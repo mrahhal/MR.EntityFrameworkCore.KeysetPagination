@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{06AE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MR.EntityFrameworkCore.KeysetPagination", "src\MR.EntityFrameworkCore.KeysetPagination\MR.EntityFrameworkCore.KeysetPagination.csproj", "{0AAE1A78-470B-4561-923B-CFEB4C985F56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MR.EntityFrameworkCore.KeysetPagination.Tests", "test\MR.EntityFrameworkCore.KeysetPagination.Tests\MR.EntityFrameworkCore.KeysetPagination.Tests.csproj", "{97C8C85C-B373-4E11-9590-62C396E65619}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{0AAE1A78-470B-4561-923B-CFEB4C985F56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AAE1A78-470B-4561-923B-CFEB4C985F56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AAE1A78-470B-4561-923B-CFEB4C985F56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97C8C85C-B373-4E11-9590-62C396E65619}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97C8C85C-B373-4E11-9590-62C396E65619}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97C8C85C-B373-4E11-9590-62C396E65619}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97C8C85C-B373-4E11-9590-62C396E65619}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
