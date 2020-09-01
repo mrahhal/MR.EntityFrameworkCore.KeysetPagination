@@ -1,0 +1,21 @@
+# Suppress: EC116
+
+root = true
+
+[*]
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{cs}]
+indent_style = tab
+indent_size = 4
+
+[*.{js,ts,css,scss,json,yaml,html,md}]
+indent_style = space
+indent_size = 2
+
+[*.cs]
+dotnet_sort_system_directives_first = true
+csharp_style_var_for_built_in_types = true:warning
+csharp_style_var_when_type_is_apparent = true:warning
+csharp_style_var_elsewhere = true:warning

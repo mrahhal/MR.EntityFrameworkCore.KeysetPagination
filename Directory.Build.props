@@ -1,0 +1,14 @@
+﻿<Project>
+
+  <Import Project="version.props" />
+
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <Product>MR.EntityFrameworkCore.KeysetPagination</Product>
+    <RepositoryUrl>https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination</RepositoryUrl>
+    <Authors>mrahhal</Authors>
+    <PackageProjectUrl>https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/mrahhal/MR.AspNetCore.NestedRouting/blob/master/LICENSE.txt</PackageLicenseUrl>
+  </PropertyGroup>
+
+</Project>
