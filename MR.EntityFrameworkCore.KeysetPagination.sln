@@ -9,6 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4FAE1C22-9B2
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D4CB6555-0A3F-4074-A9B4-323A0413A9B2}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{4B675484-482E-4BC6-864D-656EACA6E6F1}"
 	ProjectSection(SolutionItems) = preProject
@@ -42,6 +45,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0AAE1A78-470B-4561-923B-CFEB4C985F56} = {4FAE1C22-9B20-4F77-A02F-6FEFE4889CEA}
+		{97C8C85C-B373-4E11-9590-62C396E65619} = {D4CB6555-0A3F-4074-A9B4-323A0413A9B2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {867564D9-A392-43BD-8584-FB47E6D48378}
