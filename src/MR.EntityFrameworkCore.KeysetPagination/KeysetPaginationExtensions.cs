@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace MR.EntityFrameworkCore.KeysetPagination
 {
@@ -24,7 +26,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 		/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
 		/// <param name="reference">The reference entity. This can only be null when direction is also null.</param>
 		/// <param name="direction">The direction to take. This can only be null when reference is also null.</param>
-		/// <returns>The modified the queryable.</returns>
+		/// <returns>An object containing the modified queryable. Can be used with other helper methods related to keyset pagination.</returns>
 		/// <exception cref="ArgumentNullException">source or builderAction is null.</exception>
 		/// <exception cref="ArgumentException">One of <paramref name="reference"/> or <paramref name="direction"/> is null.</exception>
 		/// <exception cref="InvalidOperationException">If no properties were registered with the builder.</exception>
@@ -33,7 +35,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 		/// It's also important that you call this the very last thing in the queryable call chain
 		/// to ensure this works correctly.
 		/// </remarks>
-		public static IQueryable<T> KeysetPaginate<T>(
+		public static KeysetPaginationContext<T> KeysetPaginate<T>(
 			this IQueryable<T> source,
 			Action<KeysetPaginationBuilder<T>> builderAction,
 			T reference = null,
@@ -66,14 +68,6 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 				throw new InvalidOperationException("There should be at least one property you're acting on.");
 			}
 
-			// Predicate
-
-			if (reference != null)
-			{
-				var keysetPredicateLambda = BuildKeysetPredicateExpression(items, reference, direction.Value);
-				source = source.Where(keysetPredicateLambda);
-			}
-
 			// Order
 
 			var orderedQuery = items[0].ApplyOrderBy(source);
@@ -82,7 +76,83 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 				orderedQuery = items[i].ApplyThenOrderBy(orderedQuery);
 			}
 
-			return orderedQuery;
+			// Predicate
+
+			var predicateQuery = orderedQuery.AsQueryable();
+			if (reference != null)
+			{
+				var keysetPredicateLambda = BuildKeysetPredicateExpression(items, reference, direction.Value);
+				predicateQuery = predicateQuery.Where(keysetPredicateLambda);
+			}
+
+			return new KeysetPaginationContext<T>(predicateQuery, orderedQuery, items);
+		}
+
+		/// <summary>
+		/// Paginates using keyset pagination.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements of source.</typeparam>
+		/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
+		/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
+		/// <param name="reference">The reference entity. This can only be null when direction is also null.</param>
+		/// <param name="direction">The direction to take. This can only be null when reference is also null.</param>
+		/// <returns>The modified the queryable.</returns>
+		/// <exception cref="ArgumentNullException">source or builderAction is null.</exception>
+		/// <exception cref="ArgumentException">One of <paramref name="reference"/> or <paramref name="direction"/> is null.</exception>
+		/// <exception cref="InvalidOperationException">If no properties were registered with the builder.</exception>
+		/// <remarks>
+		/// Note that calling this method will override any OrderBy calls you have done before.
+		/// It's also important that you call this the very last thing in the queryable call chain
+		/// to ensure this works correctly.
+		/// </remarks>
+		public static IQueryable<T> KeysetPaginateQuery<T>(
+			this IQueryable<T> source,
+			Action<KeysetPaginationBuilder<T>> builderAction,
+			T reference = null,
+			KeysetPaginationReferenceDirection? direction = null)
+			where T : class
+		{
+			return KeysetPaginate(source, builderAction, reference, direction).Query;
+		}
+
+		public static Task<bool> HasPreviousAsync<T>(
+			this KeysetPaginationContext<T> context,
+			List<T> source)
+			where T : class
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (context == null)
+			{
+				throw new ArgumentNullException(nameof(context));
+			}
+
+			var reference = source.First();
+			var lambda = BuildKeysetPredicateExpression(
+				context.Items, reference, KeysetPaginationReferenceDirection.Before);
+			return context.OrderedQuery.AnyAsync(lambda);
+		}
+
+		public static Task<bool> HasNextAsync<T>(
+			this KeysetPaginationContext<T> context,
+			List<T> source)
+			where T : class
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (context == null)
+			{
+				throw new ArgumentNullException(nameof(context));
+			}
+
+			var reference = source.Last();
+			var lambda = BuildKeysetPredicateExpression(
+				context.Items, reference, KeysetPaginationReferenceDirection.After);
+			return context.OrderedQuery.AnyAsync(lambda);
 		}
 
 		internal static Expression<Func<T, bool>> BuildKeysetPredicateExpression<T>(
@@ -266,5 +336,31 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 
 			public abstract IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query);
 		}
+	}
+
+	public class KeysetPaginationContext<T>
+		where T : class
+	{
+		public KeysetPaginationContext(
+			IQueryable<T> query,
+			IOrderedQueryable<T> orderedQuery,
+			IReadOnlyList<KeysetPaginationExtensions.KeysetPaginationItem<T>> items)
+		{
+			Query = query;
+			OrderedQuery = orderedQuery;
+			Items = items;
+		}
+
+		/// <summary>
+		/// The final query.
+		/// </summary>
+		public IQueryable<T> Query { get; }
+
+		/// <summary>
+		/// This query includes only the order instructions without the predicate.
+		/// </summary>
+		public IQueryable<T> OrderedQuery { get; }
+
+		public IReadOnlyList<KeysetPaginationExtensions.KeysetPaginationItem<T>> Items { get; }
 	}
 }
