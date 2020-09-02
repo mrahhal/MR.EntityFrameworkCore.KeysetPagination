@@ -100,3 +100,21 @@ var users = await query
 ```
 
 As you can see, `KeysetPaginate` adds more predicates to the query so we have to call count before it.
+
+Implementing a First/Last page is quite easy as well:
+```cs
+// First page
+var firstPageUsers = await dbContext.Users
+  .KeysetPaginateQuery(b => b.Ascending(entity => entity.Id).Descending(entity => entity.Score))
+  .Take(20)
+  .ToListAsync();
+
+// Last page
+// Notice how we simply flip the sorting order of all properties.
+var lastPageUsers = await dbContext.Users
+  .KeysetPaginateQuery(b => b.Descending(entity => entity.Id).Ascending(entity => entity.Score))
+  .Take(20)
+  .ToListAsync();
+// Don't forget to reverse to get the proper order of the users in the last page!
+lastPageUsers = lastPageUsers.Reverse().ToList();
+```
