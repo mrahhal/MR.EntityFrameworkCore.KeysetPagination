@@ -155,7 +155,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			return context.OrderedQuery.AnyAsync(lambda);
 		}
 
-		internal static Expression<Func<T, bool>> BuildKeysetPredicateExpression<T>(
+		private static Expression<Func<T, bool>> BuildKeysetPredicateExpression<T>(
 			IReadOnlyList<KeysetPaginationItem<T>> items,
 			T reference,
 			KeysetPaginationReferenceDirection direction)
