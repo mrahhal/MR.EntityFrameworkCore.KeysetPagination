@@ -28,7 +28,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			Assert.Throws<ArgumentException>(() =>
 			{
-				Context.IntModels.KeysetPaginate(
+				Context.IntModels.KeysetPaginateQuery(
 					b => b.Ascending(x => x.Id),
 					reference);
 			});
@@ -39,7 +39,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			Assert.Throws<ArgumentException>(() =>
 			{
-				Context.IntModels.KeysetPaginate(
+				Context.IntModels.KeysetPaginateQuery(
 					b => b.Ascending(x => x.Id),
 					direction: KeysetPaginationReferenceDirection.After);
 			});
@@ -48,7 +48,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		[Fact]
 		public async Task KeysetPaginate_Raw()
 		{
-			var result = await Context.IntModels.KeysetPaginate(
+			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id))
 				.Take(20)
 				.ToListAsync();
@@ -61,7 +61,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.IntModels.First();
 
-			var result = await Context.IntModels.KeysetPaginate(
+			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
 				reference,
 				KeysetPaginationReferenceDirection.After)
@@ -74,7 +74,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.StringModels.First();
 
-			var result = await Context.StringModels.KeysetPaginate(
+			var result = await Context.StringModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
 				reference,
 				KeysetPaginationReferenceDirection.After)
@@ -87,7 +87,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.IntModels.First();
 
-			var result = await Context.IntModels.KeysetPaginate(
+			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
 				reference,
 				KeysetPaginationReferenceDirection.Before)
@@ -100,7 +100,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.StringModels.First();
 
-			var result = await Context.StringModels.KeysetPaginate(
+			var result = await Context.StringModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
 				reference,
 				KeysetPaginationReferenceDirection.Before)
@@ -113,7 +113,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.IntModels.First();
 
-			var result = await Context.IntModels.KeysetPaginate(
+			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id).Ascending(x => x.Created),
 				reference,
 				KeysetPaginationReferenceDirection.After)
@@ -126,7 +126,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.StringModels.First();
 
-			var result = await Context.StringModels.KeysetPaginate(
+			var result = await Context.StringModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id).Ascending(x => x.Created),
 				reference,
 				KeysetPaginationReferenceDirection.After)
@@ -139,7 +139,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.IntModels.First();
 
-			var result = await Context.IntModels.KeysetPaginate(
+			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Descending(x => x.Id).Ascending(x => x.Created),
 				reference,
 				KeysetPaginationReferenceDirection.After)
@@ -152,7 +152,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.StringModels.First();
 
-			var result = await Context.StringModels.KeysetPaginate(
+			var result = await Context.StringModels.KeysetPaginateQuery(
 				b => b.Descending(x => x.Id).Ascending(x => x.Created),
 				reference,
 				KeysetPaginationReferenceDirection.After)
@@ -165,7 +165,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			var reference = Context.IntModels.First();
 
-			var result = await Context.IntModels.KeysetPaginate(
+			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
 				reference,
 				KeysetPaginationReferenceDirection.Before)
