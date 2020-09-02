@@ -175,6 +175,36 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 			Assert.Empty(result);
 		}
 
+		[Fact]
+		public async Task HasPreviousAsync_False()
+		{
+			var keysetContext = Context.IntModels.KeysetPaginate(
+				b => b.Ascending(x => x.Id));
+			var items = await keysetContext.Query
+				.Take(20)
+				.ToListAsync();
+
+			var result = await keysetContext.HasPreviousAsync(items);
+			Assert.False(result);
+		}
+
+		[Fact]
+		public async Task HasPreviousAsync_True()
+		{
+			var reference = Context.IntModels.Skip(1).First();
+
+			var keysetContext = Context.IntModels.KeysetPaginate(
+				b => b.Ascending(x => x.Id),
+				reference,
+				KeysetPaginationReferenceDirection.After);
+			var items = await keysetContext.Query
+				.Take(20)
+				.ToListAsync();
+
+			var result = await keysetContext.HasPreviousAsync(items);
+			Assert.True(result);
+		}
+
 		public override void Dispose()
 		{
 			_scope.Dispose();
