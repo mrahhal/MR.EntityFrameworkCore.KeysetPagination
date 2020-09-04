@@ -25,7 +25,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 		/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
 		/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
 		/// <param name="direction">The direction to take. Default is Forward.</param>
-		/// <param name="reference">The reference entity.</param>
+		/// <param name="reference">The reference object. Needs to have properties with exact names matching the configured properties. Doesn't necessarily need to be the same type as T.</param>
 		/// <returns>An object containing the modified queryable. Can be used with other helper methods related to keyset pagination.</returns>
 		/// <exception cref="ArgumentNullException">source or builderAction is null.</exception>
 		/// <exception cref="InvalidOperationException">If no properties were registered with the builder.</exception>
@@ -36,7 +36,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			this IQueryable<T> source,
 			Action<KeysetPaginationBuilder<T>> builderAction,
 			KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
-			T reference = null)
+			object reference = null)
 			where T : class
 		{
 			if (source == null)
@@ -84,7 +84,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 		/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
 		/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
 		/// <param name="direction">The direction to take. Default is Forward.</param>
-		/// <param name="reference">The reference entity.</param>
+		/// <param name="reference">The reference object. Needs to have properties with exact names matching the configured properties. Doesn't necessarily need to be the same type as T.</param>
 		/// <returns>The modified the queryable.</returns>
 		/// <exception cref="ArgumentNullException">source or builderAction is null.</exception>
 		/// <exception cref="InvalidOperationException">If no properties were registered with the builder.</exception>
@@ -95,7 +95,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			this IQueryable<T> source,
 			Action<KeysetPaginationBuilder<T>> builderAction,
 			KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
-			T reference = null)
+			object reference = null)
 			where T : class
 		{
 			return KeysetPaginate(source, builderAction, direction, reference).Query;
@@ -163,10 +163,25 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			return context.OrderedQuery.AnyAsync(lambda);
 		}
 
+		private static List<object> GetValues<T>(
+			IReadOnlyList<KeysetPaginationItem<T>> items,
+			object reference)
+			where T : class
+		{
+			var accessor = Accessor.Obtain(reference.GetType());
+			var referenceValues = new List<object>(capacity: items.Count);
+			foreach (var item in items)
+			{
+				var value = accessor.GetPropertyValue(reference, item.Property.Name);
+				referenceValues.Add(value);
+			}
+			return referenceValues;
+		}
+
 		private static Expression<Func<T, bool>> BuildKeysetPredicateExpression<T>(
 			IReadOnlyList<KeysetPaginationItem<T>> items,
 			KeysetPaginationDirection direction,
-			T reference)
+			object reference)
 			where T : class
 		{
 			// A composite keyset pagination in sql looks something like this:
@@ -183,11 +198,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			//   (x = a AND y < b) OR
 			//   (x = a AND y = b AND z > c) OR...
 
-			var referenceValues = new List<object>(capacity: items.Count);
-			foreach (var item in items)
-			{
-				referenceValues.Add(item.Property.GetValue(reference));
-			}
+			var referenceValues = GetValues(items, reference);
 
 			// entity =>
 			var param = Expression.Parameter(typeof(T), "entity");
