@@ -9,6 +9,10 @@ function CreateStamp() {
 	return ([long]([DateTime]::UtcNow - (New-Object DateTime 2020, 1, 1)).TotalSeconds).ToString().PadLeft(11, '0')
 }
 
+if (Test-Path artifacts) {
+	rm -r artifacts
+}
+
 dotnet restore
 ExitIfFailed
 
