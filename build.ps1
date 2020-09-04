@@ -5,7 +5,23 @@ function ExitIfFailed() {
 	}
 }
 
-dotnet test
+function CreateStamp() {
+	return ([long]([DateTime]::UtcNow - (New-Object DateTime 2020, 1, 1)).TotalSeconds).ToString().PadLeft(11, '0')
+}
+
+dotnet restore
 ExitIfFailed
 
-dotnet pack -c Release -o artifacts/packages
+dotnet build --no-restore -c Release
+ExitIfFailed
+
+dotnet test --no-restore
+ExitIfFailed
+
+$versionSuffixArg = "";
+
+if (Test-Path env:GITHUB_ACTIONS) {
+	$versionSuffixArg = "--version-suffix $(CreateStamp)"
+}
+
+Invoke-Expression "dotnet pack --no-restore -c Release -o artifacts/packages $versionSuffixArg"
