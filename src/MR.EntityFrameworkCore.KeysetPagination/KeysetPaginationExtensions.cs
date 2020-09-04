@@ -115,6 +115,11 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 				throw new ArgumentNullException(nameof(context));
 			}
 
+			if (!source.Any())
+			{
+				return Task.FromResult(false);
+			}
+
 			var reference = source.First();
 			var lambda = BuildKeysetPredicateExpression(
 				context.Items, KeysetPaginationDirection.Backward, reference);
@@ -133,6 +138,11 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			if (context == null)
 			{
 				throw new ArgumentNullException(nameof(context));
+			}
+
+			if (!source.Any())
+			{
+				return Task.FromResult(false);
 			}
 
 			var reference = source.Last();
