@@ -14,7 +14,7 @@ Learn about why the standard offset based pagination (`Take().Skip()`) is bad [h
 
 ## Usage
 
-`KeysetPaginate` takes a few arguments:
+`KeysetPaginate` is an extension method on `IQueryable<T>` (same as all other queryable linq methods), it takes a few arguments:
 ```cs
 KeysetPaginate(
    b => b.Ascending(entity => entity.Id), // This configures the columns we want to act on.
