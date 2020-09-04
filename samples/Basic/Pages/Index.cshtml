@@ -1,0 +1,21 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <div class="users">
+        @foreach (var user in Model.Users)
+        {
+            <div class="user">
+                @user.Name (@user.Created.ToLongDateString())
+            </div>
+        }
+    </div>
+
+    <div class="pagination">
+        <a asp-page="/Index" asp-route-before="@Model.Users.First().Id" disabled="@(!Model.HasPrevious ? "disabled" : null)">Older</a>
+        <a asp-page="/Index" asp-route-after="@Model.Users.Last().Id" disabled="@(!Model.HasNext ? "disabled" : null)">Newer</a>
+    </div>
+</div>
