@@ -17,13 +17,15 @@ Learn about why the standard offset based pagination (`Take().Skip()`) is bad [h
 ```cs
 KeysetPaginate(
    b => b.Ascending(entity => entity.Id), // This configures the columns we want to act on.
+   direction, // The direction we want to take (Backward/Forward).
    reference, // The reference entity.
-   direction, // The direction we want to take (after/before reference).
 )
 ```
 
-If we want to display the "next page" (`KeysetPaginationReferenceDirection.After`), then the `reference` entity will be the last entity of the current page.
-If we want to display the "previous page"  (`KeysetPaginationReferenceDirection.Before`), then the `reference` entity will be the first entity of the current page.
+If we want to display the "next page" (`KeysetPaginationDirection.Forward`), then the `reference` entity will be the last entity of the current page.
+If we want to display the "previous page" (`KeysetPaginationDirection.Backward`), then the `reference` entity will be the first entity of the current page.
+
+**Note:** You'll want to reverse the items list when you use `KeysetPaginationDirection.Backward` to get the proper order.
 
 `KeysetPaginate` can be called without reference and direction. In which case this is equivalent to only ordering (equivalent to 1st page in offset pagination):
 ```cs
@@ -47,6 +49,12 @@ KeysetPaginate(
    ...
 )
 ```
+
+## Samples
+
+Check the [samples](samples) folder for project samples.
+
+- [Basic](samples/Basic): This is quick example of a page that has First/Previous/Next/Last links (razor pages).
 
 ## Extra sample usages
 
@@ -109,12 +117,11 @@ var firstPageUsers = await dbContext.Users
   .Take(20)
   .ToListAsync();
 
-// Last page
-// Notice how we simply flip the sorting order of all properties.
+// Last page (we simply use KeysetPaginationDirection.Backward)
 var lastPageUsers = await dbContext.Users
-  .KeysetPaginateQuery(b => b.Descending(entity => entity.Id).Ascending(entity => entity.Score))
+  .KeysetPaginateQuery(b => b.Ascending(entity => entity.Id).Descending(entity => entity.Score), KeysetPaginationDirection.Backward)
   .Take(20)
   .ToListAsync();
-// Don't forget to reverse to get the proper order of the users in the last page!
-lastPageUsers = lastPageUsers.Reverse().ToList();
+// We used Backward, so don't forget to reverse the list to get the proper order of the users in the last page!
+lastPageUsers.Reverse();
 ```
