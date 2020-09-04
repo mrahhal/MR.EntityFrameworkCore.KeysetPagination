@@ -101,51 +101,63 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			return KeysetPaginate(source, builderAction, direction, reference).Query;
 		}
 
+		/// <summary>
+		/// Returns true when there is more data before the list.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements of source.</typeparam>
+		/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
+		/// <param name="items">The list of items.</param>
 		public static Task<bool> HasPreviousAsync<T>(
 			this KeysetPaginationContext<T> context,
-			List<T> source)
+			List<T> items)
 			where T : class
 		{
-			if (source == null)
+			if (items == null)
 			{
-				throw new ArgumentNullException(nameof(source));
+				throw new ArgumentNullException(nameof(items));
 			}
 			if (context == null)
 			{
 				throw new ArgumentNullException(nameof(context));
 			}
 
-			if (!source.Any())
+			if (!items.Any())
 			{
 				return Task.FromResult(false);
 			}
 
-			var reference = source.First();
+			var reference = items.First();
 			var lambda = BuildKeysetPredicateExpression(
 				context.Items, KeysetPaginationDirection.Backward, reference);
 			return context.OrderedQuery.AnyAsync(lambda);
 		}
 
+		/// <summary>
+		/// Returns true when there is more data after the list.
+		/// </summary>
+		/// <typeparam name="T">The type of the elements of source.</typeparam>
+		/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
+		/// <param name="items">The list of items.</param>
 		public static Task<bool> HasNextAsync<T>(
 			this KeysetPaginationContext<T> context,
-			List<T> source)
+			List<T> items)
 			where T : class
 		{
-			if (source == null)
+			if (items == null)
 			{
-				throw new ArgumentNullException(nameof(source));
+				throw new ArgumentNullException(nameof(items));
 			}
 			if (context == null)
 			{
 				throw new ArgumentNullException(nameof(context));
 			}
 
-			if (!source.Any())
+			if (!items.Any())
 			{
 				return Task.FromResult(false);
 			}
 
-			var reference = source.Last();
+			var reference = items.Last();
 			var lambda = BuildKeysetPredicateExpression(
 				context.Items, KeysetPaginationDirection.Forward, reference);
 			return context.OrderedQuery.AnyAsync(lambda);
