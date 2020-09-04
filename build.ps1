@@ -21,7 +21,7 @@ ExitIfFailed
 $versionSuffixArg = "";
 
 if (Test-Path env:GITHUB_ACTIONS) {
-	$versionSuffixArg = "--version-suffix $(CreateStamp)"
+	$versionSuffixArg = "--version-suffix dev-$(CreateStamp)"
 }
 
 Invoke-Expression "dotnet pack --no-restore -c Release -o artifacts/packages $versionSuffixArg"
