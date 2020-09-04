@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lapis;
@@ -22,30 +22,6 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		public TestDbContext Context { get; }
 
 		[Fact]
-		public void KeysetPaginate_ReferenceWithNoDirection_Throws()
-		{
-			var reference = Context.IntModels.First();
-
-			Assert.Throws<ArgumentException>(() =>
-			{
-				Context.IntModels.KeysetPaginateQuery(
-					b => b.Ascending(x => x.Id),
-					reference);
-			});
-		}
-
-		[Fact]
-		public void KeysetPaginate_DirectionWithNoReference_Throws()
-		{
-			Assert.Throws<ArgumentException>(() =>
-			{
-				Context.IntModels.KeysetPaginateQuery(
-					b => b.Ascending(x => x.Id),
-					direction: KeysetPaginationReferenceDirection.After);
-			});
-		}
-
-		[Fact]
 		public async Task KeysetPaginate_Raw()
 		{
 			var result = await Context.IntModels.KeysetPaginateQuery(
@@ -63,8 +39,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
-				reference,
-				KeysetPaginationReferenceDirection.After)
+				KeysetPaginationDirection.Forward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 		}
@@ -76,8 +52,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.StringModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
-				reference,
-				KeysetPaginationReferenceDirection.After)
+				KeysetPaginationDirection.Forward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 		}
@@ -89,8 +65,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
-				reference,
-				KeysetPaginationReferenceDirection.Before)
+				KeysetPaginationDirection.Backward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 		}
@@ -102,8 +78,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.StringModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
-				reference,
-				KeysetPaginationReferenceDirection.Before)
+				KeysetPaginationDirection.Backward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 		}
@@ -115,8 +91,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id).Ascending(x => x.Created),
-				reference,
-				KeysetPaginationReferenceDirection.After)
+				KeysetPaginationDirection.Forward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 		}
@@ -128,8 +104,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.StringModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id).Ascending(x => x.Created),
-				reference,
-				KeysetPaginationReferenceDirection.After)
+				KeysetPaginationDirection.Forward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 		}
@@ -141,8 +117,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Descending(x => x.Id).Ascending(x => x.Created),
-				reference,
-				KeysetPaginationReferenceDirection.After)
+				KeysetPaginationDirection.Forward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 		}
@@ -154,8 +130,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.StringModels.KeysetPaginateQuery(
 				b => b.Descending(x => x.Id).Ascending(x => x.Created),
-				reference,
-				KeysetPaginationReferenceDirection.After)
+				KeysetPaginationDirection.Forward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 		}
@@ -167,8 +143,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var result = await Context.IntModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
-				reference,
-				KeysetPaginationReferenceDirection.Before)
+				KeysetPaginationDirection.Backward,
+				reference)
 				.Take(20)
 				.ToListAsync();
 
@@ -195,8 +171,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 			var keysetContext = Context.IntModels.KeysetPaginate(
 				b => b.Ascending(x => x.Id),
-				reference,
-				KeysetPaginationReferenceDirection.After);
+				KeysetPaginationDirection.Forward,
+				reference);
 			var items = await keysetContext.Query
 				.Take(20)
 				.ToListAsync();
@@ -209,6 +185,26 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		{
 			_scope.Dispose();
 			base.Dispose();
+		}
+
+		private void AssertRange(int from, int to, List<IntModel> actual)
+		{
+			AssertRange(from, to, actual.Select(x => x.Id).ToList());
+		}
+
+		private void AssertRange(int from, int to, List<StringModel> actual)
+		{
+			AssertRange(from, to, actual.Select(x => int.Parse(x.Id)).ToList());
+		}
+
+		private void AssertRange(int from, int to, List<int> actual)
+		{
+			var expected = new List<int>();
+			for (var i = from; i < to; i++)
+			{
+				expected.Add(i);
+			}
+			Assert.Equal(expected, actual);
 		}
 	}
 }

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Basic.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using MR.EntityFrameworkCore.KeysetPagination;
 
 namespace Basic.Pages
@@ -12,15 +12,14 @@ namespace Basic.Pages
 	public class IndexModel : PageModel
 	{
 		private readonly AppDbContext _dbContext;
-		private readonly ILogger _logger;
 
 		public IndexModel(
-			AppDbContext dbContext,
-			ILogger<IndexModel> logger)
+			AppDbContext dbContext)
 		{
 			_dbContext = dbContext;
-			_logger = logger;
 		}
+
+		public int Count { get; set; }
 
 		public List<User> Users { get; set; }
 
@@ -28,32 +27,52 @@ namespace Basic.Pages
 
 		public bool HasNext { get; set; }
 
-		public async Task OnGet(int? after, int? before)
+		public async Task OnGet(int? after, int? before, bool first = false, bool last = false)
 		{
+			var size = 20;
+
+			static void keysetBuilderAction(KeysetPaginationBuilder<User> b) => b.Ascending(x => x.Id);
+
 			var query = _dbContext.Users.AsQueryable();
-			var count = await query.CountAsync();
+			Count = await query.CountAsync();
 			KeysetPaginationContext<User> keysetContext;
-			if (after != null)
+			if (first)
+			{
+				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Forward);
+				Users = await keysetContext.Query
+				  .Take(size)
+				  .ToListAsync();
+			}
+			else if (last)
+			{
+				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Backward);
+				Users = await keysetContext.Query
+				  .Take(size)
+				  .ToListAsync();
+				Users.Reverse();
+			}
+			else if (after != null)
 			{
 				var reference = await _dbContext.Users.FindAsync(after.Value);
-				keysetContext = query.KeysetPaginate(b => b.Ascending(x => x.Id), reference, KeysetPaginationReferenceDirection.After);
+				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Forward, reference);
 				Users = await keysetContext.Query
-				  .Take(20)
+				  .Take(size)
 				  .ToListAsync();
 			}
 			else if (before != null)
 			{
 				var reference = await _dbContext.Users.FindAsync(before.Value);
-				keysetContext = query.KeysetPaginate(b => b.Ascending(x => x.Id), reference, KeysetPaginationReferenceDirection.Before);
+				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Backward, reference);
 				Users = await keysetContext.Query
-				  .Take(20)
+				  .Take(size)
 				  .ToListAsync();
+				Users.Reverse();
 			}
 			else
 			{
-				keysetContext = query.KeysetPaginate(b => b.Ascending(x => x.Id));
+				keysetContext = query.KeysetPaginate(keysetBuilderAction);
 				Users = await keysetContext.Query
-				  .Take(20)
+				  .Take(size)
 				  .ToListAsync();
 			}
 

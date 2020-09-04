@@ -24,22 +24,19 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 		/// <typeparam name="T">The type of the elements of source.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
 		/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
-		/// <param name="reference">The reference entity. This can only be null when direction is also null.</param>
-		/// <param name="direction">The direction to take. This can only be null when reference is also null.</param>
+		/// <param name="direction">The direction to take. Default is Forward.</param>
+		/// <param name="reference">The reference entity.</param>
 		/// <returns>An object containing the modified queryable. Can be used with other helper methods related to keyset pagination.</returns>
 		/// <exception cref="ArgumentNullException">source or builderAction is null.</exception>
-		/// <exception cref="ArgumentException">One of <paramref name="reference"/> or <paramref name="direction"/> is null.</exception>
 		/// <exception cref="InvalidOperationException">If no properties were registered with the builder.</exception>
 		/// <remarks>
 		/// Note that calling this method will override any OrderBy calls you have done before.
-		/// It's also important that you call this the very last thing in the queryable call chain
-		/// to ensure this works correctly.
 		/// </remarks>
 		public static KeysetPaginationContext<T> KeysetPaginate<T>(
 			this IQueryable<T> source,
 			Action<KeysetPaginationBuilder<T>> builderAction,
-			T reference = null,
-			KeysetPaginationReferenceDirection? direction = null)
+			KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
+			T reference = null)
 			where T : class
 		{
 			if (source == null)
@@ -49,14 +46,6 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			if (builderAction == null)
 			{
 				throw new ArgumentNullException(nameof(builderAction));
-			}
-			if (reference != null && direction == null)
-			{
-				throw new ArgumentException(nameof(direction), "direction is required when there's a reference.");
-			}
-			if (reference == null && direction != null)
-			{
-				throw new ArgumentException(nameof(direction), "direction doesn't make sense when there's no reference.");
 			}
 
 			var builder = new KeysetPaginationBuilder<T>();
@@ -70,10 +59,10 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 
 			// Order
 
-			var orderedQuery = items[0].ApplyOrderBy(source);
+			var orderedQuery = items[0].ApplyOrderBy(source, direction);
 			for (var i = 1; i < items.Count; i++)
 			{
-				orderedQuery = items[i].ApplyThenOrderBy(orderedQuery);
+				orderedQuery = items[i].ApplyThenOrderBy(orderedQuery, direction);
 			}
 
 			// Predicate
@@ -81,7 +70,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 			var predicateQuery = orderedQuery.AsQueryable();
 			if (reference != null)
 			{
-				var keysetPredicateLambda = BuildKeysetPredicateExpression(items, reference, direction.Value);
+				var keysetPredicateLambda = BuildKeysetPredicateExpression(items, direction, reference);
 				predicateQuery = predicateQuery.Where(keysetPredicateLambda);
 			}
 
@@ -94,25 +83,22 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 		/// <typeparam name="T">The type of the elements of source.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
 		/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
-		/// <param name="reference">The reference entity. This can only be null when direction is also null.</param>
-		/// <param name="direction">The direction to take. This can only be null when reference is also null.</param>
+		/// <param name="direction">The direction to take. Default is Forward.</param>
+		/// <param name="reference">The reference entity.</param>
 		/// <returns>The modified the queryable.</returns>
 		/// <exception cref="ArgumentNullException">source or builderAction is null.</exception>
-		/// <exception cref="ArgumentException">One of <paramref name="reference"/> or <paramref name="direction"/> is null.</exception>
 		/// <exception cref="InvalidOperationException">If no properties were registered with the builder.</exception>
 		/// <remarks>
 		/// Note that calling this method will override any OrderBy calls you have done before.
-		/// It's also important that you call this the very last thing in the queryable call chain
-		/// to ensure this works correctly.
 		/// </remarks>
 		public static IQueryable<T> KeysetPaginateQuery<T>(
 			this IQueryable<T> source,
 			Action<KeysetPaginationBuilder<T>> builderAction,
-			T reference = null,
-			KeysetPaginationReferenceDirection? direction = null)
+			KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
+			T reference = null)
 			where T : class
 		{
-			return KeysetPaginate(source, builderAction, reference, direction).Query;
+			return KeysetPaginate(source, builderAction, direction, reference).Query;
 		}
 
 		public static Task<bool> HasPreviousAsync<T>(
@@ -131,7 +117,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 
 			var reference = source.First();
 			var lambda = BuildKeysetPredicateExpression(
-				context.Items, reference, KeysetPaginationReferenceDirection.Before);
+				context.Items, KeysetPaginationDirection.Backward, reference);
 			return context.OrderedQuery.AnyAsync(lambda);
 		}
 
@@ -151,14 +137,14 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 
 			var reference = source.Last();
 			var lambda = BuildKeysetPredicateExpression(
-				context.Items, reference, KeysetPaginationReferenceDirection.After);
+				context.Items, KeysetPaginationDirection.Forward, reference);
 			return context.OrderedQuery.AnyAsync(lambda);
 		}
 
 		private static Expression<Func<T, bool>> BuildKeysetPredicateExpression<T>(
 			IReadOnlyList<KeysetPaginationItem<T>> items,
-			T reference,
-			KeysetPaginationReferenceDirection direction)
+			KeysetPaginationDirection direction,
+			T reference)
 			where T : class
 		{
 			// A composite keyset pagination in sql looks something like this:
@@ -209,10 +195,10 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 					{
 						var greaterThan = direction switch
 						{
-							KeysetPaginationReferenceDirection.After when !item.IsDescending => true,
-							KeysetPaginationReferenceDirection.After when item.IsDescending => false,
-							KeysetPaginationReferenceDirection.Before when !item.IsDescending => false,
-							KeysetPaginationReferenceDirection.Before when item.IsDescending => true,
+							KeysetPaginationDirection.Forward when !item.IsDescending => true,
+							KeysetPaginationDirection.Forward when item.IsDescending => false,
+							KeysetPaginationDirection.Backward when !item.IsDescending => false,
+							KeysetPaginationDirection.Backward when item.IsDescending => true,
 							_ => throw new NotImplementedException(),
 						};
 
@@ -250,9 +236,77 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 
 			return Expression.Lambda<Func<T, bool>>(orExpression, param);
 		}
+	}
 
-		internal static Expression<Func<T, TKey>> MakeMemberAccessLambda<T, TKey>(PropertyInfo property)
-			where T : class
+	public class KeysetPaginationBuilder<T>
+		where T : class
+	{
+		private readonly List<KeysetPaginationItem<T>> _items = new List<KeysetPaginationItem<T>>();
+
+		public IReadOnlyList<KeysetPaginationItem<T>> Items => _items;
+
+		public KeysetPaginationBuilder<T> Ascending<TProp>(
+			Expression<Func<T, TProp>> propertyExpression)
+		{
+			return Item(propertyExpression, false);
+		}
+
+		public KeysetPaginationBuilder<T> Descending<TProp>(
+			Expression<Func<T, TProp>> propertyExpression)
+		{
+			return Item(propertyExpression, true);
+		}
+
+		private KeysetPaginationBuilder<T> Item<TProp>(
+			Expression<Func<T, TProp>> propertyExpression,
+			bool isDescending)
+		{
+			var property = ExpressionHelper.GetPropertyInfoFromMemberAccess(propertyExpression);
+			_items.Add(new KeysetPaginationItem<T, TProp>
+			{
+				Property = property,
+				IsDescending = isDescending,
+			});
+			return this;
+		}
+	}
+
+	public class KeysetPaginationItem<T, TProp> : KeysetPaginationItem<T>
+		where T : class
+	{
+		public override IOrderedQueryable<T> ApplyOrderBy(IQueryable<T> query, KeysetPaginationDirection direction)
+		{
+			return OrderBy(query, direction, this);
+		}
+
+		public override IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction)
+		{
+			return ThenOrderBy(query, direction, this);
+		}
+
+		private static IOrderedQueryable<T> OrderBy(IQueryable<T> query, KeysetPaginationDirection direction, KeysetPaginationItem<T> item)
+		{
+			var accessExpression = MakeMemberAccessLambda<TProp>(item.Property);
+			var isDescending = item.IsDescending;
+			if (direction == KeysetPaginationDirection.Backward)
+			{
+				isDescending = !isDescending;
+			}
+			return isDescending ? query.OrderByDescending(accessExpression) : query.OrderBy(accessExpression);
+		}
+
+		private static IOrderedQueryable<T> ThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction, KeysetPaginationItem<T> item)
+		{
+			var accessExpression = MakeMemberAccessLambda<TProp>(item.Property);
+			var isDescending = item.IsDescending;
+			if (direction == KeysetPaginationDirection.Backward)
+			{
+				isDescending = !isDescending;
+			}
+			return isDescending ? query.ThenBy(accessExpression) : query.ThenByDescending(accessExpression);
+		}
+
+		private static Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>(PropertyInfo property)
 		{
 			// x => x.Property
 			// ---------------
@@ -265,77 +319,18 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 
 			return Expression.Lambda<Func<T, TKey>>(propertyMemberAccess, param);
 		}
+	}
 
-		public class KeysetPaginationBuilder<T>
-			where T : class
-		{
-			private readonly List<KeysetPaginationItem<T>> _items = new List<KeysetPaginationItem<T>>();
+	public abstract class KeysetPaginationItem<T>
+		where T : class
+	{
+		public PropertyInfo Property { get; set; }
 
-			public IReadOnlyList<KeysetPaginationItem<T>> Items => _items;
+		public bool IsDescending { get; set; }
 
-			public KeysetPaginationBuilder<T> Ascending<TProp>(
-				Expression<Func<T, TProp>> propertyExpression)
-			{
-				return Item(propertyExpression, false);
-			}
+		public abstract IOrderedQueryable<T> ApplyOrderBy(IQueryable<T> query, KeysetPaginationDirection direction);
 
-			public KeysetPaginationBuilder<T> Descending<TProp>(
-				Expression<Func<T, TProp>> propertyExpression)
-			{
-				return Item(propertyExpression, true);
-			}
-
-			private KeysetPaginationBuilder<T> Item<TProp>(
-				Expression<Func<T, TProp>> propertyExpression,
-				bool isDescending)
-			{
-				var property = ExpressionHelper.GetPropertyInfoFromMemberAccess(propertyExpression);
-				_items.Add(new KeysetPaginationItem<T, TProp>
-				{
-					Property = property,
-					IsDescending = isDescending,
-				});
-				return this;
-			}
-		}
-
-		public class KeysetPaginationItem<T, TProp> : KeysetPaginationItem<T>
-			where T : class
-		{
-			public override IOrderedQueryable<T> ApplyOrderBy(IQueryable<T> query)
-			{
-				return OrderBy(query, this);
-			}
-
-			public override IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query)
-			{
-				return ThenOrderBy(query, this);
-			}
-
-			private static IOrderedQueryable<T> OrderBy(IQueryable<T> query, KeysetPaginationItem<T> item)
-			{
-				var accessExpression = MakeMemberAccessLambda<T, TProp>(item.Property);
-				return item.IsDescending ? query.OrderByDescending(accessExpression) : query.OrderBy(accessExpression);
-			}
-
-			private static IOrderedQueryable<T> ThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationItem<T> item)
-			{
-				var accessExpression = MakeMemberAccessLambda<T, TProp>(item.Property);
-				return item.IsDescending ? query.ThenBy(accessExpression) : query.ThenByDescending(accessExpression);
-			}
-		}
-
-		public abstract class KeysetPaginationItem<T>
-			where T : class
-		{
-			public PropertyInfo Property { get; set; }
-
-			public bool IsDescending { get; set; }
-
-			public abstract IOrderedQueryable<T> ApplyOrderBy(IQueryable<T> query);
-
-			public abstract IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query);
-		}
+		public abstract IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction);
 	}
 
 	public class KeysetPaginationContext<T>
@@ -344,7 +339,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 		public KeysetPaginationContext(
 			IQueryable<T> query,
 			IOrderedQueryable<T> orderedQuery,
-			IReadOnlyList<KeysetPaginationExtensions.KeysetPaginationItem<T>> items)
+			IReadOnlyList<KeysetPaginationItem<T>> items)
 		{
 			Query = query;
 			OrderedQuery = orderedQuery;
@@ -361,6 +356,6 @@ namespace MR.EntityFrameworkCore.KeysetPagination
 		/// </summary>
 		public IQueryable<T> OrderedQuery { get; }
 
-		public IReadOnlyList<KeysetPaginationExtensions.KeysetPaginationItem<T>> Items { get; }
+		public IReadOnlyList<KeysetPaginationItem<T>> Items { get; }
 	}
 }

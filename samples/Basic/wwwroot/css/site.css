@@ -76,3 +76,12 @@ a[disabled] {
   opacity: .7;
   pointer-events: none;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination > * + * {
+    margin-left: 15px;
+}

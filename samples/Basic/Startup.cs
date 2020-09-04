@@ -39,6 +39,7 @@ namespace Basic
 					var created = now.AddMinutes(i);
 					_dbContext.Add(new User
 					{
+						Id = i,
 						Name = i.ToString(),
 						Created = created,
 					});

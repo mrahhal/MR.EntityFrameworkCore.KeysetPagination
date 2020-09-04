@@ -56,15 +56,17 @@ namespace Lapis
 		{
 			var now = DateTime.Now.AddYears(-1);
 
-			for (var i = 0; i < 1000; i++)
+			for (var i = 1; i < 1001; i++)
 			{
 				var created = now.AddMinutes(i);
 				context.StringModels.Add(new StringModel
 				{
+					Id = i.ToString(),
 					Created = created,
 				});
 				context.IntModels.Add(new IntModel
 				{
+					Id = i,
 					Created = created,
 				});
 			}
