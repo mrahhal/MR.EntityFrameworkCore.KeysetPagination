@@ -17,15 +17,15 @@ Learn about why the standard offset based pagination (`Take().Skip()`) is bad [h
 ```cs
 KeysetPaginate(
    b => b.Ascending(entity => entity.Id), // This configures the columns we want to act on.
-   direction, // The direction we want to take (Backward/Forward).
+   direction, // The direction we want to take (Backward/Forward). Default is Forward.
    reference, // The reference entity.
 )
 ```
 
-If we want to display the "next page" (`KeysetPaginationDirection.Forward`), then the `reference` entity will be the last entity of the current page.
-If we want to display the "previous page" (`KeysetPaginationDirection.Backward`), then the `reference` entity will be the first entity of the current page.
+To get the next page, you pass the last item in the current list as the `reference` with Forward direction.
+To get the previous page, you pass the first item in the current list as the `reference` with Backward direction.
 
-**Note:** You'll want to reverse the items list when you use `KeysetPaginationDirection.Backward` to get the proper order.
+**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the items.
 
 `KeysetPaginate` can be called without reference and direction. In which case this is equivalent to only ordering (equivalent to 1st page in offset pagination):
 ```cs
@@ -54,7 +54,7 @@ KeysetPaginate(
 
 Check the [samples](samples) folder for project samples.
 
-- [Basic](samples/Basic): This is quick example of a page that has First/Previous/Next/Last links (razor pages).
+- [Basic](samples/Basic): This is a quick example of a page that has First/Previous/Next/Last links (razor pages).
 
 ## Extra sample usages
 
