@@ -8,7 +8,7 @@
     <RepositoryUrl>https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination</RepositoryUrl>
     <Authors>mrahhal</Authors>
     <PackageProjectUrl>https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>
