@@ -6,7 +6,7 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     <Product>MR.EntityFrameworkCore.KeysetPagination</Product>
     <RepositoryUrl>https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination</RepositoryUrl>
-    <Authors>mrahhal</Authors>
+    <Authors>Mohammad Rahhal</Authors>
     <PackageProjectUrl>https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
