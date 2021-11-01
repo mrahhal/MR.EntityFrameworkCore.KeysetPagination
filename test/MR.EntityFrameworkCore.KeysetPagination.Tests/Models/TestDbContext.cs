@@ -18,5 +18,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests.Models
 		public DbSet<IntModel> IntModels { get; set; }
 
 		public DbSet<StringModel> StringModels { get; set; }
+
+		public DbSet<GuidModel> GuidModels { get; set; }
 	}
 }

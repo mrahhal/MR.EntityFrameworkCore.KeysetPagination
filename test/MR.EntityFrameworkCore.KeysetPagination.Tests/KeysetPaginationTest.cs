@@ -59,6 +59,19 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
+		public async Task KeysetPaginate_AfterReference3()
+		{
+			var reference = Context.GuidModels.First();
+
+			var result = await Context.GuidModels.KeysetPaginateQuery(
+				b => b.Ascending(x => x.Id),
+				KeysetPaginationDirection.Forward,
+				reference)
+				.Take(20)
+				.ToListAsync();
+		}
+
+		[Fact]
 		public async Task KeysetPaginate_BeforeReference()
 		{
 			var reference = Context.IntModels.First();
@@ -77,6 +90,19 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 			var reference = Context.StringModels.First();
 
 			var result = await Context.StringModels.KeysetPaginateQuery(
+				b => b.Ascending(x => x.Id),
+				KeysetPaginationDirection.Backward,
+				reference)
+				.Take(20)
+				.ToListAsync();
+		}
+
+		[Fact]
+		public async Task KeysetPaginate_BeforeReference3()
+		{
+			var reference = Context.GuidModels.First();
+
+			var result = await Context.GuidModels.KeysetPaginateQuery(
 				b => b.Ascending(x => x.Id),
 				KeysetPaginationDirection.Backward,
 				reference)
@@ -111,6 +137,19 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
+		public async Task KeysetPaginate_AfterReference_Composite3()
+		{
+			var reference = Context.GuidModels.First();
+
+			var result = await Context.GuidModels.KeysetPaginateQuery(
+				b => b.Ascending(x => x.Id).Ascending(x => x.Created),
+				KeysetPaginationDirection.Forward,
+				reference)
+				.Take(20)
+				.ToListAsync();
+		}
+
+		[Fact]
 		public async Task KeysetPaginate_AfterReference_Composite_Mixed()
 		{
 			var reference = Context.IntModels.First();
@@ -129,6 +168,19 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 			var reference = Context.StringModels.First();
 
 			var result = await Context.StringModels.KeysetPaginateQuery(
+				b => b.Descending(x => x.Id).Ascending(x => x.Created),
+				KeysetPaginationDirection.Forward,
+				reference)
+				.Take(20)
+				.ToListAsync();
+		}
+
+		[Fact]
+		public async Task KeysetPaginate_AfterReference_Composite_Mixed3()
+		{
+			var reference = Context.GuidModels.First();
+
+			var result = await Context.GuidModels.KeysetPaginateQuery(
 				b => b.Descending(x => x.Id).Ascending(x => x.Created),
 				KeysetPaginationDirection.Forward,
 				reference)

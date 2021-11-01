@@ -44,6 +44,7 @@ namespace Lapis
 
 			using var scope = CreateScope();
 			var context = scope.ServiceProvider.GetService<TestDbContext>();
+			context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
 			if (!context.StringModels.Any())
@@ -67,6 +68,11 @@ namespace Lapis
 				context.IntModels.Add(new IntModel
 				{
 					Id = i,
+					Created = created,
+				});
+				context.GuidModels.Add(new GuidModel
+				{
+					Id = Guid.NewGuid(),
 					Created = created,
 				});
 			}
