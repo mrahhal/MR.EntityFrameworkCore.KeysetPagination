@@ -10,14 +10,10 @@ internal class Accessor
 	private readonly IReadOnlyDictionary<string, PropertyInfo> _propertyInfoMap;
 
 	public Accessor(
-		IReadOnlyList<string> keys,
 		IReadOnlyDictionary<string, PropertyInfo> propertyInfoLookup)
 	{
-		Keys = keys;
 		_propertyInfoMap = propertyInfoLookup;
 	}
-
-	public IReadOnlyList<string> Keys { get; private set; }
 
 	public bool HasProperty(string key)
 	{
@@ -49,7 +45,6 @@ internal class Accessor
 	private static Accessor CreateNew(Type type)
 	{
 		var properties = type.GetProperties();
-		var keys = properties.Select(x => x.Name).ToList().AsReadOnly();
 
 		var propertyInfoLookup = new Dictionary<string, PropertyInfo>(capacity: properties.Length);
 		foreach (var p in properties)
@@ -57,6 +52,6 @@ internal class Accessor
 			propertyInfoLookup[p.Name] = p;
 		}
 
-		return new(keys, propertyInfoLookup);
+		return new(propertyInfoLookup);
 	}
 }
