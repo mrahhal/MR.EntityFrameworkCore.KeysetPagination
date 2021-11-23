@@ -29,6 +29,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{4B6754
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{06AED930-32C6-4FF8-A631-A9C55BB7112D}"
+	ProjectSection(SolutionItems) = preProject
+		samples\Directory.Build.props = samples\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MR.EntityFrameworkCore.KeysetPagination", "src\MR.EntityFrameworkCore.KeysetPagination\MR.EntityFrameworkCore.KeysetPagination.csproj", "{0AAE1A78-470B-4561-923B-CFEB4C985F56}"
 EndProject
