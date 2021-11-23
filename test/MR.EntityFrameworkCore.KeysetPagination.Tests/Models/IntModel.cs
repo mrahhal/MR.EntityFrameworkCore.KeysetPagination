@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MR.EntityFrameworkCore.KeysetPagination.Tests.Models
+﻿namespace MR.EntityFrameworkCore.KeysetPagination.Tests.Models
 {
 	public class IntModel
 	{

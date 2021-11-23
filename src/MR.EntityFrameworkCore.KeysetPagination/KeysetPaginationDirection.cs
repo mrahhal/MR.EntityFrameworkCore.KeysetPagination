@@ -1,8 +1,7 @@
-﻿namespace MR.EntityFrameworkCore.KeysetPagination
+﻿namespace MR.EntityFrameworkCore.KeysetPagination;
+
+public enum KeysetPaginationDirection
 {
-	public enum KeysetPaginationDirection
-	{
-		Forward,
-		Backward,
-	};
-}
+	Forward,
+	Backward,
+};
