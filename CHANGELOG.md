@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Optimize the generated predicate expression to use an access predicate. [[#8](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/8)]
 
+## 0.2.1 - 2021-11-24
+
+https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/releases/tag/v0.2.1
+
+- Fixed order of expressions generated for the order by when acting on more than one column.
+
+**Full Changelog**: https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v0.2.0...v0.2.1
+
 ## 0.2.0 - 2021-11-23
 
 https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/releases/tag/v0.2.0
