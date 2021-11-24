@@ -284,7 +284,7 @@ public class KeysetPaginationBuilder<T>
 {
 	private readonly List<KeysetPaginationItem<T>> _items = new();
 
-	public IReadOnlyList<KeysetPaginationItem<T>> Items => _items;
+	internal IReadOnlyList<KeysetPaginationItem<T>> Items => _items;
 
 	public KeysetPaginationBuilder<T> Ascending<TProp>(
 		Expression<Func<T, TProp>> propertyExpression)
@@ -310,7 +310,7 @@ public class KeysetPaginationBuilder<T>
 	}
 }
 
-public class KeysetPaginationItem<T, TProp> : KeysetPaginationItem<T>
+internal class KeysetPaginationItem<T, TProp> : KeysetPaginationItem<T>
 	where T : class
 {
 	public KeysetPaginationItem(
@@ -366,7 +366,7 @@ public class KeysetPaginationItem<T, TProp> : KeysetPaginationItem<T>
 	}
 }
 
-public abstract class KeysetPaginationItem<T>
+internal abstract class KeysetPaginationItem<T>
 	where T : class
 {
 	public KeysetPaginationItem(
@@ -389,7 +389,7 @@ public abstract class KeysetPaginationItem<T>
 public class KeysetPaginationContext<T>
 	where T : class
 {
-	public KeysetPaginationContext(
+	internal KeysetPaginationContext(
 		IQueryable<T> query,
 		IOrderedQueryable<T> orderedQuery,
 		IReadOnlyList<KeysetPaginationItem<T>> items)
@@ -409,5 +409,5 @@ public class KeysetPaginationContext<T>
 	/// </summary>
 	public IQueryable<T> OrderedQuery { get; }
 
-	public IReadOnlyList<KeysetPaginationItem<T>> Items { get; }
+	internal IReadOnlyList<KeysetPaginationItem<T>> Items { get; }
 }
