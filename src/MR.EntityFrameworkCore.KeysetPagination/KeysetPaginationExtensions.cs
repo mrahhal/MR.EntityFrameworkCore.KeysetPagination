@@ -6,15 +6,9 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public static class KeysetPaginationExtensions
 {
-	private static readonly MethodInfo StringCompareToMethod;
-	private static readonly MethodInfo GuidCompareToMethod;
+	private static readonly MethodInfo StringCompareToMethod = GetCompareToMethod(typeof(string));
+	private static readonly MethodInfo GuidCompareToMethod = GetCompareToMethod(typeof(Guid));
 	private static readonly ConstantExpression ConstantExpression0 = Expression.Constant(0);
-
-	static KeysetPaginationExtensions()
-	{
-		StringCompareToMethod = typeof(string).GetTypeInfo().GetMethod(nameof(string.CompareTo), new Type[] { typeof(string) })!;
-		GuidCompareToMethod = typeof(Guid).GetTypeInfo().GetMethod(nameof(Guid.CompareTo), new Type[] { typeof(Guid) })!;
-	}
 
 	/// <summary>
 	/// Paginates using keyset pagination.
@@ -276,5 +270,16 @@ public static class KeysetPaginationExtensions
 		}
 
 		return Expression.Lambda<Func<T, bool>>(orExpression, param);
+	}
+
+	private static MethodInfo GetCompareToMethod(Type type)
+	{
+		var methodInfo = type.GetTypeInfo().GetMethod(nameof(string.CompareTo), new Type[] { type });
+		if (methodInfo == null)
+		{
+			throw new InvalidOperationException($"Didn't find a CompareTo method on type {type.Name}.");
+		}
+
+		return methodInfo;
 	}
 }
