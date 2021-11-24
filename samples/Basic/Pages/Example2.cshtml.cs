@@ -1,4 +1,5 @@
-﻿using Basic.Models;
+﻿using System.Diagnostics;
+using Basic.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MR.EntityFrameworkCore.KeysetPagination;
@@ -23,14 +24,21 @@ namespace Basic.Pages
 
 		public bool HasNext { get; set; }
 
+		public string Elapsed { get; set; }
+
+		public string ElapsedTotal { get; set; }
+
 		public async Task OnGet(int? after, int? before, bool first = false, bool last = false)
 		{
 			var size = 20;
 
 			var keysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
 			{
+				// It kind of doesn't make sense to add the Id here since Created will be unique, but this is just a sample.
 				b.Descending(x => x.Created).Ascending(x => x.Id);
 			};
+
+			var sw = Stopwatch.StartNew();
 
 			var query = _dbContext.Users.AsQueryable();
 			Count = await query.CountAsync();
@@ -75,8 +83,12 @@ namespace Basic.Pages
 				  .ToListAsync();
 			}
 
+			Elapsed = sw.ElapsedMilliseconds.ToString();
+
 			HasPrevious = await keysetContext.HasPreviousAsync(Users);
 			HasNext = await keysetContext.HasNextAsync(Users);
+
+			ElapsedTotal = sw.ElapsedMilliseconds.ToString();
 		}
 	}
 }
