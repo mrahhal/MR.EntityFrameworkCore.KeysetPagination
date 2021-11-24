@@ -6,8 +6,11 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public static class KeysetPaginationExtensions
 {
-	private static readonly MethodInfo StringCompareToMethod = GetCompareToMethod(typeof(string));
-	private static readonly MethodInfo GuidCompareToMethod = GetCompareToMethod(typeof(Guid));
+	private static readonly IReadOnlyDictionary<Type, MethodInfo> TypeToCompareToMethod = new Dictionary<Type, MethodInfo>
+	{
+		{ typeof(string), GetCompareToMethod(typeof(string)) },
+		{ typeof(Guid), GetCompareToMethod(typeof(Guid)) },
+	};
 	private static readonly ConstantExpression ConstantExpression0 = Expression.Constant(0);
 
 	/// <summary>
@@ -261,18 +264,18 @@ public static class KeysetPaginationExtensions
 		where T : class
 	{
 		var propertyType = item.Property.PropertyType;
-		if (propertyType == typeof(string) || propertyType == typeof(Guid))
+		if (TypeToCompareToMethod.TryGetValue(propertyType, out var compareToMethod))
 		{
-			// GreaterThan/LessThan operators are not valid for strings and guids.
-			// We use string/Guid.CompareTo instead.
+			// LessThan/GreaterThan operators are not valid for some types such as strings and guids.
+			// We use the CompareTo method on these types instead.
 
 			// entity.Property.CompareTo(constant) >|< 0
 			// -----------------------------------------
 
 			// entity.Property.CompareTo(constant)
-			var compareToMethod = propertyType == typeof(string) ? StringCompareToMethod : GuidCompareToMethod;
 			var methodCallExpression = Expression.Call(memberAccess, compareToMethod, referenceValue);
 
+			// >|< 0
 			return compare(methodCallExpression, ConstantExpression0);
 		}
 		else
