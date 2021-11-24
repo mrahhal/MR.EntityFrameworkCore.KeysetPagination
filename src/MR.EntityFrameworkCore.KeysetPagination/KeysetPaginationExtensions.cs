@@ -235,14 +235,7 @@ public static class KeysetPaginationExtensions
 				}
 				else
 				{
-					var greaterThan = direction switch
-					{
-						KeysetPaginationDirection.Forward when !item.IsDescending => true,
-						KeysetPaginationDirection.Forward when item.IsDescending => false,
-						KeysetPaginationDirection.Backward when !item.IsDescending => false,
-						KeysetPaginationDirection.Backward when item.IsDescending => true,
-						_ => throw new NotImplementedException(),
-					};
+					var compare = GetComparisonExpressionToApply(direction, item, orEqual: false);
 
 					var propertyType = item.Property.PropertyType;
 					if (propertyType == typeof(string) || propertyType == typeof(Guid))
@@ -257,15 +250,11 @@ public static class KeysetPaginationExtensions
 						var compareToMethod = propertyType == typeof(string) ? StringCompareToMethod : GuidCompareToMethod;
 						var methodCallExpression = Expression.Call(memberAccess, compareToMethod, referenceValueExpression);
 
-						innerExpression = greaterThan ?
-							Expression.GreaterThan(methodCallExpression, ConstantExpression0) :
-							Expression.LessThan(methodCallExpression, ConstantExpression0);
+						innerExpression = compare(methodCallExpression, ConstantExpression0);
 					}
 					else
 					{
-						innerExpression = greaterThan ?
-							Expression.GreaterThan(memberAccess, referenceValueExpression) :
-							Expression.LessThan(memberAccess, referenceValueExpression);
+						innerExpression = compare(memberAccess, referenceValueExpression);
 					}
 				}
 
@@ -278,6 +267,24 @@ public static class KeysetPaginationExtensions
 		}
 
 		return Expression.Lambda<Func<T, bool>>(orExpression, param);
+	}
+
+	private static Func<Expression, Expression, BinaryExpression> GetComparisonExpressionToApply<T>(
+		KeysetPaginationDirection direction, KeysetPaginationItem<T> item, bool orEqual)
+		where T : class
+	{
+		var greaterThan = direction switch
+		{
+			KeysetPaginationDirection.Forward when !item.IsDescending => true,
+			KeysetPaginationDirection.Forward when item.IsDescending => false,
+			KeysetPaginationDirection.Backward when !item.IsDescending => false,
+			KeysetPaginationDirection.Backward when item.IsDescending => true,
+			_ => throw new NotImplementedException(),
+		};
+
+		return orEqual ?
+			(greaterThan ? Expression.GreaterThanOrEqual : Expression.LessThanOrEqual) :
+			(greaterThan ? Expression.GreaterThan : Expression.LessThan);
 	}
 
 	private static MethodInfo GetCompareToMethod(Type type)
