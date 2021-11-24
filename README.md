@@ -26,7 +26,7 @@ KeysetPaginate(
 To get the next page, you pass the last item in the current list as the `reference` with Forward direction.
 To get the previous page, you pass the first item in the current list as the `reference` with Backward direction.
 
-**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the items.
+**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data.
 
 Here's a small visual explanation:
 

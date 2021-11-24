@@ -99,27 +99,27 @@ public static class KeysetPaginationExtensions
 	/// <typeparam name="T">The type of the elements of source.</typeparam>
 	/// <typeparam name="T2">The type of the elements of the list.</typeparam>
 	/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
-	/// <param name="items">The list of items.</param>
+	/// <param name="data">The data list.</param>
 	public static Task<bool> HasPreviousAsync<T, T2>(
 		this KeysetPaginationContext<T> context,
-		List<T2> items)
+		List<T2> data)
 		where T : class
 	{
-		if (items == null)
+		if (data == null)
 		{
-			throw new ArgumentNullException(nameof(items));
+			throw new ArgumentNullException(nameof(data));
 		}
 		if (context == null)
 		{
 			throw new ArgumentNullException(nameof(context));
 		}
 
-		if (!items.Any())
+		if (!data.Any())
 		{
 			return Task.FromResult(false);
 		}
 
-		var reference = items.First()!;
+		var reference = data.First()!;
 		return HasAsync(context, KeysetPaginationDirection.Backward, reference);
 	}
 
@@ -129,27 +129,27 @@ public static class KeysetPaginationExtensions
 	/// <typeparam name="T">The type of the elements of source.</typeparam>
 	/// <typeparam name="T2">The type of the elements of the list.</typeparam>
 	/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
-	/// <param name="items">The list of items.</param>
+	/// <param name="data">The data list.</param>
 	public static Task<bool> HasNextAsync<T, T2>(
 		this KeysetPaginationContext<T> context,
-		List<T2> items)
+		List<T2> data)
 		where T : class
 	{
-		if (items == null)
+		if (data == null)
 		{
-			throw new ArgumentNullException(nameof(items));
+			throw new ArgumentNullException(nameof(data));
 		}
 		if (context == null)
 		{
 			throw new ArgumentNullException(nameof(context));
 		}
 
-		if (!items.Any())
+		if (!data.Any())
 		{
 			return Task.FromResult(false);
 		}
 
-		var reference = items.Last()!;
+		var reference = data.Last()!;
 		return HasAsync(context, KeysetPaginationDirection.Forward, reference);
 	}
 
