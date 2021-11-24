@@ -224,39 +224,23 @@ public static class KeysetPaginationExtensions
 			// innerLimit implicitly grows from 1 to items.Count by each iteration.
 			for (var j = 0; j < innerLimit; j++)
 			{
-				var isLast = j + 1 == innerLimit;
+				var isOrLast = j + 1 == innerLimit;
 				var item = items[j];
 				var referenceValueExpression = Expression.Constant(referenceValues[j]);
 				var memberAccess = Expression.MakeMemberAccess(param, item.Property);
 
 				BinaryExpression innerExpression;
-				if (!isLast)
+				if (!isOrLast)
 				{
 					innerExpression = Expression.Equal(memberAccess, referenceValueExpression);
 				}
 				else
 				{
 					var compare = GetComparisonExpressionToApply(direction, item, orEqual: false);
-
-					var propertyType = item.Property.PropertyType;
-					if (propertyType == typeof(string) || propertyType == typeof(Guid))
-					{
-						// GreaterThan/LessThan operators are not valid for strings and guids.
-						// We use string/Guid.CompareTo instead.
-
-						// entity.Property.CompareTo(constant) >|< 0
-						// -----------------------------------------
-
-						// entity.Property.CompareTo(constant)
-						var compareToMethod = propertyType == typeof(string) ? StringCompareToMethod : GuidCompareToMethod;
-						var methodCallExpression = Expression.Call(memberAccess, compareToMethod, referenceValueExpression);
-
-						innerExpression = compare(methodCallExpression, ConstantExpression0);
-					}
-					else
-					{
-						innerExpression = compare(memberAccess, referenceValueExpression);
-					}
+					innerExpression = MakeComparisonExpression(
+						item,
+						memberAccess, referenceValueExpression,
+						compare);
 				}
 
 				andExpression = andExpression == null ? innerExpression : Expression.And(andExpression, innerExpression);
@@ -268,6 +252,33 @@ public static class KeysetPaginationExtensions
 		}
 
 		return Expression.Lambda<Func<T, bool>>(orExpression, param);
+	}
+
+	private static BinaryExpression MakeComparisonExpression<T>(
+		KeysetPaginationItem<T> item,
+		MemberExpression memberAccess, ConstantExpression referenceValue,
+		Func<Expression, Expression, BinaryExpression> compare)
+		where T : class
+	{
+		var propertyType = item.Property.PropertyType;
+		if (propertyType == typeof(string) || propertyType == typeof(Guid))
+		{
+			// GreaterThan/LessThan operators are not valid for strings and guids.
+			// We use string/Guid.CompareTo instead.
+
+			// entity.Property.CompareTo(constant) >|< 0
+			// -----------------------------------------
+
+			// entity.Property.CompareTo(constant)
+			var compareToMethod = propertyType == typeof(string) ? StringCompareToMethod : GuidCompareToMethod;
+			var methodCallExpression = Expression.Call(memberAccess, compareToMethod, referenceValue);
+
+			return compare(methodCallExpression, ConstantExpression0);
+		}
+		else
+		{
+			return compare(memberAccess, referenceValue);
+		}
 	}
 
 	private static Func<Expression, Expression, BinaryExpression> GetComparisonExpressionToApply<T>(
