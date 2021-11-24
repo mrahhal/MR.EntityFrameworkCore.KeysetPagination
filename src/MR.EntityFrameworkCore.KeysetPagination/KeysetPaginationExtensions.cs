@@ -348,7 +348,7 @@ public class KeysetPaginationItem<T, TProp> : KeysetPaginationItem<T>
 		{
 			isDescending = !isDescending;
 		}
-		return isDescending ? query.ThenBy(accessExpression) : query.ThenByDescending(accessExpression);
+		return isDescending ? query.ThenByDescending(accessExpression) : query.ThenBy(accessExpression);
 	}
 
 	private static Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>(PropertyInfo property)
