@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
-Nothing yet...
+
+- Optimize the generated predicate expression to use an access predicate. [[#8](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/8)]
 
 ## 0.2.0 - 2021-11-23
 

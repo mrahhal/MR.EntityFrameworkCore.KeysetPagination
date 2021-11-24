@@ -210,8 +210,15 @@ public static class KeysetPaginationExtensions
 		//   (x > a) OR
 		//   (x = a AND y < b) OR
 		//   (x = a AND y = b AND z > c) OR...
+		//
+		// An optimization is to include an additional redundant wrapping clause for the 1st column when there are
+		// more than one column we're acting on, which would allow the db to use it as an access predicate on the 1st column.
+		// See here: https://use-the-index-luke.com/sql/partial-results/fetch-next-page#sb-equivalent-logic
 
 		var referenceValues = GetValues(items, reference);
+
+		var firstMemberAccessExpression = default(MemberExpression);
+		var firstReferenceValueExpression = default(ConstantExpression);
 
 		// entity =>
 		var param = Expression.Parameter(typeof(T), "entity");
@@ -229,8 +236,15 @@ public static class KeysetPaginationExtensions
 			{
 				var isOrLast = j + 1 == innerLimit;
 				var item = items[j];
-				var referenceValueExpression = Expression.Constant(referenceValues[j]);
 				var memberAccess = Expression.MakeMemberAccess(param, item.Property);
+				var referenceValueExpression = Expression.Constant(referenceValues[j]);
+
+				if (firstMemberAccessExpression == null)
+				{
+					// This might be used later on in an optimization.
+					firstMemberAccessExpression = memberAccess;
+					firstReferenceValueExpression = referenceValueExpression;
+				}
 
 				BinaryExpression innerExpression;
 				if (!isOrLast)
@@ -254,7 +268,26 @@ public static class KeysetPaginationExtensions
 			innerLimit++;
 		}
 
-		return Expression.Lambda<Func<T, bool>>(orExpression, param);
+		var finalExpression = orExpression;
+		if (items.Count > 1)
+		{
+			// Implement the optimization that allows an access predicate on the 1st column.
+			// This is done by generating the following expression:
+			//   (x >=|<= a) AND (previous generated expression)
+			//
+			// This effectively adds a redudant clause on the 1st column, but it's a clause all dbs
+			// understand and can use as an access predicate (most commonly when the column is indexed).
+
+			var firstItem = items[0];
+			var compare = GetComparisonExpressionToApply(direction, firstItem, orEqual: true);
+			var accessPredicateClause = MakeComparisonExpression(
+				firstItem,
+				firstMemberAccessExpression!, firstReferenceValueExpression!,
+				compare);
+			finalExpression = Expression.And(accessPredicateClause, finalExpression);
+		}
+
+		return Expression.Lambda<Func<T, bool>>(finalExpression, param);
 	}
 
 	private static BinaryExpression MakeComparisonExpression<T>(
