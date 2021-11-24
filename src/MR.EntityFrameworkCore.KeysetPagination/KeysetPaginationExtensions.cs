@@ -13,7 +13,7 @@ public static class KeysetPaginationExtensions
 	static KeysetPaginationExtensions()
 	{
 		StringCompareToMethod = typeof(string).GetTypeInfo().GetMethod(nameof(string.CompareTo), new Type[] { typeof(string) })!;
-		GuidCompareToMethod = typeof(Guid).GetTypeInfo().GetMethod(nameof(string.CompareTo), new Type[] { typeof(Guid) })!;
+		GuidCompareToMethod = typeof(Guid).GetTypeInfo().GetMethod(nameof(Guid.CompareTo), new Type[] { typeof(Guid) })!;
 	}
 
 	/// <summary>
