@@ -192,13 +192,13 @@ public static class KeysetPaginationExtensions
 		//   (x, y, ...) > (a, b, ...)
 		// Where, x/y/... represent the column and a/b/... represent the reference's respective values.
 		//
-		// In sql standard this syntax is called "row values". Check here: https://use-the-index-luke.com/sql/partial-results/fetch-next-page#sb-row-values
+		// In sql standard this syntax is called "row value". Check here: https://use-the-index-luke.com/sql/partial-results/fetch-next-page#sb-row-values
 		// Unfortunately, not a lot of databases support this properly.
-		// Further, if we were to use this we would somehow need EFCore to recognise it and transform it
+		// Further, if we were to use this we would somehow need EFCore to recognise it and translate it
 		// perhaps by using a new DbFunction (https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbfunctions).
 		//
 		// So, we're going to implement it ourselves (less efficient when compared
-		// to a proper db implementation for row values but will still do the job).
+		// to a proper db implementation for row value but will still do the job).
 		//
 		// The generalized expression for this in pseudocode is:
 		//   (x > a) OR
