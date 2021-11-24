@@ -188,6 +188,14 @@ public static class KeysetPaginationExtensions
 		// A composite keyset pagination in sql looks something like this:
 		//   (x, y, ...) > (a, b, ...)
 		//
+		// In sql standard this syntax is called "row values". Check here: https://use-the-index-luke.com/sql/partial-results/fetch-next-page#sb-row-values
+		// Unfortunately, not a lot of databases support this properly.
+		// Further, if we were to use this we would somehow need EFCore to recognise it and transform it
+		// perhaps by using a new DbFunction (https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbfunctions).
+		//
+		// So, we're going to implement it ourselves (less efficient when compared
+		// to a proper db implementation for row values but will still do the job).
+		//
 		// The generalized expression for this in pseudocode is:
 		//   (x > a) OR
 		//   (x = a AND y > b) OR
