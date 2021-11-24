@@ -28,6 +28,10 @@ To get the previous page, you pass the first item in the current list as the `re
 
 **Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the items.
 
+Here's a small visual explanation:
+
+<img src="images/exp.jpg" width="300" />
+
 `KeysetPaginate` can be called without reference and direction. In which case this is equivalent to only ordering (equivalent to 1st page in offset pagination):
 ```cs
 KeysetPaginate(
