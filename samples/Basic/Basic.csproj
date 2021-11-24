@@ -4,6 +4,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="app.db*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\MR.EntityFrameworkCore.KeysetPagination\MR.EntityFrameworkCore.KeysetPagination.csproj" />
   </ItemGroup>
 
