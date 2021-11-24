@@ -57,16 +57,16 @@ public static class KeysetPaginationExtensions
 			orderedQuery = items[i].ApplyThenOrderBy(orderedQuery, direction);
 		}
 
-		// Predicate
+		// Filter
 
-		var predicateQuery = orderedQuery.AsQueryable();
+		var filteredQuery = orderedQuery.AsQueryable();
 		if (reference != null)
 		{
-			var keysetPredicateLambda = BuildKeysetPredicateExpression(items, direction, reference);
-			predicateQuery = predicateQuery.Where(keysetPredicateLambda);
+			var keysetFilterPredicateLambda = BuildKeysetFilterPredicateExpression(items, direction, reference);
+			filteredQuery = filteredQuery.Where(keysetFilterPredicateLambda);
 		}
 
-		return new KeysetPaginationContext<T>(predicateQuery, orderedQuery, items);
+		return new KeysetPaginationContext<T>(filteredQuery, orderedQuery, items);
 	}
 
 	/// <summary>
@@ -159,7 +159,7 @@ public static class KeysetPaginationExtensions
 		object reference)
 		where T : class
 	{
-		var lambda = BuildKeysetPredicateExpression(
+		var lambda = BuildKeysetFilterPredicateExpression(
 			context.Items, direction, reference);
 		return context.OrderedQuery.AnyAsync(lambda);
 	}
@@ -179,7 +179,7 @@ public static class KeysetPaginationExtensions
 		return referenceValues;
 	}
 
-	private static Expression<Func<T, bool>> BuildKeysetPredicateExpression<T>(
+	private static Expression<Func<T, bool>> BuildKeysetFilterPredicateExpression<T>(
 		IReadOnlyList<KeysetPaginationItem<T>> items,
 		KeysetPaginationDirection direction,
 		object reference)
