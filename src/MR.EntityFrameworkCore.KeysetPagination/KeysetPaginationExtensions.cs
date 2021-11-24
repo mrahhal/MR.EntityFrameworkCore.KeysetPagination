@@ -289,13 +289,13 @@ public class KeysetPaginationBuilder<T>
 	public KeysetPaginationBuilder<T> Ascending<TProp>(
 		Expression<Func<T, TProp>> propertyExpression)
 	{
-		return Item(propertyExpression, false);
+		return Item(propertyExpression, isDescending: false);
 	}
 
 	public KeysetPaginationBuilder<T> Descending<TProp>(
 		Expression<Func<T, TProp>> propertyExpression)
 	{
-		return Item(propertyExpression, true);
+		return Item(propertyExpression, isDescending: true);
 	}
 
 	private KeysetPaginationBuilder<T> Item<TProp>(

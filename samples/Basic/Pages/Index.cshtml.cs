@@ -27,7 +27,10 @@ namespace Basic.Pages
 		{
 			var size = 20;
 
-			static void keysetBuilderAction(KeysetPaginationBuilder<User> b) => b.Ascending(x => x.Id);
+			var keysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
+			{
+				b.Ascending(x => x.Id);
+			};
 
 			var query = _dbContext.Users.AsQueryable();
 			Count = await query.CountAsync();
