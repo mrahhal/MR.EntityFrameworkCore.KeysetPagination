@@ -8,7 +8,7 @@
 [![NuGet version](https://badge.fury.io/nu/MR.EntityFrameworkCore.KeysetPagination.svg)](https://www.nuget.org/packages/MR.EntityFrameworkCore.KeysetPagination)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Keyset pagination for EntityFrameworkCore. Also known as seek pagination.
+Keyset pagination for EntityFrameworkCore. Also known as seek pagination or cursor pagination.
 
 Learn about why the standard offset based pagination (`Take().Skip()`) is bad [here](http://use-the-index-luke.com/no-offset).
 
