@@ -187,6 +187,7 @@ public static class KeysetPaginationExtensions
 	{
 		// A composite keyset pagination in sql looks something like this:
 		//   (x, y, ...) > (a, b, ...)
+		// Where, x/y/... represent the column and a/b/... represent the reference's respective values.
 		//
 		// In sql standard this syntax is called "row values". Check here: https://use-the-index-luke.com/sql/partial-results/fetch-next-page#sb-row-values
 		// Unfortunately, not a lot of databases support this properly.
