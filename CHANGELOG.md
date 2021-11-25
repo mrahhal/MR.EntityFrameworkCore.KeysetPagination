@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
@@ -26,5 +27,7 @@ https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/releases/tag/
 **Full Changelog**: https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v0.1.3...v0.2.0
 
 ## 0.1.3 - 2021-11-01
+
 ### Fixed
+
 - Support Guids. [#1](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/1)

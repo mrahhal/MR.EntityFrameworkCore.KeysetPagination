@@ -7,7 +7,7 @@ insert_final_newline = true
 [*.{cs}]
 indent_style = tab
 
-[*.{js,ts,css,scss,json,yaml,html,md,csproj,Build.props,Build.targets}]
+[*.{js,ts,css,scss,json,yml,yaml,html,md,csproj,Build.props,Build.targets}]
 indent_style = space
 indent_size = 2
 

@@ -21,11 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{4B6754
 		CHANGELOG.md = CHANGELOG.md
 		.github\workflows\ci.yml = .github\workflows\ci.yml
 		DEVELOPMENT.md = DEVELOPMENT.md
-		Directory.Build.props = Directory.Build.props
-		Directory.Build.targets = Directory.Build.targets
 		global.json = global.json
 		README.md = README.md
-		version.props = version.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{06AED930-32C6-4FF8-A631-A9C55BB7112D}"
@@ -42,7 +39,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{66E7C63B-2300-40F4-B588-B3917A69AB78}"
 	ProjectSection(SolutionItems) = preProject
 		build.ps1 = build.ps1
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 		nuget-push.ps1 = nuget-push.ps1
+		version.props = version.props
 	EndProjectSection
 EndProject
 Global
