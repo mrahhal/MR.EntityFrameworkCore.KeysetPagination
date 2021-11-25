@@ -275,7 +275,7 @@ public static class KeysetPaginationExtensions
 			// This is done by generating the following expression:
 			//   (x >=|<= a) AND (previous generated expression)
 			//
-			// This effectively adds a redudant clause on the 1st column, but it's a clause all dbs
+			// This effectively adds a redundant clause on the 1st column, but it's a clause all dbs
 			// understand and can use as an access predicate (most commonly when the column is indexed).
 
 			var firstItem = items[0];
