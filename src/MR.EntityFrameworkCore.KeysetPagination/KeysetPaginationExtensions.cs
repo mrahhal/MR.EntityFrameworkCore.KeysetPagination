@@ -195,12 +195,13 @@ public static class KeysetPaginationExtensions
 		// Where, x/y/... represent the column and a/b/... represent the reference's respective values.
 		//
 		// In sql standard this syntax is called "row value". Check here: https://use-the-index-luke.com/sql/partial-results/fetch-next-page#sb-row-values
-		// Unfortunately, not a lot of databases support this properly.
-		// Further, if we were to use this we would somehow need EFCore to recognise it and translate it
+		// Unfortunately, not all databases support this properly.
+		// Further, if we were to use this we would somehow need EF Core to recognise it and translate it
 		// perhaps by using a new DbFunction (https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbfunctions).
+		// There's an ongoing issue for this here: https://github.com/dotnet/efcore/issues/26822
 		//
-		// So, we're going to implement it ourselves (less efficient when compared
-		// to a proper db implementation for row value but will still do the job).
+		// In addition, row value won't work for mixed ordered columns. i.e if x > a but y < b.
+		// So even if we can use it we'll still have to fallback to this logic in these cases.
 		//
 		// The generalized expression for this in pseudocode is:
 		//   (x > a) OR
