@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Keyset pagination for EntityFrameworkCore. Also known as seek pagination or cursor pagination.</Description>
+    <Description>Keyset pagination for EF Core (Entity Framework Core). Also known as seek pagination or cursor pagination.</Description>
   </PropertyGroup>
 
   <ItemGroup>
