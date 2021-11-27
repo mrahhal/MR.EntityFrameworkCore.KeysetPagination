@@ -128,7 +128,9 @@ KeysetPaginate(
 
 ## Getting the data
 
-The following is a basic example usage of the returned context object. We're querying the data and specifying the size as 20 items:
+Let's now see how to work with the context object that `KeysetPaginate` returns.
+
+The following is a basic example usage. We're querying the data and getting back 20 items:
 
 ```cs
 var users = await dbContext.Users
@@ -140,9 +142,9 @@ var users = await dbContext.Users
 // users.Reverse();
 ```
 
-`KeysetPaginate` returns a context object that includes a `Query` property. This `Query` is what you'll chain more linq operators to.
+`KeysetPaginate` returns a context object that includes a `Query` property. This `Query` is what you'll chain more linq operators to and then use to get your data.
 
-The context object returned can be further reused by other helper methods in this package such as `HasPreviousAsync`/`HasNextAsync`.
+The context object itself can be further reused by other helper methods in this package such as `HasPreviousAsync`/`HasNextAsync` to get more info.
 
 As a shortcut for when you don't need this context object, there's a `KeysetPaginateQuery` method:
 
@@ -156,8 +158,11 @@ var users = await dbContext.Users
 Using the context object with helper methods:
 
 ```cs
+// Store it in a variable because we'll be using it in more than one way.
 var keysetContext = dbContext.Users
     .KeysetPaginate(...);
+
+// First, we'll get our actual data. We do this by using the `Query` property.
 var users = await keysetContext.Query.Take(20).ToListAsync();
 
 // This is true when there is more data before the returned list.
@@ -167,26 +172,28 @@ var hasPrevious = await keysetContext.HasPreviousAsync(users);
 var hasNext = await keysetContext.HasNextAsync(users);
 ```
 
-`HasPreviousAsync`/`HasNextAsync` can be used when you want to render Previous/Next (Older/Newer) buttons.
+`HasPreviousAsync`/`HasNextAsync` are useful when you want to know when to render Previous/Next (Older/Newer) buttons.
 
-If you want to obtain the total count for the data to display somewhere:
+Here's nother example showing how to obtain the total count for the data to display somewhere:
 
 ```cs
-// Assuming this api returns users who are admins only.
+// Assuming we're in an api that should return admin users.
 
+// Do the initial query first.
 var query = dbContext.Users.Where(x => x.IsAdmin);
 
 // This will be the count of all admins.
 var count = await query.CountAsync();
 
-// And then we apply keyset pagination.
+// And then we apply keyset pagination at the end.
+// You can optionally use the context object too as explained above to get additional info.
 var users = await query
     .KeysetPaginateQuery(...)
     .Take(20)
     .ToListAsync();
 ```
 
-As you can see, `KeysetPaginate` adds more predicates to the query so we have to call count before it.
+`KeysetPaginate` adds ordering and more predicates to the query so we have to get the count before we apply it.
 
 ## Samples
 
