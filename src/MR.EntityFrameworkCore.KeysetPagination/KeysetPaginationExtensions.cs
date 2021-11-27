@@ -100,12 +100,12 @@ public static class KeysetPaginationExtensions
 	/// Returns true when there is more data before the list.
 	/// </summary>
 	/// <typeparam name="T">The type of the elements of source.</typeparam>
-	/// <typeparam name="T2">The type of the elements of the list.</typeparam>
+	/// <typeparam name="T2">The type of the elements of the data.</typeparam>
 	/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
 	/// <param name="data">The data list.</param>
 	public static Task<bool> HasPreviousAsync<T, T2>(
 		this KeysetPaginationContext<T> context,
-		List<T2> data)
+		IReadOnlyList<T2> data)
 		where T : class
 	{
 		if (data == null)
@@ -122,7 +122,8 @@ public static class KeysetPaginationExtensions
 			return Task.FromResult(false);
 		}
 
-		var reference = data.First()!;
+		// Get first item and see if there's anything before it.
+		var reference = data[0]!;
 		return HasAsync(context, KeysetPaginationDirection.Backward, reference);
 	}
 
@@ -130,12 +131,12 @@ public static class KeysetPaginationExtensions
 	/// Returns true when there is more data after the list.
 	/// </summary>
 	/// <typeparam name="T">The type of the elements of source.</typeparam>
-	/// <typeparam name="T2">The type of the elements of the list.</typeparam>
+	/// <typeparam name="T2">The type of the elements of the data.</typeparam>
 	/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
 	/// <param name="data">The data list.</param>
 	public static Task<bool> HasNextAsync<T, T2>(
 		this KeysetPaginationContext<T> context,
-		List<T2> data)
+		IReadOnlyList<T2> data)
 		where T : class
 	{
 		if (data == null)
@@ -152,7 +153,8 @@ public static class KeysetPaginationExtensions
 			return Task.FromResult(false);
 		}
 
-		var reference = data.Last()!;
+		// Get last item and see if there's anything after it.
+		var reference = data[^1]!;
 		return HasAsync(context, KeysetPaginationDirection.Forward, reference);
 	}
 
