@@ -31,21 +31,21 @@ KeysetPaginate(
 
 Using this method we can do all kinds of keyset queries: first page, previous page, next page, last page.
 
-These queries usually follow the same pattern, described below.
+These queries usually follow the same patterns, shown in the "Common patterns" section. Practical code examples are shown in the "Getting the data" section.
 
-To obtain first/last pages, we won't need a reference entity.
-
-To obtain previous/last pages, we need to walk backwards (relative to the order). We do that by specifying the direction.
+But first, let's talk a bit more about `KeysetPaginate` and how it works.
 
 Here's a small visual representation:
 
 <img src="images/exp.jpg" width="300" />
 
+The columns and their configured order are used to order the data, and then the direction decides if we're getting the data before or after the reference row.
+
 **Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking backwards gives results in the opposite order to the configured columns order.
 
-`KeysetPaginate` returns a context object which you can use to ask more info or get the results. We'll show practical examples of how to use this in a bit.
+`KeysetPaginate` returns a context object which you can use to get secondary info and get the data result.
 
-`KeysetPaginate` can be called without direction and reference, in which case this is equivalent to querying the first page:
+It can be called without direction and reference, in which case this is equivalent to querying the first page:
 
 ```cs
 KeysetPaginate(
@@ -53,7 +53,7 @@ KeysetPaginate(
 )
 ```
 
-`KeysetPaginate` works with composite keyset as well. Just configure all the columns you want:
+It works with composite keyset as well. Just configure all the columns you want:
 
 ```cs
 KeysetPaginate(
@@ -62,7 +62,7 @@ KeysetPaginate(
 )
 ```
 
-You can also mix ASC/DESC columns. `KeysetPaginate` knows how to handle that (even with a reference/direction specified):
+You can also mix ASC/DESC columns. `KeysetPaginate` knows how to handle that:
 
 ```cs
 KeysetPaginate(
@@ -75,7 +75,7 @@ KeysetPaginate(
 
 ## Common patterns
 
-The most common 4 patterns of using `KeysetPaginate`:
+Here are the 4 most common patterns of using `KeysetPaginate`.
 
 #### First page
 
