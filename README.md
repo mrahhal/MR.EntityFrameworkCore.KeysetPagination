@@ -41,7 +41,7 @@ Here's a small visual representation:
 
 The columns and their configured order are used to order the data, and then the direction decides if we're getting the data before or after the reference row.
 
-**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking backwards gives results in the opposite order to the configured columns order.
+**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order.
 
 `KeysetPaginate` returns a context object which you can use to get secondary info and get the data result.
 
@@ -89,7 +89,7 @@ KeysetPaginate(
 
 #### Last page
 
-We get the last page by specifying a backwards direction.
+We get the last page by specifying a `Backward` direction.
 
 ```cs
 KeysetPaginate(
@@ -98,11 +98,11 @@ KeysetPaginate(
 )
 ```
 
-**Note**: Since we're specifing a backwards direction, we should reverse the data list (sample code shown below).
+**Note**: Since we're specifing a `Backward` direction, we should reverse the data list (sample code shown below).
 
 #### Previous page
 
-You get previous/next pages by providing a direction and a reference. In this case, the reference should be the first item of the current page, and the direction is backwards:
+You get previous/next pages by providing a direction and a reference. In this case, the reference should be the first item of the current page, and the direction is `Backward`:
 
 ```cs
 KeysetPaginate(
@@ -112,11 +112,11 @@ KeysetPaginate(
 )
 ```
 
-**Note**: Since we're specifing a backwards direction, we should reverse the data list (sample shown below).
+**Note**: Since we're specifing a `Backward` direction, we should reverse the data list (sample shown below).
 
 #### Next page
 
-You get previous/next pages by providing a direction and a reference. In this case, the reference should be the last item of the current page, and the direction is forwards:
+You get previous/next pages by providing a direction and a reference. In this case, the reference should be the last item of the current page, and the direction is `Forward`:
 
 ```cs
 KeysetPaginate(
@@ -136,7 +136,7 @@ var users = await dbContext.Users
     .Take(20)
     .ToListAsync();
 
-// As noted in several places above, don't forget to reverse the data if we specified a backwards direction:
+// As noted in several places above, don't forget to reverse the data if we specified a Backward direction:
 // users.Reverse();
 ```
 
