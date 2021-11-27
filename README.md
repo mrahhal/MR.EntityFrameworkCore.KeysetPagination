@@ -174,6 +174,8 @@ var hasNext = await keysetContext.HasNextAsync(users);
 
 `HasPreviousAsync`/`HasNextAsync` are useful when you want to know when to render Previous/Next (Older/Newer) buttons.
 
+**Note**: The reference/data these methods accept are always losely typed. This is designed so that you have the freedom of transforming/mapping your data to DTOs if you want, and still have the ability to ask more info using the same context object. You just need to make sure the columns you configured still exist on the transformed objects.
+
 Here's nother example showing how to obtain the total count for the data to display somewhere:
 
 ```cs
