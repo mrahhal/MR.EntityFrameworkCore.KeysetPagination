@@ -178,7 +178,11 @@ public static class KeysetPaginationExtensions
 		var referenceValues = new List<object>(capacity: items.Count);
 		foreach (var item in items)
 		{
-			var value = accessor.GetPropertyValue(reference, item.Property.Name);
+			var propertyName = item.Property.Name;
+			if (!accessor.TryGetPropertyValue(reference, propertyName, out var value))
+			{
+				throw new KeysetPaginationIncompatibleObjectException($"Property '{propertyName}' not found on this object.");
+			}
 			referenceValues.Add(value);
 		}
 		return referenceValues;

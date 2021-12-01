@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
@@ -20,16 +21,15 @@ internal class Accessor
 		return _propertyInfoMap.ContainsKey(key);
 	}
 
-	public object GetPropertyValue(object instance, string key)
+	public bool TryGetPropertyValue(object instance, string key, [NotNullWhen(true)] out object? value)
 	{
-		var propertyInfo = _propertyInfoMap[key];
-		return propertyInfo.GetMethod!.Invoke(instance, Array.Empty<object>())!;
-	}
-
-	public void SetPropertyValue(object instance, string key, object value)
-	{
-		var propertyInfo = _propertyInfoMap[key];
-		propertyInfo.SetMethod!.Invoke(instance, new object[] { value });
+		value = null;
+		if (!_propertyInfoMap.TryGetValue(key, out var propertyInfo))
+		{
+			return false;
+		}
+		value = propertyInfo.GetMethod!.Invoke(instance, Array.Empty<object>())!;
+		return true;
 	}
 
 	public static Accessor Obtain<T>()

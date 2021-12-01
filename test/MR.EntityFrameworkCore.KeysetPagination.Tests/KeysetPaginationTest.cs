@@ -230,6 +230,24 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 			Assert.True(result);
 		}
 
+		[Fact]
+		public async Task HasPreviousAsync_Incompatible()
+		{
+			var keysetContext = Context.IntModels.KeysetPaginate(
+				b => b.Ascending(x => x.Id));
+			var items = await keysetContext.Query
+				.Take(20)
+				.ToListAsync();
+
+			// A type that doesn't have an Id property which is included in the columns definition above.
+			var dtos = items.Select(x => new { x.Created }).ToList();
+
+			await Assert.ThrowsAsync<KeysetPaginationIncompatibleObjectException>(async () =>
+			{
+				await keysetContext.HasPreviousAsync(dtos);
+			});
+		}
+
 		public override void Dispose()
 		{
 			GC.SuppressFinalize(this);
