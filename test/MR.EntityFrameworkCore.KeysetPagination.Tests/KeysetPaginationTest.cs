@@ -30,7 +30,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference()
+		public async Task KeysetPaginate_AfterReference_int()
 		{
 			var reference = Context.IntModels.First();
 
@@ -43,7 +43,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference2()
+		public async Task KeysetPaginate_AfterReference_string()
 		{
 			var reference = Context.StringModels.First();
 
@@ -56,7 +56,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference3()
+		public async Task KeysetPaginate_AfterReference_Guid()
 		{
 			var reference = Context.GuidModels.First();
 
@@ -69,7 +69,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_BeforeReference()
+		public async Task KeysetPaginate_BeforeReference_int()
 		{
 			var reference = Context.IntModels.First();
 
@@ -82,7 +82,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_BeforeReference2()
+		public async Task KeysetPaginate_BeforeReference_string()
 		{
 			var reference = Context.StringModels.First();
 
@@ -95,7 +95,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_BeforeReference3()
+		public async Task KeysetPaginate_BeforeReference_Guid()
 		{
 			var reference = Context.GuidModels.First();
 
@@ -108,7 +108,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference_Composite()
+		public async Task KeysetPaginate_AfterReference_Composite_int()
 		{
 			var reference = Context.IntModels.First();
 
@@ -121,7 +121,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference_Composite2()
+		public async Task KeysetPaginate_AfterReference_Composite_string()
 		{
 			var reference = Context.StringModels.First();
 
@@ -134,7 +134,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference_Composite3()
+		public async Task KeysetPaginate_AfterReference_Composite_Guid()
 		{
 			var reference = Context.GuidModels.First();
 
@@ -147,7 +147,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference_Composite_Mixed()
+		public async Task KeysetPaginate_AfterReference_Composite_Mixed_int()
 		{
 			var reference = Context.IntModels.First();
 
@@ -160,7 +160,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference_Composite_Mixed2()
+		public async Task KeysetPaginate_AfterReference_Composite_Mixed_string()
 		{
 			var reference = Context.StringModels.First();
 
@@ -173,7 +173,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 		}
 
 		[Fact]
-		public async Task KeysetPaginate_AfterReference_Composite_Mixed3()
+		public async Task KeysetPaginate_AfterReference_Composite_Mixed_Guid()
 		{
 			var reference = Context.GuidModels.First();
 
@@ -232,6 +232,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 
 		public override void Dispose()
 		{
+			GC.SuppressFinalize(this);
+
 			_scope.Dispose();
 			base.Dispose();
 		}

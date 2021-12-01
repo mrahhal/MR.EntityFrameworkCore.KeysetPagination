@@ -24,6 +24,7 @@ namespace Lapis
 
 		public virtual void Dispose()
 		{
+			GC.SuppressFinalize(this);
 		}
 
 		protected static IServiceScope CreateScope()
