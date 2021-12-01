@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Optimize the generated predicate expression to use an access predicate. [[#8](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/8)]
 - Throw custom exception when data type is incompatible. [[#11](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/11)]
+- Add EnsureCorrectOrder to KeysetContext.
 
 ## 0.2.1 - 2021-11-24
 

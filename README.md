@@ -41,7 +41,7 @@ Here's a small visual representation:
 
 The columns and their configured order are used to order the data, and then the direction decides if we're getting the data before or after the reference row.
 
-**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order.
+**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order. There's a helper method on KeysetContext for this, shown in a snippet later.'
 
 `KeysetPaginate` returns a context object which you can use to get secondary info and get the data result.
 
@@ -98,8 +98,6 @@ KeysetPaginate(
 )
 ```
 
-**Note**: Since we're specifing a `Backward` direction, we should reverse the data list (sample code shown below).
-
 #### Previous page
 
 You get previous/next pages by providing a direction and a reference. In this case, the reference should be the first item of the current page, and the direction is `Backward`:
@@ -111,8 +109,6 @@ KeysetPaginate(
     reference
 )
 ```
-
-**Note**: Since we're specifing a `Backward` direction, we should reverse the data list (sample shown below).
 
 #### Next page
 
@@ -138,8 +134,8 @@ var users = await dbContext.Users
     .Take(20)
     .ToListAsync();
 
-// As noted in several places above, don't forget to reverse the data if we specified a Backward direction:
-// users.Reverse();
+// As noted in several places above, don't forget to ensure the data is correctly ordered:
+keysetContext.EnsureCorrectOrder(users);
 ```
 
 `KeysetPaginate` returns a context object that includes a `Query` property. This `Query` is what you'll chain more linq operators to and then use to get your data.
@@ -164,6 +160,8 @@ var keysetContext = dbContext.Users
 
 // First, we'll get our actual data. We do this by using the `Query` property.
 var users = await keysetContext.Query.Take(20).ToListAsync();
+// Make sure you call EnsureCorrectOrder before anything else.
+keysetContext.EnsureCorrectOrder(users);
 
 // This is true when there is more data before the returned list.
 var hasPrevious = await keysetContext.HasPreviousAsync(users);
@@ -193,6 +191,7 @@ var users = await query
     .KeysetPaginateQuery(...)
     .Take(20)
     .ToListAsync();
+keysetContext.EnsureCorrectOrder(users);
 ```
 
 `KeysetPaginate` adds ordering and more predicates to the query so we have to get the count before we apply it.

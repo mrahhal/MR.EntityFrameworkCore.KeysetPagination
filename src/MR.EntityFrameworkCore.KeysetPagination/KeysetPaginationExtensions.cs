@@ -69,7 +69,7 @@ public static class KeysetPaginationExtensions
 			filteredQuery = filteredQuery.Where(keysetFilterPredicateLambda);
 		}
 
-		return new KeysetPaginationContext<T>(filteredQuery, orderedQuery, items);
+		return new KeysetPaginationContext<T>(filteredQuery, orderedQuery, items, direction);
 	}
 
 	/// <summary>
@@ -186,6 +186,34 @@ public static class KeysetPaginationExtensions
 			referenceValues.Add(value);
 		}
 		return referenceValues;
+	}
+
+	/// <summary>
+	/// Ensures the data list is correctly ordered.
+	/// Basically applies a reverse on the data if the KeysetPaginate direction was Backward.
+	/// </summary>
+	/// <typeparam name="T">The type of the elements of source.</typeparam>
+	/// <typeparam name="T2">The type of the elements of the data.</typeparam>
+	/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
+	/// <param name="data">The data list.</param>
+	public static void EnsureCorrectOrder<T, T2>(
+		this KeysetPaginationContext<T> context,
+		List<T2> data)
+		where T : class
+	{
+		if (data == null)
+		{
+			throw new ArgumentNullException(nameof(data));
+		}
+		if (context == null)
+		{
+			throw new ArgumentNullException(nameof(context));
+		}
+
+		if (context.Direction == KeysetPaginationDirection.Backward)
+		{
+			data.Reverse();
+		}
 	}
 
 	private static Expression<Func<T, bool>> BuildKeysetFilterPredicateExpression<T>(

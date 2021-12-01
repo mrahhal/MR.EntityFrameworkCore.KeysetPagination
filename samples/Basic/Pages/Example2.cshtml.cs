@@ -58,7 +58,6 @@ namespace Basic.Pages
 				Users = await keysetContext.Query
 				  .Take(size)
 				  .ToListAsync();
-				Users.Reverse();
 			}
 			else if (after != null)
 			{
@@ -75,7 +74,6 @@ namespace Basic.Pages
 				Users = await keysetContext.Query
 				  .Take(size)
 				  .ToListAsync();
-				Users.Reverse();
 			}
 			else
 			{
@@ -84,6 +82,8 @@ namespace Basic.Pages
 				  .Take(size)
 				  .ToListAsync();
 			}
+
+			keysetContext.EnsureCorrectOrder(Users);
 
 			Elapsed = sw.ElapsedMilliseconds.ToString();
 

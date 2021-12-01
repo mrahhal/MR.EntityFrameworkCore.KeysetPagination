@@ -248,6 +248,36 @@ namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 			});
 		}
 
+		[Fact]
+		public async Task EnsureCorrectOrder_Forward()
+		{
+			var keysetContext = Context.IntModels.KeysetPaginate(
+				b => b.Ascending(x => x.Id),
+				KeysetPaginationDirection.Forward);
+			var items = await keysetContext.Query
+				.Take(20)
+				.ToListAsync();
+
+			keysetContext.EnsureCorrectOrder(items);
+
+			Assert.True(items[1].Id > items[0].Id, "Wrong order of ids.");
+		}
+
+		[Fact]
+		public async Task EnsureCorrectOrder_Backward()
+		{
+			var keysetContext = Context.IntModels.KeysetPaginate(
+				b => b.Ascending(x => x.Id),
+				KeysetPaginationDirection.Backward);
+			var items = await keysetContext.Query
+				.Take(20)
+				.ToListAsync();
+
+			keysetContext.EnsureCorrectOrder(items);
+
+			Assert.True(items[1].Id > items[0].Id, "Wrong order of ids.");
+		}
+
 		public override void Dispose()
 		{
 			GC.SuppressFinalize(this);

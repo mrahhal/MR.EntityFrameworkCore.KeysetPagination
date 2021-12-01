@@ -6,11 +6,13 @@ public class KeysetPaginationContext<T>
 	internal KeysetPaginationContext(
 		IQueryable<T> query,
 		IOrderedQueryable<T> orderedQuery,
-		IReadOnlyList<KeysetPaginationItem<T>> items)
+		IReadOnlyList<KeysetPaginationItem<T>> items,
+		KeysetPaginationDirection direction)
 	{
 		Query = query;
 		OrderedQuery = orderedQuery;
 		Items = items;
+		Direction = direction;
 	}
 
 	/// <summary>
@@ -22,6 +24,11 @@ public class KeysetPaginationContext<T>
 	/// This query includes only the order instructions without the predicate.
 	/// </summary>
 	public IQueryable<T> OrderedQuery { get; }
+
+	/// <summary>
+	/// The direction with which KeysetPaginate was called.
+	/// </summary>
+	public KeysetPaginationDirection Direction { get; }
 
 	internal IReadOnlyList<KeysetPaginationItem<T>> Items { get; }
 }
