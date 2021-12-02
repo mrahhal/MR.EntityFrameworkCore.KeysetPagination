@@ -129,8 +129,10 @@ Let's now see how to work with the context object that `KeysetPaginate` returns.
 The following is a basic example usage. We're querying the data and getting back 20 items:
 
 ```cs
-var users = await dbContext.Users
-    .KeysetPaginate(...).Query
+var keysetContext = dbContext.Users.KeysetPaginate(...);
+
+var users = await keysetContext
+    .Query
     .Take(20)
     .ToListAsync();
 
@@ -159,7 +161,9 @@ var keysetContext = dbContext.Users
     .KeysetPaginate(...);
 
 // First, we'll get our actual data. We do this by using the `Query` property.
-var users = await keysetContext.Query.Take(20).ToListAsync();
+var users = await keysetContext.Query
+    .Take(20)
+    .ToListAsync();
 // Make sure you call EnsureCorrectOrder before anything else.
 keysetContext.EnsureCorrectOrder(users);
 
@@ -187,8 +191,8 @@ var count = await query.CountAsync();
 
 // And then we apply keyset pagination at the end.
 // You can optionally use the context object too as explained above to get additional info.
-var users = await query
-    .KeysetPaginateQuery(...)
+var keysetContext = dbContext.Users.KeysetPaginate(...);
+var users = await keysetContext.Query
     .Take(20)
     .ToListAsync();
 keysetContext.EnsureCorrectOrder(users);
