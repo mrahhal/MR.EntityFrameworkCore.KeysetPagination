@@ -16,15 +16,15 @@ Learn about why the standard offset based pagination (`Take().Skip()`) is bad [h
 
 ## Usage
 
-`KeysetPaginate` is an extension method on `IQueryable<T>` (same as all other queryable linq methods), and it takes a few arguments:
+`KeysetPaginate` is an extension method on `IQueryable<T>` (same as all other queryable Linq methods), and it takes a few arguments:
 
 ```cs
 KeysetPaginate(
     // This configures the columns and their order.
     b => b.Ascending(entity => entity.Id),
-    // The direction we want to walk relative to the order above (Backward/Forward). Default is Forward.
+    // The direction we want to walk relative to the order above (Forward/Backward). Default is Forward.
     direction,
-    // The reference entity (unsed to query previous/next pages). Default is null.
+    // The reference entity (used to query previous/next pages). Default is null.
     reference
 )
 ```
@@ -41,7 +41,7 @@ Here's a small visual representation:
 
 The columns and their configured order are used to order the data, and then the direction decides if we're getting the data before or after the reference row.
 
-**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order. There's a helper method on KeysetContext for this, shown in a snippet later.'
+**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order. There's a helper method on KeysetContext for this, shown in a snippet later.
 
 `KeysetPaginate` returns a context object which you can use to get secondary info and get the data result.
 
@@ -71,7 +71,7 @@ KeysetPaginate(
 )
 ```
 
-**Note:** You'll want to make sure the combination of these columns uniquely identify an entity, otherwise you might get duplicate data. This is a general thing to keep in mind when doing keyset pagination. You can always add the Id column to the composite columns if the columns you provided don't already provide unique identification of entities.
+**Note:** Review the "Avoiding duplication" section for an important note about columns you're configuring.
 
 ## Common patterns
 
@@ -176,9 +176,9 @@ var hasNext = await keysetContext.HasNextAsync(users);
 
 `HasPreviousAsync`/`HasNextAsync` are useful when you want to know when to render Previous/Next (Older/Newer) buttons.
 
-**Note**: The reference/data these methods accept are always losely typed. This is designed so that you have the freedom of transforming/mapping your data to DTOs if you want, and still have the ability to ask more info using the same context object. You just need to make sure the columns you configured still exist on the transformed objects.
+**Note**: The reference/data these methods accept are always loosely typed. This is designed so that you have the freedom of transforming/mapping your data to DTOs if you want, and still have the ability to ask more info using the same context object. You just need to make sure the columns you configured still exist on the transformed objects.
 
-Here's nother example showing how to obtain the total count for the data to display somewhere:
+Here's another example showing how to obtain the total count for the data to display somewhere:
 
 ```cs
 // Assuming we're in an api that should return admin users.
@@ -199,6 +199,42 @@ keysetContext.EnsureCorrectOrder(users);
 ```
 
 `KeysetPaginate` adds ordering and more predicates to the query so we have to get the count before we apply it.
+
+## Avoiding duplication
+
+You'll want to make sure the combination of the columns you configure uniquely identify an entity, otherwise you might get duplicate data. This is a general rule to keep in mind when doing keyset pagination.
+
+If you have configured some columns that don't uniquely identify entities, you can always add the `Id` column to that.
+
+Doing this correctly means you'll never see duplicate data, a behavior that offset based pagination can never guarantee.
+
+## Indexing
+
+Keyset pagination, as is the case with any other kind of query, can benefit a lot from good database indexing. In the case of keyset pagination, you'll want to add a composite index that is compatible with the columns and the order of the query.
+
+Here's an example. Let's say we're doing the following pagination query:
+
+```cs
+KeysetPaginate(
+    b => b.Descending(entity => entity.Created),
+    ...
+)
+```
+
+You'll want to add an index on the `Created` column for this query to be as fast as it can.
+
+Another more complex example:
+
+```cs
+KeysetPaginate(
+    b => b.Descending(entity => entity.Score).Ascending(entity => entity.Id),
+    ...
+)
+```
+
+In this case you'll want to create a composite index on `Score` + `Id`, but make sure they're compatible with the order above. i.e You'll want to make the index descending on `Score` and ascending on `Id` (or the opposite) for it to be effective.
+
+**Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes in EF Core.
 
 ## Samples
 
