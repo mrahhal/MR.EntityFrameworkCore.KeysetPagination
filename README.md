@@ -204,7 +204,7 @@ keysetContext.EnsureCorrectOrder(users);
 
 You'll want to make sure the combination of the columns you configure uniquely identify an entity, otherwise you might skip over data while navigating pages. This is a general rule to keep in mind when doing keyset pagination.
 
-If you have configured some columns that don't uniquely identify entities, an easy fix is to just add the `Id` column.
+If you have configured some columns that don't uniquely identify entities, an easy fix is to just add the `Id` column to the configured columns.
 
 Doing this correctly means you'll never skip over data, a behavior that offset based pagination can never guarantee.
 
