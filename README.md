@@ -71,7 +71,7 @@ KeysetPaginate(
 )
 ```
 
-**Note:** Review the "Avoiding duplication" section for an important note about columns you're configuring.
+**Note:** Review the "Avoiding skipping over data" section for an important note about the columns you're configuring.
 
 ## Common patterns
 
@@ -200,13 +200,13 @@ keysetContext.EnsureCorrectOrder(users);
 
 `KeysetPaginate` adds ordering and more predicates to the query so we have to get the count before we apply it.
 
-## Avoiding duplication
+## Avoiding skipping over data
 
-You'll want to make sure the combination of the columns you configure uniquely identify an entity, otherwise you might get duplicate data. This is a general rule to keep in mind when doing keyset pagination.
+You'll want to make sure the combination of the columns you configure uniquely identify an entity, otherwise you might skip over data while navigating pages. This is a general rule to keep in mind when doing keyset pagination.
 
-If you have configured some columns that don't uniquely identify entities, you can always add the `Id` column to that.
+If you have configured some columns that don't uniquely identify entities, an easy fix is to just add the `Id` column.
 
-Doing this correctly means you'll never see duplicate data, a behavior that offset based pagination can never guarantee.
+Doing this correctly means you'll never skip over data, a behavior that offset based pagination can never guarantee.
 
 ## Indexing
 
@@ -221,7 +221,7 @@ KeysetPaginate(
 )
 ```
 
-You'll want to add an index on the `Created` column for this query to be as fast as it can.
+You'll want to add an index on the `Created` column for this query to be as fast as it can no matter the size of the data.
 
 Another more complex example:
 
