@@ -206,7 +206,7 @@ You'll want to make sure the combination of the columns you configure uniquely i
 
 If you have configured some columns that don't uniquely identify entities, an easy fix is to just add the `Id` column to the configured columns.
 
-Doing this correctly means you'll never skip over data, a behavior that offset based pagination can never guarantee.
+Doing this correctly means you'll never skip over or duplicate data, a behavior that offset based pagination can never guarantee.
 
 ## Indexing
 
@@ -234,7 +234,7 @@ KeysetPaginate(
 
 In this case you'll want to create a composite index on `Score` + `Id`, but make sure they're compatible with the order above. i.e You'll want to make the index descending on `Score` and ascending on `Id` (or the opposite) for it to be effective.
 
-**Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes in EF Core.
+**Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core.
 
 ## Samples
 
