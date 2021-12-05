@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MR.EntityFrameworkCore.KeysetPagination.Tests.Models;
 
-namespace Lapis
+namespace MR.EntityFrameworkCore.KeysetPagination.Tests
 {
 	public abstract class TestHost : IDisposable
 	{

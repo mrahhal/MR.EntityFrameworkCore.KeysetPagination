@@ -1,5 +1,4 @@
-﻿using Lapis;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MR.EntityFrameworkCore.KeysetPagination.Tests.Models;
 using Xunit;
