@@ -1,9 +1,8 @@
-﻿namespace MR.EntityFrameworkCore.KeysetPagination.Tests.Models
-{
-	public class StringModel
-	{
-		public string Id { get; set; }
+﻿namespace MR.EntityFrameworkCore.KeysetPagination.Tests.Models;
 
-		public DateTime Created { get; set; }
-	}
+public class StringModel
+{
+	public string Id { get; set; }
+
+	public DateTime Created { get; set; }
 }

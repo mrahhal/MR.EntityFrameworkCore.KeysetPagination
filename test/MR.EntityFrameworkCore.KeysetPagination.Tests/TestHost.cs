@@ -2,81 +2,77 @@
 using Microsoft.Extensions.DependencyInjection;
 using MR.EntityFrameworkCore.KeysetPagination.Tests.Models;
 
-namespace MR.EntityFrameworkCore.KeysetPagination.Tests
+namespace MR.EntityFrameworkCore.KeysetPagination.Tests;
+
+public abstract class TestHost : IDisposable
 {
-	public abstract class TestHost : IDisposable
+	private static bool _initialized;
+
+	static TestHost()
 	{
-		private static bool _initialized;
+		var services = new ServiceCollection();
+		services.AddDbContext<TestDbContext>(options => options.UseSqlite("Data Source=test.db"));
+		Provider = services.BuildServiceProvider();
+	}
 
-		static TestHost()
+	public TestHost()
+	{
+		EnsureSetup();
+	}
+
+	static public IServiceProvider Provider { get; }
+
+	public virtual void Dispose()
+	{
+		GC.SuppressFinalize(this);
+	}
+
+	protected static IServiceScope CreateScope()
+	{
+		return Provider.CreateScope();
+	}
+
+	private static void EnsureSetup()
+	{
+		if (_initialized)
 		{
-			var services = new ServiceCollection();
-			services.AddDbContext<TestDbContext>(options => options.UseSqlite("Data Source=test.db"));
-			Provider = services.BuildServiceProvider();
+			return;
 		}
 
-		public TestHost()
-		{
-			EnsureSetup();
-		}
+		_initialized = true;
 
-		static public IServiceProvider Provider { get; }
+		using var scope = CreateScope();
+		var context = scope.ServiceProvider.GetService<TestDbContext>();
+		context.Database.EnsureDeleted();
+		context.Database.EnsureCreated();
 
-		public virtual void Dispose()
-		{
-			GC.SuppressFinalize(this);
-		}
+		FillData(context);
+	}
 
-		protected static IServiceScope CreateScope()
-		{
-			return Provider.CreateScope();
-		}
+	private static void FillData(TestDbContext context)
+	{
+		var now = DateTime.Now.AddYears(-1);
 
-		private static void EnsureSetup()
+		for (var i = 1; i < 1001; i++)
 		{
-			if (_initialized)
+			var created = now.AddMinutes(i);
+			context.StringModels.Add(new StringModel
 			{
-				return;
-			}
-
-			_initialized = true;
-
-			using var scope = CreateScope();
-			var context = scope.ServiceProvider.GetService<TestDbContext>();
-			context.Database.EnsureDeleted();
-			context.Database.EnsureCreated();
-
-			if (!context.StringModels.Any())
+				Id = i.ToString(),
+				Created = created,
+			});
+			context.IntModels.Add(new IntModel
 			{
-				FillData(context);
-			}
+				Id = i,
+				Created = created,
+			});
+			context.GuidModels.Add(new GuidModel
+			{
+				Id = Guid.NewGuid(),
+				Created = created,
+			});
 		}
 
-		private static void FillData(TestDbContext context)
-		{
-			var now = DateTime.Now.AddYears(-1);
-
-			for (var i = 1; i < 1001; i++)
-			{
-				var created = now.AddMinutes(i);
-				context.StringModels.Add(new StringModel
-				{
-					Id = i.ToString(),
-					Created = created,
-				});
-				context.IntModels.Add(new IntModel
-				{
-					Id = i,
-					Created = created,
-				});
-				context.GuidModels.Add(new GuidModel
-				{
-					Id = Guid.NewGuid(),
-					Created = created,
-				});
-			}
-
-			context.SaveChanges();
-		}
+		context.SaveChanges();
 	}
 }
