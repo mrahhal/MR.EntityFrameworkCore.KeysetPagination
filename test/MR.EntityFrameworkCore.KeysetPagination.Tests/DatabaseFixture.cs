@@ -25,7 +25,7 @@ public class DatabaseFixture : IDisposable
 		return BuildServices(services =>
 		{
 			configureServices?.Invoke(services);
-			services.AddSingleton<T>();
+			services.AddTransient<T>();
 		});
 	}
 
