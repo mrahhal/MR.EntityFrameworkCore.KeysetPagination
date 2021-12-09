@@ -1,4 +1,4 @@
-﻿namespace MR.EntityFrameworkCore.KeysetPagination.Tests.Models;
+﻿namespace MR.EntityFrameworkCore.KeysetPagination.TestModels;
 
 public class GuidModel
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace MR.EntityFrameworkCore.KeysetPagination.Tests.Models;
+namespace MR.EntityFrameworkCore.KeysetPagination.TestModels;
 
 public class TestDbContext : DbContext
 {

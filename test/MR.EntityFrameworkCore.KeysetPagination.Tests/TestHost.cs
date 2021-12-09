@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using MR.EntityFrameworkCore.KeysetPagination.Tests.Models;
+using MR.EntityFrameworkCore.KeysetPagination.TestModels;
 
-namespace MR.EntityFrameworkCore.KeysetPagination.Tests;
+namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public abstract class TestHost : IDisposable
 {

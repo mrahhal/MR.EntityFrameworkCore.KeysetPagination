@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <RootNamespace>MR.EntityFrameworkCore.KeysetPagination</RootNamespace>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\MR.EntityFrameworkCore.KeysetPagination\MR.EntityFrameworkCore.KeysetPagination.csproj" />
   </ItemGroup>

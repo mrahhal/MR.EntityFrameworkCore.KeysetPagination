@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using MR.EntityFrameworkCore.KeysetPagination.Tests.Models;
+using MR.EntityFrameworkCore.KeysetPagination.TestModels;
 using Xunit;
 
-namespace MR.EntityFrameworkCore.KeysetPagination.Tests;
+namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public class KeysetPaginationTest : TestHost
 {
