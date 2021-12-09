@@ -8,31 +8,33 @@ public abstract class TestHost : IDisposable
 {
 	private static bool _initialized;
 
-	static TestHost()
+	public TestHost()
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<TestDbContext>(options => options.UseSqlite("Data Source=test.db"));
+		ConfigureServices(services);
 		Provider = services.BuildServiceProvider();
-	}
 
-	public TestHost()
-	{
 		EnsureSetup();
 	}
 
-	static public IServiceProvider Provider { get; }
+	public IServiceProvider Provider { get; }
 
 	public virtual void Dispose()
 	{
 		GC.SuppressFinalize(this);
 	}
 
-	protected static IServiceScope CreateScope()
+	protected virtual void ConfigureServices(IServiceCollection services)
+	{
+	}
+
+	protected IServiceScope CreateScope()
 	{
 		return Provider.CreateScope();
 	}
 
-	private static void EnsureSetup()
+	private void EnsureSetup()
 	{
 		if (_initialized)
 		{
