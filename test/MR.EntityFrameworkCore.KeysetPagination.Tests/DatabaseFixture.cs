@@ -4,46 +4,41 @@ using MR.EntityFrameworkCore.KeysetPagination.TestModels;
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
 
-public abstract class TestHost : IDisposable
+public class DatabaseFixture : IDisposable
 {
-	private static bool _initialized;
+	public DatabaseFixture()
+	{
+		SetupDatabase();
+	}
 
-	public TestHost()
+	public IServiceProvider BuildServices(Action<IServiceCollection> configureServices = null)
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<TestDbContext>(options => options.UseSqlite("Data Source=test.db"));
-		ConfigureServices(services);
-		Provider = services.BuildServiceProvider();
-
-		EnsureSetup();
+		configureServices?.Invoke(services);
+		return services.BuildServiceProvider();
 	}
 
-	public IServiceProvider Provider { get; }
+	public IServiceProvider BuildForService<T>(Action<IServiceCollection> configureServices = null)
+		where T : class
+	{
+		return BuildServices(services =>
+		{
+			configureServices?.Invoke(services);
+			services.AddSingleton<T>();
+		});
+	}
 
-	public virtual void Dispose()
+	public void Dispose()
 	{
 		GC.SuppressFinalize(this);
 	}
 
-	protected virtual void ConfigureServices(IServiceCollection services)
+	private void SetupDatabase()
 	{
-	}
+		var provider = BuildServices();
 
-	protected IServiceScope CreateScope()
-	{
-		return Provider.CreateScope();
-	}
-
-	private void EnsureSetup()
-	{
-		if (_initialized)
-		{
-			return;
-		}
-
-		_initialized = true;
-
-		using var scope = CreateScope();
+		using var scope = provider.CreateScope();
 		var context = scope.ServiceProvider.GetService<TestDbContext>();
 		context.Database.EnsureDeleted();
 		context.Database.EnsureCreated();
@@ -51,7 +46,7 @@ public abstract class TestHost : IDisposable
 		FillData(context);
 	}
 
-	private static void FillData(TestDbContext context)
+	private void FillData(TestDbContext context)
 	{
 		var now = DateTime.Now.AddYears(-1);
 

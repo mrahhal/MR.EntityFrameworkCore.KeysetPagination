@@ -5,22 +5,20 @@ using Xunit;
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
 
-public class KeysetPaginationTest : TestHost
+public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 {
-	private readonly IServiceScope _scope;
-
-	public KeysetPaginationTest()
+	public KeysetPaginationTest(DatabaseFixture fixture)
 	{
-		_scope = CreateScope();
-		Context = _scope.ServiceProvider.GetService<TestDbContext>();
+		var provider = fixture.BuildServices();
+		DbContext = provider.GetService<TestDbContext>();
 	}
 
-	public TestDbContext Context { get; }
+	public TestDbContext DbContext { get; }
 
 	[Fact]
 	public async Task KeysetPaginate_Raw()
 	{
-		var result = await Context.IntModels.KeysetPaginateQuery(
+		var result = await DbContext.IntModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id))
 			.Take(20)
 			.ToListAsync();
@@ -31,9 +29,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_int()
 	{
-		var reference = Context.IntModels.First();
+		var reference = DbContext.IntModels.First();
 
-		var result = await Context.IntModels.KeysetPaginateQuery(
+		var result = await DbContext.IntModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -44,9 +42,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_string()
 	{
-		var reference = Context.StringModels.First();
+		var reference = DbContext.StringModels.First();
 
-		var result = await Context.StringModels.KeysetPaginateQuery(
+		var result = await DbContext.StringModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -57,9 +55,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_Guid()
 	{
-		var reference = Context.GuidModels.First();
+		var reference = DbContext.GuidModels.First();
 
-		var result = await Context.GuidModels.KeysetPaginateQuery(
+		var result = await DbContext.GuidModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -70,9 +68,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_BeforeReference_int()
 	{
-		var reference = Context.IntModels.First();
+		var reference = DbContext.IntModels.First();
 
-		var result = await Context.IntModels.KeysetPaginateQuery(
+		var result = await DbContext.IntModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Backward,
 			reference)
@@ -83,9 +81,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_BeforeReference_string()
 	{
-		var reference = Context.StringModels.First();
+		var reference = DbContext.StringModels.First();
 
-		var result = await Context.StringModels.KeysetPaginateQuery(
+		var result = await DbContext.StringModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Backward,
 			reference)
@@ -96,9 +94,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_BeforeReference_Guid()
 	{
-		var reference = Context.GuidModels.First();
+		var reference = DbContext.GuidModels.First();
 
-		var result = await Context.GuidModels.KeysetPaginateQuery(
+		var result = await DbContext.GuidModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Backward,
 			reference)
@@ -109,9 +107,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_Composite_int()
 	{
-		var reference = Context.IntModels.First();
+		var reference = DbContext.IntModels.First();
 
-		var result = await Context.IntModels.KeysetPaginateQuery(
+		var result = await DbContext.IntModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id).Ascending(x => x.Created),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -122,9 +120,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_Composite_string()
 	{
-		var reference = Context.StringModels.First();
+		var reference = DbContext.StringModels.First();
 
-		var result = await Context.StringModels.KeysetPaginateQuery(
+		var result = await DbContext.StringModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id).Ascending(x => x.Created),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -135,9 +133,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_Composite_Guid()
 	{
-		var reference = Context.GuidModels.First();
+		var reference = DbContext.GuidModels.First();
 
-		var result = await Context.GuidModels.KeysetPaginateQuery(
+		var result = await DbContext.GuidModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id).Ascending(x => x.Created),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -148,9 +146,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_Composite_Mixed_int()
 	{
-		var reference = Context.IntModels.First();
+		var reference = DbContext.IntModels.First();
 
-		var result = await Context.IntModels.KeysetPaginateQuery(
+		var result = await DbContext.IntModels.KeysetPaginateQuery(
 			b => b.Descending(x => x.Id).Ascending(x => x.Created),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -161,9 +159,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_Composite_Mixed_string()
 	{
-		var reference = Context.StringModels.First();
+		var reference = DbContext.StringModels.First();
 
-		var result = await Context.StringModels.KeysetPaginateQuery(
+		var result = await DbContext.StringModels.KeysetPaginateQuery(
 			b => b.Descending(x => x.Id).Ascending(x => x.Created),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -174,9 +172,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_Composite_Mixed_Guid()
 	{
-		var reference = Context.GuidModels.First();
+		var reference = DbContext.GuidModels.First();
 
-		var result = await Context.GuidModels.KeysetPaginateQuery(
+		var result = await DbContext.GuidModels.KeysetPaginateQuery(
 			b => b.Descending(x => x.Id).Ascending(x => x.Created),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -187,9 +185,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task KeysetPaginate_BeforeFirstReference_Empty()
 	{
-		var reference = Context.IntModels.First();
+		var reference = DbContext.IntModels.First();
 
-		var result = await Context.IntModels.KeysetPaginateQuery(
+		var result = await DbContext.IntModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Backward,
 			reference)
@@ -202,7 +200,7 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task HasPreviousAsync_False()
 	{
-		var keysetContext = Context.IntModels.KeysetPaginate(
+		var keysetContext = DbContext.IntModels.KeysetPaginate(
 			b => b.Ascending(x => x.Id));
 		var items = await keysetContext.Query
 			.Take(20)
@@ -215,9 +213,9 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task HasPreviousAsync_True()
 	{
-		var reference = Context.IntModels.Skip(1).First();
+		var reference = DbContext.IntModels.Skip(1).First();
 
-		var keysetContext = Context.IntModels.KeysetPaginate(
+		var keysetContext = DbContext.IntModels.KeysetPaginate(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward,
 			reference);
@@ -232,7 +230,7 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task HasPreviousAsync_Incompatible()
 	{
-		var keysetContext = Context.IntModels.KeysetPaginate(
+		var keysetContext = DbContext.IntModels.KeysetPaginate(
 			b => b.Ascending(x => x.Id));
 		var items = await keysetContext.Query
 			.Take(20)
@@ -250,7 +248,7 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task EnsureCorrectOrder_Forward()
 	{
-		var keysetContext = Context.IntModels.KeysetPaginate(
+		var keysetContext = DbContext.IntModels.KeysetPaginate(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward);
 		var items = await keysetContext.Query
@@ -265,7 +263,7 @@ public class KeysetPaginationTest : TestHost
 	[Fact]
 	public async Task EnsureCorrectOrder_Backward()
 	{
-		var keysetContext = Context.IntModels.KeysetPaginate(
+		var keysetContext = DbContext.IntModels.KeysetPaginate(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Backward);
 		var items = await keysetContext.Query
@@ -275,14 +273,6 @@ public class KeysetPaginationTest : TestHost
 		keysetContext.EnsureCorrectOrder(items);
 
 		Assert.True(items[1].Id > items[0].Id, "Wrong order of ids.");
-	}
-
-	public override void Dispose()
-	{
-		GC.SuppressFinalize(this);
-
-		_scope.Dispose();
-		base.Dispose();
 	}
 
 	private void AssertRange(int from, int to, List<IntModel> actual)
