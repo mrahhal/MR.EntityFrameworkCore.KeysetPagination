@@ -1,0 +1,20 @@
+changelog:
+  categories:
+    - title: Fixed
+      labels:
+        - release:fixed
+    - title: Added
+      labels:
+        - release:added
+    - title: Changed
+      labels:
+        - release:changed
+    - title: Deprecated
+      labels:
+        - release:deprecated
+    - title: Removed
+      labels:
+        - release:removed
+    - title: Other
+      labels:
+        - "*"
