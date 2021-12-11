@@ -269,7 +269,7 @@ public static class KeysetPaginationExtensions
 			// innerLimit implicitly grows from 1 to items.Count by each iteration.
 			for (var j = 0; j < innerLimit; j++)
 			{
-				var isOrLast = j + 1 == innerLimit;
+				var isInnerLastOperation = j + 1 == innerLimit;
 				var item = items[j];
 				var memberAccess = Expression.MakeMemberAccess(param, item.Property);
 				var referenceValueExpression = Expression.Constant(referenceValues[j]);
@@ -282,7 +282,7 @@ public static class KeysetPaginationExtensions
 				}
 
 				BinaryExpression innerExpression;
-				if (!isOrLast)
+				if (!isInnerLastOperation)
 				{
 					innerExpression = Expression.Equal(memberAccess, referenceValueExpression);
 				}
