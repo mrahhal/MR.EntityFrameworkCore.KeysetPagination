@@ -6,6 +6,9 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public class DatabaseFixture : IDisposable
 {
+	private static readonly object _lock = new();
+	private static bool _initialized;
+
 	public DatabaseFixture()
 	{
 		SetupDatabase();
@@ -36,17 +39,24 @@ public class DatabaseFixture : IDisposable
 
 	private void SetupDatabase()
 	{
-		var provider = BuildServices();
+		lock (_lock)
+		{
+			if (_initialized) return;
 
-		using var scope = provider.CreateScope();
-		var context = scope.ServiceProvider.GetService<TestDbContext>();
-		context.Database.EnsureDeleted();
-		context.Database.EnsureCreated();
+			var provider = BuildServices();
 
-		FillData(context);
+			using var scope = provider.CreateScope();
+			var context = scope.ServiceProvider.GetService<TestDbContext>();
+			context.Database.EnsureDeleted();
+			context.Database.EnsureCreated();
+
+			Seed(context);
+
+			_initialized = true;
+		}
 	}
 
-	private void FillData(TestDbContext context)
+	private void Seed(TestDbContext context)
 	{
 		var now = DateTime.Now.AddYears(-1);
 
