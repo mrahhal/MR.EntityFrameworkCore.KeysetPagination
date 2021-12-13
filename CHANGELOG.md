@@ -2,14 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+Make sure to always view this file from the main branch to get an up to date changelog.
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-Nothing yet...
+_Nothing yet_
 
 ## 1.0.0 - 2021-12-01
+
+https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/releases/tag/v1.0.0
 
 - Optimize the generated predicate expression to use an access predicate. [[#8](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/8)]
 - Throw custom exception when data type is incompatible. [[#11](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/11)]
