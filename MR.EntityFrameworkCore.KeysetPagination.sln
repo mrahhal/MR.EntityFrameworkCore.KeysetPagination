@@ -38,10 +38,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic", "samples\Basic\Basi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{66E7C63B-2300-40F4-B588-B3917A69AB78}"
 	ProjectSection(SolutionItems) = preProject
-		build.ps1 = build.ps1
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
-		nuget-push.ps1 = nuget-push.ps1
+		scripts.ps1 = scripts.ps1
 		version.props = version.props
 	EndProjectSection
 EndProject
