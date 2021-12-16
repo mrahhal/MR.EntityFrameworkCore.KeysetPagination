@@ -221,7 +221,7 @@ KeysetPaginate(
 )
 ```
 
-You'll want to add an index on the `Created` column for this query to be as fast as it can no matter the size of the data.
+You'll want to add an index on the `Created` column for this query to be as fast as it can.
 
 Another more complex example:
 
