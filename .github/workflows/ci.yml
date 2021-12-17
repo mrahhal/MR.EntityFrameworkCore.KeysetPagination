@@ -13,7 +13,7 @@ on:
 
 jobs:
   main:
-    uses: mrahhal/.github/workflows/ci-dotnet-package.yml@main
+    uses: mrahhal/.github/.github/workflows/ci-dotnet-package.yml@main
     with:
       dotnet-version: 6.x.x
     secrets:
