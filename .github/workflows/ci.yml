@@ -17,4 +17,4 @@ jobs:
     with:
       dotnet-version: 6.x.x
     secrets:
-      NUGET_ORG_API_KEY: ${{ secrets.NUGET_ORG_API_KEY }}
+      NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
