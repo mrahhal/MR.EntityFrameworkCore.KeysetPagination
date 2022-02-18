@@ -236,7 +236,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 			.Take(20)
 			.ToListAsync();
 
-		// A type that doesn't have an Id property which is included in the columns definition above.
+		// A type that doesn't have an Id property which is included in the keyset above.
 		var dtos = items.Select(x => new { x.Created }).ToList();
 
 		await Assert.ThrowsAsync<KeysetPaginationIncompatibleObjectException>(async () =>
