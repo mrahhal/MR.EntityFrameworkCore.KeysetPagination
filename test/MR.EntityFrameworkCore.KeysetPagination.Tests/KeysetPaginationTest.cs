@@ -283,6 +283,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
 		Assert.False(result);
@@ -300,6 +301,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
 		Assert.True(result);
@@ -313,6 +315,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
 
 		// A type that doesn't have an Id property which is included in the keyset above.
 		var dtos = items.Select(x => new { x.Created }).ToList();
@@ -331,6 +334,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
 		Assert.False(result);
@@ -344,6 +348,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
 		Assert.False(result);
@@ -357,6 +362,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
 		Assert.False(result);
@@ -370,6 +376,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
 		Assert.False(result);
