@@ -284,7 +284,9 @@ public static class KeysetPaginationExtensions
 				BinaryExpression innerExpression;
 				if (!isInnerLastOperation)
 				{
-					innerExpression = Expression.Equal(memberAccess, referenceValueExpression);
+					innerExpression = Expression.Equal(
+						memberAccess,
+						EnsureMatchingType(memberAccess, referenceValueExpression));
 				}
 				else
 				{
@@ -348,8 +350,29 @@ public static class KeysetPaginationExtensions
 		}
 		else
 		{
-			return compare(memberAccess, referenceValue);
+			return compare(
+				memberAccess,
+				EnsureMatchingType(memberAccess, referenceValue));
 		}
+	}
+
+	private static Expression EnsureMatchingType(
+		MemberExpression memberExpression,
+		Expression targetExpression)
+	{
+		// If the member is nullable we'll have to make sure the target type matches or else comparison/equal
+		// expressions won't work because of unmatching types.
+		if (IsNullableType(memberExpression.Type) && memberExpression.Type != targetExpression.Type)
+		{
+			return Expression.Convert(targetExpression, memberExpression.Type);
+		}
+
+		return targetExpression;
+	}
+
+	private static bool IsNullableType(Type type)
+	{
+		return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 	}
 
 	private static Func<Expression, Expression, BinaryExpression> GetComparisonExpressionToApply<T>(

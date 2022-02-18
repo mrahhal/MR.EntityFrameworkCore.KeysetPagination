@@ -20,4 +20,6 @@ public class TestDbContext : DbContext
 	public DbSet<StringModel> StringModels { get; set; }
 
 	public DbSet<GuidModel> GuidModels { get; set; }
+
+	public DbSet<NullableModel> NullableModels { get; set; }
 }
