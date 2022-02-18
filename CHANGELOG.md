@@ -9,7 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+_Nothing yet_
+
+## 1.0.1 - 2022-02-18
+
+https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/releases/tag/v1.0.1
+
 - Fix problem with nullable props. [[#14](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/14)]
+
+**Full Changelog**: https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.0...v1.0.1
 
 ## 1.0.0 - 2021-12-01
 
