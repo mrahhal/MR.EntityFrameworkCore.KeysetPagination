@@ -2,7 +2,7 @@
 
 namespace Basic.Models
 {
-	[Index(nameof(Created))]
+	[Index(nameof(Created), nameof(Id))]
 	public class User
 	{
 		public int Id { get; set; }
