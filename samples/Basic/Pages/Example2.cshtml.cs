@@ -30,8 +30,6 @@ namespace Basic.Pages
 
 		public async Task OnGet(int? after, int? before, bool first = false, bool last = false)
 		{
-			HttpContext.RequestServices.GetService<ILogger<Example2Model>>().LogInformation("New request...");
-
 			var size = 20;
 
 			var keysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
