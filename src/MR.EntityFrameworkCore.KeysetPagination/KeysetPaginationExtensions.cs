@@ -10,6 +10,7 @@ public static class KeysetPaginationExtensions
 	{
 		{ typeof(string), GetCompareToMethod(typeof(string)) },
 		{ typeof(Guid), GetCompareToMethod(typeof(Guid)) },
+		{ typeof(bool), GetCompareToMethod(typeof(bool)) },
 	};
 	private static readonly ConstantExpression ConstantExpression0 = Expression.Constant(0);
 

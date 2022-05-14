@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-_Nothing yet_
+- Support booleans. [[#16](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/16)]
 
 ## 1.0.1 - 2022-02-18
 

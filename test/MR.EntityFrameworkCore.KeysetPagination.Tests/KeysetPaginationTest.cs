@@ -27,6 +27,19 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	}
 
 	[Fact]
+	public async Task KeysetPaginate_bool()
+	{
+		var reference = DbContext.IntModels.First();
+
+		var result = await DbContext.IntModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.IsDone),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
 	public async Task KeysetPaginate_AfterReference_int()
 	{
 		var reference = DbContext.IntModels.First();
