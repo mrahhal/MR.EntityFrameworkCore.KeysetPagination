@@ -15,6 +15,8 @@ _Nothing yet_
 
 - Support booleans. [[#16](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/16)]
 
+**Full Changelog**: https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.1...v1.0.2
+
 ## 1.0.1 - 2022-02-18
 
 https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/releases/tag/v1.0.1
