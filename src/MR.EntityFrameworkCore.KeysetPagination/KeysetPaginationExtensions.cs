@@ -254,7 +254,7 @@ public static class KeysetPaginationExtensions
 		var referenceValues = GetValues(items, reference);
 
 		var firstMemberAccessExpression = default(MemberExpression);
-		var firstReferenceValueExpression = default(ConstantExpression);
+		var firstReferenceValueExpression = default(Expression);
 
 		// entity =>
 		var param = Expression.Parameter(typeof(T), "entity");
@@ -273,7 +273,9 @@ public static class KeysetPaginationExtensions
 				var isInnerLastOperation = j + 1 == innerLimit;
 				var item = items[j];
 				var memberAccess = Expression.MakeMemberAccess(param, item.Property);
-				var referenceValueExpression = Expression.Constant(referenceValues[j]);
+				var referenceValue = referenceValues[j];
+				Expression<Func<object>> referenceValueFunc = () => referenceValue;
+				var referenceValueExpression = referenceValueFunc.Body;
 
 				if (firstMemberAccessExpression == null)
 				{
@@ -330,7 +332,7 @@ public static class KeysetPaginationExtensions
 
 	private static BinaryExpression MakeComparisonExpression<T>(
 		KeysetPaginationItem<T> item,
-		MemberExpression memberAccess, ConstantExpression referenceValue,
+		MemberExpression memberAccess, Expression referenceValue,
 		Func<Expression, Expression, BinaryExpression> compare)
 		where T : class
 	{
@@ -340,11 +342,14 @@ public static class KeysetPaginationExtensions
 			// LessThan/GreaterThan operators are not valid for some types such as strings and guids.
 			// We use the CompareTo method on these types instead.
 
-			// entity.Property.CompareTo(constant) >|< 0
+			// entity.Property.CompareTo(referenceValue) >|< 0
 			// -----------------------------------------
 
-			// entity.Property.CompareTo(constant)
-			var methodCallExpression = Expression.Call(memberAccess, compareToMethod, referenceValue);
+			// entity.Property.CompareTo(referenceValue)
+			var methodCallExpression = Expression.Call(
+				memberAccess,
+				compareToMethod,
+				EnsureMatchingType(memberAccess, referenceValue));
 
 			// >|< 0
 			return compare(methodCallExpression, ConstantExpression0);
@@ -361,19 +366,16 @@ public static class KeysetPaginationExtensions
 		MemberExpression memberExpression,
 		Expression targetExpression)
 	{
-		// If the member is nullable we'll have to make sure the target type matches or else comparison/equal
-		// expressions won't work because of unmatching types.
-		if (IsNullableType(memberExpression.Type) && memberExpression.Type != targetExpression.Type)
+		// If the target has a different type we should convert it.
+		// Originally this happened with nullables only, but now that we use expressions
+		// for the target access instead of constants we'll need this or else comparison won't work
+		// between unmatching types (i.e int (member) compared to object (target)).
+		if (memberExpression.Type != targetExpression.Type)
 		{
 			return Expression.Convert(targetExpression, memberExpression.Type);
 		}
 
 		return targetExpression;
-	}
-
-	private static bool IsNullableType(Type type)
-	{
-		return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 	}
 
 	private static Func<Expression, Expression, BinaryExpression> GetComparisonExpressionToApply<T>(
