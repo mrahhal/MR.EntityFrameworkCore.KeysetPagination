@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 _Nothing yet_
 
+## 1.0.3 - 2022-06-16
+
+### Improved
+
+* Generate expressions to use sql parameters instead of constants by @mrahhal in https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/19
+
 ## 1.0.2 - 2022-05-14
 
 - Support booleans. [[#16](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/16)]
