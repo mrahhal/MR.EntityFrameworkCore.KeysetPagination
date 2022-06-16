@@ -94,9 +94,9 @@ function PathToName($path) {
 }
 
 function PrintBuildInfo() {
-	$buildInfo
-	| Select-Object @{name = 'SrcProjects'; expression = { PathToName $_.SrcProjects } }, @{name = 'TestProjects'; expression = { PathToName $_.TestProjects } }, Sha, Tags, Tagged, CI, AddCIPrerelease, Stamp, VersionPrefix, VersionSuffix, Version
-	| Format-List
+	$buildInfo |
+	Select-Object @{name = 'SrcProjects'; expression = { PathToName $_.SrcProjects } }, @{name = 'TestProjects'; expression = { PathToName $_.TestProjects } }, Sha, Tags, Tagged, CI, AddCIPrerelease, Stamp, VersionPrefix, VersionSuffix, Version |
+	Format-List
 }
 
 function TagVersion() {
