@@ -241,3 +241,7 @@ In this case you'll want to create a composite index on `Score` + `Id`, but make
 Check the [samples](samples) folder for project samples.
 
 - [Basic](samples/Basic): This is a quick example of a page that has First/Previous/Next/Last links (using razor pages).
+
+## Talks
+
+[.NET Standup session](https://www.youtube.com/watch?v=DIKH-q-gJNU) where we discuss pagination and showcase this package.
