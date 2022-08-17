@@ -183,22 +183,22 @@ Here's another example showing how to obtain the total count for the data to dis
 ```cs
 // Assuming we're in an api that should return admin users.
 
-// Do the initial query first.
+// Prepare the base query first.
 var query = dbContext.Users.Where(x => x.IsAdmin);
 
 // This will be the count of all admins.
 var count = await query.CountAsync();
 
 // And then we apply keyset pagination at the end.
-// You can optionally use the context object too as explained above to get additional info.
-var keysetContext = dbContext.Users.KeysetPaginate(...);
-var users = await keysetContext.Query
+// `KeysetPaginate` adds ordering and more predicates to the query so we have to get the count before we apply it.
+var keysetContext = query.KeysetPaginate(...);
+var admins = await keysetContext.Query
     .Take(20)
     .ToListAsync();
-keysetContext.EnsureCorrectOrder(users);
-```
 
-`KeysetPaginate` adds ordering and more predicates to the query so we have to get the count before we apply it.
+// You can optionally use the context object too as explained above to get additional info.
+keysetContext.EnsureCorrectOrder(admins);
+```
 
 ## Avoiding skipping over data
 
