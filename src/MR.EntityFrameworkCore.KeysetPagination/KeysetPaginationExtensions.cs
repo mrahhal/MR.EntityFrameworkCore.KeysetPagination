@@ -175,15 +175,10 @@ public static class KeysetPaginationExtensions
 		object reference)
 		where T : class
 	{
-		var accessor = Accessor.Obtain(reference.GetType());
 		var referenceValues = new List<object>(capacity: items.Count);
 		foreach (var item in items)
 		{
-			var propertyName = item.Property.Name;
-			if (!accessor.TryGetPropertyValue(reference, propertyName, out var value))
-			{
-				throw new KeysetPaginationIncompatibleObjectException($"Property '{propertyName}' not found on this object.");
-			}
+			var value = item.ObtainValue(reference);
 			referenceValues.Add(value);
 		}
 		return referenceValues;
@@ -272,7 +267,7 @@ public static class KeysetPaginationExtensions
 			{
 				var isInnerLastOperation = j + 1 == innerLimit;
 				var item = items[j];
-				var memberAccess = Expression.MakeMemberAccess(param, item.Property);
+				var memberAccess = item.MakeMemberAccessExpression(param);
 				var referenceValue = referenceValues[j];
 				Expression<Func<object>> referenceValueFunc = () => referenceValue;
 				var referenceValueExpression = referenceValueFunc.Body;

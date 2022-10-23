@@ -25,10 +25,22 @@ public class KeysetPaginationBuilder<T>
 		Expression<Func<T, TProp>> propertyExpression,
 		bool isDescending)
 	{
-		var property = ExpressionHelper.GetPropertyInfoFromMemberAccess(propertyExpression);
-		_items.Add(new KeysetPaginationItem<T, TProp>(
-			property,
-			isDescending));
+		var unwrapped = ExpressionHelper.UnwrapConvert(propertyExpression);
+		if (ExpressionHelper.IsSimpleMemberAccess(unwrapped))
+		{
+			var property = ExpressionHelper.GetSimplePropertyFromMemberAccess(unwrapped);
+			_items.Add(new KeysetPaginationItemSimple<T, TProp>(
+				property,
+				isDescending));
+		}
+		else
+		{
+			var properties = ExpressionHelper.GetNestedPropertiesFromMemberAccess(unwrapped);
+			_items.Add(new KeysetPaginationItemNested<T, TProp>(
+				properties,
+				isDescending));
+		}
+
 		return this;
 	}
 }

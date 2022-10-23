@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
@@ -7,65 +8,73 @@ internal abstract class KeysetPaginationItem<T>
 	where T : class
 {
 	public KeysetPaginationItem(
-		PropertyInfo property,
 		bool isDescending)
 	{
-		Property = property;
 		IsDescending = isDescending;
 	}
 
-	public PropertyInfo Property { get; }
-
 	public bool IsDescending { get; }
+
+	/// <summary>
+	/// The property that represents the keyset column of this item.
+	/// </summary>
+	public abstract PropertyInfo Property { get; }
+
+	public abstract MemberExpression MakeMemberAccessExpression(ParameterExpression param);
 
 	public abstract IOrderedQueryable<T> ApplyOrderBy(IQueryable<T> query, KeysetPaginationDirection direction);
 
 	public abstract IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction);
+
+	public abstract object ObtainValue(object reference);
 }
 
-internal class KeysetPaginationItem<T, TProp> : KeysetPaginationItem<T>
+internal class KeysetPaginationItemSimple<T, TProp> : KeysetPaginationItem<T>
 	where T : class
 {
-	public KeysetPaginationItem(
+	public KeysetPaginationItemSimple(
 		PropertyInfo property,
 		bool isDescending)
-		: base(property, isDescending)
+		: base(isDescending)
 	{
+		Property = property;
 	}
+
+	public override PropertyInfo Property { get; }
 
 	public override IOrderedQueryable<T> ApplyOrderBy(IQueryable<T> query, KeysetPaginationDirection direction)
 	{
-		return OrderBy(query, direction, this);
+		var accessExpression = MakeMemberAccessLambda<TProp>();
+		var isDescending = direction == KeysetPaginationDirection.Backward ? !IsDescending : IsDescending;
+		return isDescending ? query.OrderByDescending(accessExpression) : query.OrderBy(accessExpression);
 	}
 
 	public override IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction)
 	{
-		return ThenOrderBy(query, direction, this);
-	}
-
-	private static IOrderedQueryable<T> OrderBy(IQueryable<T> query, KeysetPaginationDirection direction, KeysetPaginationItem<T> item)
-	{
-		var accessExpression = MakeMemberAccessLambda<TProp>(item.Property);
-		var isDescending = item.IsDescending;
-		if (direction == KeysetPaginationDirection.Backward)
-		{
-			isDescending = !isDescending;
-		}
-		return isDescending ? query.OrderByDescending(accessExpression) : query.OrderBy(accessExpression);
-	}
-
-	private static IOrderedQueryable<T> ThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction, KeysetPaginationItem<T> item)
-	{
-		var accessExpression = MakeMemberAccessLambda<TProp>(item.Property);
-		var isDescending = item.IsDescending;
-		if (direction == KeysetPaginationDirection.Backward)
-		{
-			isDescending = !isDescending;
-		}
+		var accessExpression = MakeMemberAccessLambda<TProp>();
+		var isDescending = direction == KeysetPaginationDirection.Backward ? !IsDescending : IsDescending;
 		return isDescending ? query.ThenByDescending(accessExpression) : query.ThenBy(accessExpression);
 	}
 
-	private static Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>(PropertyInfo property)
+	public override MemberExpression MakeMemberAccessExpression(ParameterExpression param)
+	{
+		return Expression.MakeMemberAccess(param, Property);
+	}
+
+	public override object ObtainValue(object reference)
+	{
+		var accessor = Accessor.Obtain(reference.GetType());
+
+		var propertyName = Property.Name;
+		if (!accessor.TryGetPropertyValue(reference, propertyName, out var value))
+		{
+			throw new KeysetPaginationIncompatibleObjectException($"Property '{propertyName}' not found on this object.");
+		}
+
+		return value;
+	}
+
+	private Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>()
 	{
 		// x => x.Property
 		// ---------------
@@ -74,7 +83,86 @@ internal class KeysetPaginationItem<T, TProp> : KeysetPaginationItem<T>
 		var param = Expression.Parameter(typeof(T), "x");
 
 		// x.Property
-		var propertyMemberAccess = Expression.MakeMemberAccess(param, property);
+		var propertyMemberAccess = MakeMemberAccessExpression(param);
+
+		return Expression.Lambda<Func<T, TKey>>(propertyMemberAccess, param);
+	}
+}
+
+internal class KeysetPaginationItemNested<T, TProp> : KeysetPaginationItem<T>
+	where T : class
+{
+	public KeysetPaginationItemNested(
+		List<PropertyInfo> properties,
+		bool isDescending)
+		: base(isDescending)
+	{
+		Debug.Assert(properties.Count > 1, "Expected this to be a chain of nested properties (more than 1 property).");
+
+		Properties = properties;
+		Property = properties[^1];
+	}
+
+	public IReadOnlyList<PropertyInfo> Properties { get; }
+
+	public override PropertyInfo Property { get; }
+
+	public override IOrderedQueryable<T> ApplyOrderBy(IQueryable<T> query, KeysetPaginationDirection direction)
+	{
+		var accessExpression = MakeMemberAccessLambda<TProp>();
+		var isDescending = direction == KeysetPaginationDirection.Backward ? !IsDescending : IsDescending;
+		return isDescending ? query.OrderByDescending(accessExpression) : query.OrderBy(accessExpression);
+	}
+
+	public override IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction)
+	{
+		var accessExpression = MakeMemberAccessLambda<TProp>();
+		var isDescending = direction == KeysetPaginationDirection.Backward ? !IsDescending : IsDescending;
+		return isDescending ? query.ThenByDescending(accessExpression) : query.ThenBy(accessExpression);
+	}
+
+	public override MemberExpression MakeMemberAccessExpression(ParameterExpression param)
+	{
+		// x.Nested.Property
+		// -----------------
+
+		var resultingExpression = default(MemberExpression);
+		foreach (var prop in Properties)
+		{
+			var chainAnchor = resultingExpression ?? (Expression)param;
+			resultingExpression = Expression.MakeMemberAccess(chainAnchor, prop);
+		}
+
+		return resultingExpression!;
+	}
+
+	public override object ObtainValue(object reference)
+	{
+		var lastValue = reference;
+		foreach (var prop in Properties)
+		{
+			var accessor = Accessor.Obtain(lastValue.GetType());
+			var propertyName = prop.Name;
+			if (!accessor.TryGetPropertyValue(lastValue, propertyName, out var value))
+			{
+				throw new KeysetPaginationIncompatibleObjectException($"Property '{propertyName}' not found on this object.");
+			}
+			lastValue = value;
+		}
+
+		return lastValue;
+	}
+
+	private Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>()
+	{
+		// x => x.Nested.Property
+		// ----------------------
+
+		// x =>
+		var param = Expression.Parameter(typeof(T), "x");
+
+		// x.Nested.Property
+		var propertyMemberAccess = MakeMemberAccessExpression(param);
 
 		return Expression.Lambda<Func<T, TKey>>(propertyMemberAccess, param);
 	}
