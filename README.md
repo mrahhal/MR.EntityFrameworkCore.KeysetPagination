@@ -209,7 +209,7 @@ Nested properties are also supported when defining a keyset. Just make sure the 
 var reference = await dbContext.Users
     // Load it, otherwise you won't get the correct result.
     .Include(x => x.Nested)
-    .FindAsync(id);
+    .FirstOrDefaultAsync(x => x.Id == id);
 
 // If you're using another type for the reference.
 var reference = new
@@ -220,12 +220,16 @@ var reference = new
     },
 };
 
-var result = await dbContext.Users.KeysetPaginate(
+var keysetContext = dbContext.Users.KeysetPaginate(
     // Defining the keyset using a nested property.
     b => b.Ascending(entity => entity.Nested.Created),
     direction,
-    reference
-).Take(20).ToListAsync();
+    reference);
+var result = await keysetContext.Query
+    // You'll want to load it here too if you plan on calling any context methods.
+    .Include(x => x.Nested)
+    .Take(20)
+    .ToListAsync();
 ```
 
 ## Avoiding skipping over data
