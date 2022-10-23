@@ -6,7 +6,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 
 internal static class ExpressionHelper
 {
-	public static Expression UnwrapConvert<T, TProp>(
+	public static Expression UnwrapConvertAndLambda<T, TProp>(
 		Expression<Func<T, TProp>> expression)
 	{
 		if (expression.Body.NodeType != ExpressionType.Convert)

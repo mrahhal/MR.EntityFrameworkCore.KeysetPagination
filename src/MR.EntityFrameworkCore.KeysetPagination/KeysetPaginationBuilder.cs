@@ -25,7 +25,7 @@ public class KeysetPaginationBuilder<T>
 		Expression<Func<T, TProp>> propertyExpression,
 		bool isDescending)
 	{
-		var unwrapped = ExpressionHelper.UnwrapConvert(propertyExpression);
+		var unwrapped = ExpressionHelper.UnwrapConvertAndLambda(propertyExpression);
 		if (ExpressionHelper.IsSimpleMemberAccess(unwrapped))
 		{
 			var property = ExpressionHelper.GetSimplePropertyFromMemberAccess(unwrapped);
