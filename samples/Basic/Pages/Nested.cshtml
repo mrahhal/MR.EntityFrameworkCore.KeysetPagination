@@ -1,0 +1,31 @@
+﻿@page
+@model NestedModel
+
+<div class="text-center">
+    @if (Model.Users.Any())
+    {
+        <div class="users">
+            @foreach (var user in Model.Users)
+            {
+                <div class="user">
+                    @user.Name (@user.Details.Created.ToLongDateString())
+                </div>
+            }
+        </div>
+
+        <div class="mt-3" style="text-align: center">
+            (@Model.Count items) (@Model.Elapsed | total with prev/next: @Model.ElapsedTotal)
+        </div>
+
+        <div class="pagination mt-3">
+            <a asp-page="/Nested" asp-route-first="@true" disabled="@(!Model.HasPrevious ? "disabled" : null)">First</a>
+            <a asp-page="/Nested" asp-route-before="@Model.Users.First().Id" disabled="@(!Model.HasPrevious ? "disabled" : null)">Previous</a>
+            <a asp-page="/Nested" asp-route-after="@Model.Users.Last().Id" disabled="@(!Model.HasNext ? "disabled" : null)">Next</a>
+            <a asp-page="/Nested" asp-route-last="@true" disabled="@(!Model.HasNext ? "disabled" : null)">Last</a>
+        </div>
+    }
+    else
+    {
+        <div>Nothing</div>
+    }
+</div>

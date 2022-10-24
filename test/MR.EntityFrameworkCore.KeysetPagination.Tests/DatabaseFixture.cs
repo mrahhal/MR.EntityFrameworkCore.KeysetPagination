@@ -84,6 +84,15 @@ public class DatabaseFixture : IDisposable
 				AnotherId = i % 2 == 0 ? i : null,
 				Created = i % 2 == 0 ? created : null,
 			});
+			context.NestedModels.Add(new NestedModel
+			{
+				Id = i,
+				Inner = new NestedInnerModel
+				{
+					Id = i,
+					Created = created,
+				},
+			});
 		}
 
 		context.SaveChanges();

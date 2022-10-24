@@ -79,6 +79,39 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	}
 
 	[Fact]
+	public async Task KeysetPaginate_AfterReference_Nested()
+	{
+		var reference = DbContext.NestedModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Inner.Created),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_Nested_DtoReference()
+	{
+		var reference = DbContext.NestedModels.Include(x => x.Inner).First();
+		var referenceDto = new
+		{
+			Inner = new
+			{
+				reference.Inner.Created,
+			},
+		};
+
+		var result = await DbContext.NestedModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Inner.Created),
+			KeysetPaginationDirection.Forward,
+			referenceDto)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
 	public async Task KeysetPaginate_BeforeReference_int()
 	{
 		var reference = DbContext.IntModels.First();

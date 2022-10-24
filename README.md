@@ -200,6 +200,38 @@ var admins = await keysetContext.Query
 keysetContext.EnsureCorrectOrder(admins);
 ```
 
+## Nested properties
+
+Nested properties are also supported when defining a keyset. Just make sure the reference contains the same nested chain of properties.
+
+```cs
+// If you're using a loaded entity for the reference.
+var reference = await dbContext.Users
+    // Load it, otherwise you won't get the correct result.
+    .Include(x => x.Nested)
+    .FirstOrDefaultAsync(x => x.Id == id);
+
+// If you're using another type for the reference.
+var reference = new
+{
+    Nested = new
+    {
+        Created = ...,
+    },
+};
+
+var keysetContext = dbContext.Users.KeysetPaginate(
+    // Defining the keyset using a nested property.
+    b => b.Ascending(entity => entity.Nested.Created),
+    direction,
+    reference);
+var result = await keysetContext.Query
+    // You'll want to load it here too if you plan on calling any context methods.
+    .Include(x => x.Nested)
+    .Take(20)
+    .ToListAsync();
+```
+
 ## Avoiding skipping over data
 
 You'll want to make sure the combination of the columns you configure uniquely identify an entity, otherwise you might skip over data while navigating pages. This is a general rule to keep in mind when doing keyset pagination.

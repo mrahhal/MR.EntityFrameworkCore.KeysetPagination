@@ -41,6 +41,10 @@ namespace Basic
 						Id = i,
 						Name = i.ToString(),
 						Created = created,
+						Details = new UserDetails
+						{
+							Created = created,
+						},
 					});
 				}
 				_dbContext.AddRange(users);
