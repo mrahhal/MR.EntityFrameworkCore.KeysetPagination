@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 _Nothing yet_
 
+## 1.1.0 - 2022-10-24
+
+### Added
+
+* Support nested properties when defining a keyset by @mrahhal in https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/23
+
+**Full Changelog**: https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.3...v1.1.0
+
 ## 1.0.3 - 2022-06-16
 
 ### Improved
