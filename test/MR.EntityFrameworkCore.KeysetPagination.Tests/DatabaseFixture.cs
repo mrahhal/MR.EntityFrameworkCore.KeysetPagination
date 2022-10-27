@@ -60,6 +60,9 @@ public class DatabaseFixture : IDisposable
 	{
 		var now = DateTime.Now.AddYears(-1);
 
+		var issue24Created = DateTime.Now;
+		var issue24Count = 1;
+
 		for (var i = 1; i < 1001; i++)
 		{
 			var created = now.AddMinutes(i);
@@ -92,6 +95,12 @@ public class DatabaseFixture : IDisposable
 					Id = i,
 					Created = created,
 				},
+			});
+			context.Issue24Models.Add(new Issue24Model
+			{
+				Id = i,
+				Created = issue24Created,
+				Name = issue24Count++.ToString("D5"),
 			});
 		}
 

@@ -458,6 +458,21 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		Assert.True(items[1].Id > items[0].Id, "Wrong order of ids.");
 	}
 
+	[Fact]
+	public async Task Issue24()
+	{
+		var reference = DbContext.Issue24Models.OrderBy(x => x.Id).First();
+
+		var result = await DbContext.Issue24Models.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Created).Ascending(x => x.Name),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+
+		Assert.True(result.Any());
+	}
+
 	private void AssertRange(int from, int to, List<IntModel> actual)
 	{
 		AssertRange(from, to, actual.Select(x => x.Id).ToList());
