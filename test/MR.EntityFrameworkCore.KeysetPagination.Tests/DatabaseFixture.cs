@@ -18,6 +18,7 @@ public class DatabaseFixture : IDisposable
 	{
 		var services = new ServiceCollection();
 		services.AddDbContext<TestDbContext>(options => options.UseSqlite("Data Source=test.db"));
+		//services.AddDbContext<TestDbContext>(options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=KeysetPaginationTest;Trusted_Connection=True;MultipleActiveResultSets=true"));
 		configureServices?.Invoke(services);
 		return services.BuildServiceProvider();
 	}
