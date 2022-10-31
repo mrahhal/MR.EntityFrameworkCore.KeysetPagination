@@ -60,9 +60,6 @@ public class DatabaseFixture : IDisposable
 	{
 		var now = DateTime.Now.AddYears(-1);
 
-		var issue24Created = DateTime.Now;
-		var issue24Count = 1;
-
 		for (var i = 1; i < 1001; i++)
 		{
 			var created = now.AddMinutes(i);
@@ -73,7 +70,6 @@ public class DatabaseFixture : IDisposable
 			});
 			context.IntModels.Add(new IntModel
 			{
-				Id = i,
 				Created = created,
 			});
 			context.GuidModels.Add(new GuidModel
@@ -83,24 +79,20 @@ public class DatabaseFixture : IDisposable
 			});
 			context.NullableModels.Add(new NullableModel
 			{
-				Id = i,
 				AnotherId = i % 2 == 0 ? i : null,
 				Created = i % 2 == 0 ? created : null,
 			});
 			context.NestedModels.Add(new NestedModel
 			{
-				Id = i,
 				Inner = new NestedInnerModel
 				{
-					Id = i,
 					Created = created,
 				},
 			});
 			context.Issue24Models.Add(new Issue24Model
 			{
-				Id = i,
 				Created = null,
-				Name = issue24Count++.ToString("D5"),
+				Name = i.ToString("D5"),
 			});
 		}
 
