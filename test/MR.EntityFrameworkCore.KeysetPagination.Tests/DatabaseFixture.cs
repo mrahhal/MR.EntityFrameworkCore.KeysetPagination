@@ -99,7 +99,7 @@ public class DatabaseFixture : IDisposable
 			context.Issue24Models.Add(new Issue24Model
 			{
 				Id = i,
-				Created = issue24Created,
+				Created = null,
 				Name = issue24Count++.ToString("D5"),
 			});
 		}
