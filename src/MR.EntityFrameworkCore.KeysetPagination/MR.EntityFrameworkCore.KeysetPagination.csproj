@@ -2,10 +2,17 @@
 
   <PropertyGroup>
     <Description>Keyset pagination for EF Core (Entity Framework Core). Also known as seek pagination or cursor pagination.</Description>
+
+    <AnalyzersAssemblyName>$(AssemblyName).Analyzers</AnalyzersAssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EntityFrameworkCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Label="Analyzers">
+    <ProjectReference Include="..\$(AnalyzersAssemblyName)\$(AnalyzersAssemblyName).csproj"
+                      PrivateAssets="contentfiles;build" />
   </ItemGroup>
 
 </Project>
