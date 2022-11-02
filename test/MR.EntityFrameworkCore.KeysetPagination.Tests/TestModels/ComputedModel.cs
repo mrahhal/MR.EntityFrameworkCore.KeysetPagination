@@ -7,4 +7,6 @@ public class ComputedModel
 	public DateTime? Created { get; set; }
 
 	public DateTime CreatedComputed { get; }
+
+	public DateTime CreatedNormal { get; set; }
 }

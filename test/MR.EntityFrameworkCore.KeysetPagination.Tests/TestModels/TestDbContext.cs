@@ -12,6 +12,18 @@ public class TestDbContext : DbContext
 	{
 	}
 
+	public IEnumerable<string> LogMessages => _logMessages;
+
+	public DbSet<IntModel> IntModels { get; set; }
+
+	public DbSet<StringModel> StringModels { get; set; }
+
+	public DbSet<GuidModel> GuidModels { get; set; }
+
+	public DbSet<NestedModel> NestedModels { get; set; }
+
+	public DbSet<ComputedModel> ComputedModels { get; set; }
+
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		optionsBuilder.LogTo(message =>
@@ -27,25 +39,30 @@ public class TestDbContext : DbContext
 	{
 		base.OnModelCreating(builder);
 
-		builder.Entity<ComputedModel>()
-			.Property(x => x.CreatedComputed)
-			// We're coalescing NULLs into a max date. This results in NULLs effectively sorted last (if ASC), irrelevant of the db provider.
-			.HasComputedColumnSql("COALESCE(Created, '9999-12-31T00:00:00.0000000')");
+		var computedPropertyBuilder = builder.Entity<ComputedModel>()
+			.Property(x => x.CreatedComputed);
+
+		// We're coalescing NULLs into a max date.
+		// This results in NULLs effectively sorted last (if ASC), irrelevant of the db provider.
+		if (DatabaseFixture.UseSqlServer)
+		{
+			// For Sql Server:
+			computedPropertyBuilder
+				// Has to be deterministic to be able to create an index on it, that's why we need
+				// to use CONVERT.
+				.HasComputedColumnSql("COALESCE(Created, CONVERT(datetime2, '9999-12-31', 102))");
+		}
+		else
+		{
+			// For sqlite:
+			computedPropertyBuilder
+				// This is how EF formats dates for sqlite. Be careful, you'll have to put the
+				// right format or you might get wrong results.
+				.HasComputedColumnSql("COALESCE(Created, '9999-12-31 00:00:00')");
+		}
 
 		// Make sure to properly index columns as per your expected queries.
 		builder.Entity<ComputedModel>()
 			.HasIndex(x => x.CreatedComputed);
 	}
-
-	public IEnumerable<string> LogMessages => _logMessages;
-
-	public DbSet<IntModel> IntModels { get; set; }
-
-	public DbSet<StringModel> StringModels { get; set; }
-
-	public DbSet<GuidModel> GuidModels { get; set; }
-
-	public DbSet<NestedModel> NestedModels { get; set; }
-
-	public DbSet<ComputedModel> ComputedModels { get; set; }
 }

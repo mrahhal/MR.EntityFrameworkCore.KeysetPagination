@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MR.EntityFrameworkCore.KeysetPagination.TestModels;
 using Xunit;

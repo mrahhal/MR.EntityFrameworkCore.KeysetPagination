@@ -6,6 +6,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public class DatabaseFixture : IDisposable
 {
+	public static readonly bool UseSqlServer = false;
+
 	private static readonly object _lock = new();
 	private static bool _initialized;
 
@@ -19,8 +21,14 @@ public class DatabaseFixture : IDisposable
 		var services = new ServiceCollection();
 		services.AddDbContext<TestDbContext>(options =>
 		{
-			options.UseSqlite("Data Source=test.db");
-			//options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=KeysetPaginationTest;Trusted_Connection=True;MultipleActiveResultSets=true");
+			if (UseSqlServer)
+			{
+				options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=KeysetPaginationTest;Trusted_Connection=True;MultipleActiveResultSets=true");
+			}
+			else
+			{
+				options.UseSqlite("Data Source=test.db");
+			}
 			options.EnableSensitiveDataLogging();
 		});
 		configureServices?.Invoke(services);
@@ -92,6 +100,7 @@ public class DatabaseFixture : IDisposable
 			context.ComputedModels.Add(new ComputedModel
 			{
 				Created = null,
+				CreatedNormal = UseSqlServer ? DateTime.Parse("9999-12-31T00:00:00.0000000") : DateTime.Parse("9999-12-31 00:00:00"),
 			});
 		}
 
