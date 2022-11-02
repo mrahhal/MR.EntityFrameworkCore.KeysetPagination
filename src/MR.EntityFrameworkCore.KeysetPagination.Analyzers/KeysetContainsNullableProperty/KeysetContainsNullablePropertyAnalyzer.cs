@@ -1,9 +1,7 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
-using Microsoft.CodeAnalysis.Text;
 
 namespace MR.EntityFrameworkCore.KeysetPagination.Analyzers;
 
@@ -23,11 +21,6 @@ public class KeysetContainsNullablePropertyAnalyzer : DiagnosticAnalyzer
 
 	private void AnalyzeOperation(OperationAnalysisContext context)
 	{
-		//context.ReportDiagnostic(Diagnostic.Create(
-		//	DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableProperty,
-		//	context.Operation.Syntax.GetLocation(),
-		//	"Foo"));
-
 		switch (context.Operation.Kind)
 		{
 			case OperationKind.Invocation:
@@ -38,22 +31,40 @@ public class KeysetContainsNullablePropertyAnalyzer : DiagnosticAnalyzer
 
 	private void AnalyzeInvocation(OperationAnalysisContext context, IInvocationOperation operation)
 	{
-		if (!IsCandidateMethod(operation, operation.TargetMethod))
+		if (!IsCandidateMethod(operation, operation.TargetMethod, out var argument))
 		{
 			return;
 		}
 
-		context.ReportDiagnostic(Diagnostic.Create(
-			DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableProperty,
-			operation.Arguments[0].Syntax.GetLocation(),
-			"Foo"));
+		// The argument is the lambda (IConversionOperation). Traverse down to find the first property ref.
+		var prop = argument.Descendants()
+			.OfType<IPropertyReferenceOperation>()
+			.FirstOrDefault();
+		if (prop != null && prop.Property.NullableAnnotation == NullableAnnotation.Annotated)
+		{
+			context.ReportDiagnostic(Diagnostic.Create(
+				DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableProperty,
+				prop.Syntax.GetLocation(),
+				prop.Property.Name));
+		}
 	}
 
-	private bool IsCandidateMethod(IInvocationOperation operation, IMethodSymbol method)
+	private bool IsCandidateMethod(
+		IInvocationOperation operation,
+		IMethodSymbol method,
+		out IArgumentOperation argument)
 	{
-		return operation.Arguments.Length > 0
-			&& method.ContainingType.Name == "KeysetPaginationBuilder"
-			//&& method.ContainingNamespace ==
-			&& (method.Name == "Ascending" || method.Name == "Descending");
+		if (operation.Arguments.Length > 0 &&
+			method.ContainingNamespace.Name == "KeysetPagination" &&
+			method.ContainingType.Name == "KeysetPaginationBuilder" &&
+			(method.Name == "Ascending" || method.Name == "Descending"))
+		{
+			// Should always be valid for the methods above.
+			argument = operation.Arguments[0];
+			return true;
+		}
+
+		argument = null!;
+		return false;
 	}
 }

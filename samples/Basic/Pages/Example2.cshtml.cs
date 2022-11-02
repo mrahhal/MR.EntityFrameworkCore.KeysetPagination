@@ -95,8 +95,10 @@ namespace Basic.Pages
 		private void TestingTheAnalyzer()
 		{
 			// ===
-			// Testing the analyzer works.
+			// Testing that the analyzer properly detects the following cases.
 			// Removing the suppression should reveal errors on HEREs.
+
+#pragma warning disable KeysetPagination1000 // Keyset contains a nullable property
 
 			var analyzerTestKeysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
 			{
@@ -111,6 +113,8 @@ namespace Basic.Pages
 			_dbContext.Users.KeysetPaginateQuery(
 				//                      HERE
 				b => b.Ascending(x => x.NullableDate));
+
+#pragma warning restore KeysetPagination1000 // Keyset contains a nullable property
 
 			// ===
 		}
