@@ -7,6 +7,4 @@ public class ComputedModel
 	public DateTime? Created { get; set; }
 
 	public DateTime CreatedComputed { get; }
-
-	public string Name { get; set; }
 }

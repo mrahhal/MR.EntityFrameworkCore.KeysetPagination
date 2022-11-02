@@ -92,7 +92,6 @@ public class DatabaseFixture : IDisposable
 			context.ComputedModels.Add(new ComputedModel
 			{
 				Created = null,
-				Name = i.ToString("D5"),
 			});
 		}
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Drawing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MR.EntityFrameworkCore.KeysetPagination.TestModels;
 using Xunit;
@@ -330,13 +331,31 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var reference = DbContext.ComputedModels.OrderBy(x => x.Id).First();
 
 		var result = await DbContext.ComputedModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.CreatedComputed).Ascending(x => x.Name),
+			b => b.Ascending(x => x.CreatedComputed).Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward,
 			reference)
 			.Take(20)
 			.ToListAsync();
 
 		Assert.True(result.Any());
+	}
+
+	[Fact]
+	public async Task HasNext_DbComputed()
+	{
+		// The last page
+		var keysetContext = DbContext.ComputedModels.KeysetPaginate(
+			b => b.Ascending(x => x.CreatedComputed).Ascending(x => x.Id),
+			KeysetPaginationDirection.Backward);
+		var data = await keysetContext.Query
+			.Take(1)
+			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(data);
+
+		// Next on the last page => should be false
+		var hasNext = await keysetContext.HasNextAsync(data);
+
+		Assert.False(hasNext);
 	}
 
 	private void AssertRange(int from, int to, List<IntModel> actual)
