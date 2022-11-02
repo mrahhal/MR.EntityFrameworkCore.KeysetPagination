@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.1.0...HEAD)
 
+### Others
+
+- Remove null tests and add computed tests and samples + doc ([#25](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/25))
+
 ## 1.1.0 - 2022-10-24
 
 [**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.3...v1.1.0)
