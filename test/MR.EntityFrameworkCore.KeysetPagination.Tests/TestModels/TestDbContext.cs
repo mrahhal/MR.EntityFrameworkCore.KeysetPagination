@@ -36,9 +36,5 @@ public class TestDbContext : DbContext
 
 	public DbSet<GuidModel> GuidModels { get; set; }
 
-	public DbSet<NullableModel> NullableModels { get; set; }
-
 	public DbSet<NestedModel> NestedModels { get; set; }
-
-	public DbSet<Issue24Model> Issue24Models { get; set; }
 }

@@ -78,22 +78,12 @@ public class DatabaseFixture : IDisposable
 				Id = Guid.NewGuid(),
 				Created = created,
 			});
-			context.NullableModels.Add(new NullableModel
-			{
-				AnotherId = i % 2 == 0 ? i : null,
-				Created = i % 2 == 0 ? created : null,
-			});
 			context.NestedModels.Add(new NestedModel
 			{
 				Inner = new NestedInnerModel
 				{
 					Created = created,
 				},
-			});
-			context.Issue24Models.Add(new Issue24Model
-			{
-				Created = null,
-				Name = i.ToString("D5"),
 			});
 		}
 
