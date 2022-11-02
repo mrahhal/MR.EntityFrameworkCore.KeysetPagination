@@ -89,6 +89,11 @@ public class DatabaseFixture : IDisposable
 					Created = created,
 				},
 			});
+			context.ComputedModels.Add(new ComputedModel
+			{
+				Created = null,
+				Name = i.ToString("D5"),
+			});
 		}
 
 		context.SaveChanges();
