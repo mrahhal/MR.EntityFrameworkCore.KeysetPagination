@@ -268,6 +268,10 @@ In this case you'll want to create a composite index on `Score` + `Id`, but make
 
 **Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core. Note that right now you can't specify the sorting of the index in EF Core when creating a composite index. You might have to create the index in raw sql if you need to do that. This issue is tracked here: https://github.com/dotnet/efcore/issues/4150.
 
+## Caveats
+
+Check this [document](docs/caveats.md) on a few caveats to keep in mind when working with keyset pagination.
+
 ## Samples
 
 Check the [samples](samples) folder for project samples.
