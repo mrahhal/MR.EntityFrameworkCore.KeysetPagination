@@ -5,4 +5,4 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-MRKP1000 | Trivia | Error | DiagnosticDescriptors
+KeysetPagination1000 | Unsupported | Error | DiagnosticDescriptors

@@ -90,5 +90,30 @@ namespace Basic.Pages
 
 			ElapsedTotal = sw.ElapsedMilliseconds.ToString();
 		}
+
+#pragma warning disable IDE0051
+		private void TestingTheAnalyzer()
+		{
+			// ===
+			// Testing the analyzer works.
+			// Removing the suppression should reveal errors on HEREs.
+
+			var analyzerTestKeysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
+			{
+				//                  HERE
+				b.Descending(x => x.NullableDate).Ascending(x => x.Id);
+			};
+
+			_dbContext.Users.KeysetPaginate(
+				//                       HERE
+				b => b.Descending(x => x.NullableDate).Ascending(x => x.Id));
+
+			_dbContext.Users.KeysetPaginateQuery(
+				//                      HERE
+				b => b.Ascending(x => x.NullableDate));
+
+			// ===
+		}
+#pragma warning restore IDE0051
 	}
 }
