@@ -6,6 +6,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public class DatabaseFixture : IDisposable
 {
+	public static readonly bool UseSqlServer = false;
+
 	private static readonly object _lock = new();
 	private static bool _initialized;
 
@@ -17,7 +19,18 @@ public class DatabaseFixture : IDisposable
 	public IServiceProvider BuildServices(Action<IServiceCollection> configureServices = null)
 	{
 		var services = new ServiceCollection();
-		services.AddDbContext<TestDbContext>(options => options.UseSqlite("Data Source=test.db"));
+		services.AddDbContext<TestDbContext>(options =>
+		{
+			if (UseSqlServer)
+			{
+				options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=KeysetPaginationTest;Trusted_Connection=True;MultipleActiveResultSets=true");
+			}
+			else
+			{
+				options.UseSqlite("Data Source=test.db");
+			}
+			options.EnableSensitiveDataLogging();
+		});
 		configureServices?.Invoke(services);
 		return services.BuildServiceProvider();
 	}
@@ -60,9 +73,6 @@ public class DatabaseFixture : IDisposable
 	{
 		var now = DateTime.Now.AddYears(-1);
 
-		var issue24Created = DateTime.Now;
-		var issue24Count = 1;
-
 		for (var i = 1; i < 1001; i++)
 		{
 			var created = now.AddMinutes(i);
@@ -73,7 +83,6 @@ public class DatabaseFixture : IDisposable
 			});
 			context.IntModels.Add(new IntModel
 			{
-				Id = i,
 				Created = created,
 			});
 			context.GuidModels.Add(new GuidModel
@@ -81,26 +90,17 @@ public class DatabaseFixture : IDisposable
 				Id = Guid.NewGuid(),
 				Created = created,
 			});
-			context.NullableModels.Add(new NullableModel
-			{
-				Id = i,
-				AnotherId = i % 2 == 0 ? i : null,
-				Created = i % 2 == 0 ? created : null,
-			});
 			context.NestedModels.Add(new NestedModel
 			{
-				Id = i,
 				Inner = new NestedInnerModel
 				{
-					Id = i,
 					Created = created,
 				},
 			});
-			context.Issue24Models.Add(new Issue24Model
+			context.ComputedModels.Add(new ComputedModel
 			{
-				Id = i,
-				Created = issue24Created,
-				Name = issue24Count++.ToString("D5"),
+				Created = null,
+				CreatedNormal = UseSqlServer ? DateTime.Parse("9999-12-31T00:00:00.0000000") : DateTime.Parse("9999-12-31 00:00:00"),
 			});
 		}
 

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.1.0...HEAD)
+
+### Other
+
+- Add NULL caveat doc and add tests/samples/guiding around the computed workaround ([#25](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/25))
+
 ## 1.1.0 - 2022-10-24
 
 [**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.3...v1.1.0)

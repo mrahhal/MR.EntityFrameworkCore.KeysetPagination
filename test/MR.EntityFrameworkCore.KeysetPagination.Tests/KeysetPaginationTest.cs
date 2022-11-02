@@ -190,32 +190,6 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	}
 
 	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Nullable()
-	{
-		var reference = DbContext.NullableModels.First();
-
-		var result = await DbContext.NullableModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Nullable2()
-	{
-		var reference = DbContext.NullableModels.First();
-
-		var result = await DbContext.NullableModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Created).Ascending(x => x.Id),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
 	public async Task KeysetPaginate_AfterReference_Composite_Mixed_int()
 	{
 		var reference = DbContext.IntModels.First();
@@ -248,58 +222,6 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 
 		var result = await DbContext.GuidModels.KeysetPaginateQuery(
 			b => b.Descending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Mixed_Nullable()
-	{
-		var reference = DbContext.NullableModels.First();
-
-		var result = await DbContext.NullableModels.KeysetPaginateQuery(
-			b => b.Descending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Mixed_Nullable2()
-	{
-		var reference = DbContext.NullableModels.First();
-
-		var result = await DbContext.NullableModels.KeysetPaginateQuery(
-			b => b.Descending(x => x.Created).Ascending(x => x.Id),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Mixed_Nullable3()
-	{
-		var reference = DbContext.NullableModels.First();
-
-		var result = await DbContext.NullableModels.KeysetPaginateQuery(
-			b => b.Descending(x => x.AnotherId).Ascending(x => x.Id),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Mixed_Nullable4()
-	{
-		var reference = DbContext.NullableModels.First();
-
-		var result = await DbContext.NullableModels.KeysetPaginateQuery(
-			b => b.Descending(x => x.AnotherId).Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward,
 			reference)
 			.Take(20)
@@ -373,62 +295,6 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	}
 
 	[Fact]
-	public async Task HasPreviousAsync_Nullable()
-	{
-		var keysetContext = DbContext.NullableModels.KeysetPaginate(
-			b => b.Descending(x => x.Created).Ascending(x => x.Id));
-		var items = await keysetContext.Query
-			.Take(20)
-			.ToListAsync();
-		keysetContext.EnsureCorrectOrder(items);
-
-		var result = await keysetContext.HasPreviousAsync(items);
-		Assert.False(result);
-	}
-
-	[Fact]
-	public async Task HasPreviousAsync_Nullable2()
-	{
-		var keysetContext = DbContext.NullableModels.KeysetPaginate(
-			b => b.Ascending(x => x.Id).Descending(x => x.Created));
-		var items = await keysetContext.Query
-			.Take(20)
-			.ToListAsync();
-		keysetContext.EnsureCorrectOrder(items);
-
-		var result = await keysetContext.HasPreviousAsync(items);
-		Assert.False(result);
-	}
-
-	[Fact]
-	public async Task HasPreviousAsync_Nullable3()
-	{
-		var keysetContext = DbContext.NullableModels.KeysetPaginate(
-			b => b.Descending(x => x.AnotherId).Ascending(x => x.Id));
-		var items = await keysetContext.Query
-			.Take(20)
-			.ToListAsync();
-		keysetContext.EnsureCorrectOrder(items);
-
-		var result = await keysetContext.HasPreviousAsync(items);
-		Assert.False(result);
-	}
-
-	[Fact]
-	public async Task HasPreviousAsync_Nullable4()
-	{
-		var keysetContext = DbContext.NullableModels.KeysetPaginate(
-			b => b.Ascending(x => x.Id).Descending(x => x.AnotherId));
-		var items = await keysetContext.Query
-			.Take(20)
-			.ToListAsync();
-		keysetContext.EnsureCorrectOrder(items);
-
-		var result = await keysetContext.HasPreviousAsync(items);
-		Assert.False(result);
-	}
-
-	[Fact]
 	public async Task EnsureCorrectOrder_Forward()
 	{
 		var keysetContext = DbContext.IntModels.KeysetPaginate(
@@ -459,18 +325,36 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	}
 
 	[Fact]
-	public async Task Issue24()
+	public async Task KeysetPaginate_DbComputed()
 	{
-		var reference = DbContext.Issue24Models.OrderBy(x => x.Id).First();
+		var reference = DbContext.ComputedModels.OrderBy(x => x.Id).First();
 
-		var result = await DbContext.Issue24Models.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Created).Ascending(x => x.Name),
+		var result = await DbContext.ComputedModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.CreatedComputed).Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward,
 			reference)
 			.Take(20)
 			.ToListAsync();
 
 		Assert.True(result.Any());
+	}
+
+	[Fact]
+	public async Task HasNext_DbComputed()
+	{
+		// The last page
+		var keysetContext = DbContext.ComputedModels.KeysetPaginate(
+			b => b.Ascending(x => x.CreatedComputed).Ascending(x => x.Id),
+			KeysetPaginationDirection.Backward);
+		var data = await keysetContext.Query
+			.Take(1)
+			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(data);
+
+		// Next on the last page => should be false
+		var hasNext = await keysetContext.HasNextAsync(data);
+
+		Assert.False(hasNext);
 	}
 
 	private void AssertRange(int from, int to, List<IntModel> actual)

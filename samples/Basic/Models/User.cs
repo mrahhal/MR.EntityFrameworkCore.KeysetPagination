@@ -11,6 +11,11 @@ namespace Basic.Models
 
 		public DateTime Created { get; set; }
 
+		// Used to show how to deal with nullables in the keyset
+		public DateTime? NullableDate { get; set; }
+		public DateTime NullableDateComputed { get; }
+		// ---
+
 		public UserDetails Details { get; set; }
 	}
 

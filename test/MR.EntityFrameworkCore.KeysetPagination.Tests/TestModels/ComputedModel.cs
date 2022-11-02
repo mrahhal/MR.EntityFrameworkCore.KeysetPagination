@@ -1,10 +1,12 @@
 ﻿namespace MR.EntityFrameworkCore.KeysetPagination.TestModels;
 
-public class NullableModel
+public class ComputedModel
 {
 	public int Id { get; set; }
 
-	public int? AnotherId { get; set; }
-
 	public DateTime? Created { get; set; }
+
+	public DateTime CreatedComputed { get; }
+
+	public DateTime CreatedNormal { get; set; }
 }

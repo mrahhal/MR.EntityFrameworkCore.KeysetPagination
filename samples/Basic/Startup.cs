@@ -16,7 +16,11 @@ namespace Basic
 		{
 			services.AddRazorPages();
 
-			services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=app.db"));
+			services.AddDbContext<AppDbContext>(options =>
+			{
+				options.UseSqlite("Data Source=app.db");
+				options.EnableSensitiveDataLogging();
+			});
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -41,6 +45,7 @@ namespace Basic
 						Id = i,
 						Name = i.ToString(),
 						Created = created,
+						NullableDate = i % 2 == 0 ? created : null,
 						Details = new UserDetails
 						{
 							Created = created,
