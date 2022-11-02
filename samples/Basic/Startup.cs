@@ -16,7 +16,11 @@ namespace Basic
 		{
 			services.AddRazorPages();
 
-			services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=app.db"));
+			services.AddDbContext<AppDbContext>(options =>
+			{
+				options.UseSqlite("Data Source=app.db");
+				options.EnableSensitiveDataLogging();
+			});
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
