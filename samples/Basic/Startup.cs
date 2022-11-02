@@ -41,6 +41,7 @@ namespace Basic
 						Id = i,
 						Name = i.ToString(),
 						Created = created,
+						NullableDate = i % 2 == 0 ? created : null,
 						Details = new UserDetails
 						{
 							Created = created,
