@@ -43,12 +43,12 @@ public class TestDbContext : DbContext
 			.Property(x => x.CreatedComputed);
 
 		// We're coalescing NULLs into a max date.
-		// This results in NULLs effectively sorted last (if ASC), irrelevant of the db provider.
+		// This results in NULLs effectively being sorted last (if ASC), irrelevant of the Db.
 		if (DatabaseFixture.UseSqlServer)
 		{
 			// For Sql Server:
 			computedPropertyBuilder
-				// Has to be deterministic to be able to create an index on it, that's why we need
+				// Has to be deterministic to be able to create an index for it, that's why we need
 				// to use CONVERT.
 				.HasComputedColumnSql("COALESCE(Created, CONVERT(datetime2, '9999-12-31', 102))");
 		}
