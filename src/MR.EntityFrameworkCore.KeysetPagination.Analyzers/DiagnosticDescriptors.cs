@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis;
 
-namespace TemplateRoslynAnalyzer;
+namespace MR.EntityFrameworkCore.KeysetPagination.Analyzers;
 
 public static class DiagnosticDescriptors
 {

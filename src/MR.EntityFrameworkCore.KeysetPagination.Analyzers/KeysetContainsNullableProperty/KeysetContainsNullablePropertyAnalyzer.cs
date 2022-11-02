@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
 
-namespace TemplateRoslynAnalyzer;
+namespace MR.EntityFrameworkCore.KeysetPagination.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class KeysetContainsNullablePropertyAnalyzer : DiagnosticAnalyzer
