@@ -6,7 +6,7 @@ public static class DiagnosticDescriptors
 {
 	public static class Categories
 	{
-		public const string Unsupported = nameof(Unsupported);
+		public const string Usage = nameof(Usage);
 	}
 
 	// https://github.com/dotnet/roslyn-analyzers/issues/5828
@@ -15,7 +15,7 @@ public static class DiagnosticDescriptors
 		"KeysetPagination1000",
 		"Keyset contains a nullable property",
 		"Unsupported nullable property '{0}' in the keyset",
-		Categories.Unsupported,
+		Categories.Usage,
 		DiagnosticSeverity.Error,
 		isEnabledByDefault: true,
 		description: "Nullable properties are not supported in the keyset.",

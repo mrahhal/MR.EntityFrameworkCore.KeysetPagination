@@ -5,4 +5,4 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-KeysetPagination1000 | Unsupported | Error | DiagnosticDescriptors
+KeysetPagination1000 | Usage | Error |
