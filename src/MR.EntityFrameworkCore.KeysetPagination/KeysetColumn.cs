@@ -31,6 +31,10 @@ internal abstract class KeysetColumn<T>
 	public abstract IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction);
 
 	public abstract object ObtainValue(object reference);
+
+	protected Exception CreateIncompatibleObjectException(string propertyName) =>
+		new KeysetPaginationIncompatibleObjectException(
+			   $"A matching property '{propertyName}' was not found on this object. Refer to the following document for more info: https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/blob/main/docs/loose-typing.md");
 }
 
 /// <summary>
@@ -75,7 +79,7 @@ internal class KeysetColumnSimple<T, TProp> : KeysetColumn<T>
 		var propertyName = Property.Name;
 		if (!accessor.TryGetPropertyValue(reference, propertyName, out var value))
 		{
-			throw new KeysetPaginationIncompatibleObjectException($"Property '{propertyName}' not found on this object.");
+			throw CreateIncompatibleObjectException(propertyName);
 		}
 
 		return value;
@@ -155,7 +159,7 @@ internal class KeysetColumnNested<T, TProp> : KeysetColumn<T>
 			var propertyName = prop.Name;
 			if (!accessor.TryGetPropertyValue(lastValue, propertyName, out var value))
 			{
-				throw new KeysetPaginationIncompatibleObjectException($"Property '{propertyName}' not found on this object.");
+				throw CreateIncompatibleObjectException(propertyName);
 			}
 			lastValue = value;
 		}
