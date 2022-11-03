@@ -43,6 +43,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{66E7C6
 		version.props = version.props
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MR.EntityFrameworkCore.KeysetPagination.Analyzers", "src\MR.EntityFrameworkCore.KeysetPagination.Analyzers\MR.EntityFrameworkCore.KeysetPagination.Analyzers.csproj", "{D3FDCD29-B5CF-4A5A-AD3A-AA91836CB5B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{BCF93912-D61A-4538-AB0B-D262ECC51EBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCF93912-D61A-4538-AB0B-D262ECC51EBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCF93912-D61A-4538-AB0B-D262ECC51EBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3FDCD29-B5CF-4A5A-AD3A-AA91836CB5B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3FDCD29-B5CF-4A5A-AD3A-AA91836CB5B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3FDCD29-B5CF-4A5A-AD3A-AA91836CB5B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3FDCD29-B5CF-4A5A-AD3A-AA91836CB5B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{0AAE1A78-470B-4561-923B-CFEB4C985F56} = {4FAE1C22-9B20-4F77-A02F-6FEFE4889CEA}
 		{97C8C85C-B373-4E11-9590-62C396E65619} = {D4CB6555-0A3F-4074-A9B4-323A0413A9B2}
 		{BCF93912-D61A-4538-AB0B-D262ECC51EBB} = {06AED930-32C6-4FF8-A631-A9C55BB7112D}
+		{D3FDCD29-B5CF-4A5A-AD3A-AA91836CB5B1} = {4FAE1C22-9B20-4F77-A02F-6FEFE4889CEA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {867564D9-A392-43BD-8584-FB47E6D48378}

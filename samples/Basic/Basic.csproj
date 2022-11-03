@@ -9,6 +9,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MR.EntityFrameworkCore.KeysetPagination\MR.EntityFrameworkCore.KeysetPagination.csproj" />
+
+    <!-- Only needed because we're doing a project reference. You won't need this. -->
+    <ProjectReference Include="..\..\src\MR.EntityFrameworkCore.KeysetPagination.Analyzers\MR.EntityFrameworkCore.KeysetPagination.Analyzers.csproj"
+                      PrivateAssets="all"
+                      ReferenceOutputAssembly="false"
+                      OutputItemType="Analyzer" />
   </ItemGroup>
 
   <ItemGroup>

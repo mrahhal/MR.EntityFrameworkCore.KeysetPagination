@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Other
 
-- Add NULL caveat doc and add tests/samples/guiding around the computed workaround ([#25](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/25))
+- Add NULL caveat doc and add tests/samples/guiding around the computed workaround ([#25](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/25) by [@mrahhal](https://github.com/mrahhal))
+- Add an analyzer that detects unsupported nullable properties in the keyset ([#26](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/26) by [@mrahhal](https://github.com/mrahhal))
 
 ## 1.1.0 - 2022-10-24
 
