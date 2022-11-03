@@ -176,7 +176,7 @@ var hasNext = await keysetContext.HasNextAsync(users);
 
 `HasPreviousAsync`/`HasNextAsync` are useful when you want to know when to render Previous/Next (Older/Newer) buttons.
 
-**Note**: The reference/data these methods accept are always loosely typed. This is designed so that you have the freedom of transforming/mapping your data to DTOs if you want, and still have the ability to ask more info using the same context object. You just need to make sure the columns you configured still exist on the transformed objects.
+**Note**: The reference/data these methods accept are loosely typed to allow flexibility when projecting your models (to DTOs for example). For more info check [this document](./docs/loose-typing.md).
 
 Here's another example showing how to obtain the total count for the data to display somewhere:
 
@@ -270,7 +270,7 @@ In this case you'll want to create a composite index on `Score` + `Id`, but make
 
 ## Caveats
 
-Check this [document](docs/caveats.md) on a few caveats to keep in mind when working with keyset pagination.
+Check [this document](docs/caveats.md) on a few caveats to keep in mind when working with keyset pagination.
 
 ## Samples
 
