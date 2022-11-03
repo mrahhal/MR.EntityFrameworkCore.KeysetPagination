@@ -18,7 +18,7 @@ public static class DiagnosticDescriptors
 		Categories.Unsupported,
 		DiagnosticSeverity.Error,
 		isEnabledByDefault: true,
-		description: "Nullable properties are not supported in the keyset. Refer to the help link for more info and a workaround.",
+		description: "Nullable properties are not supported in the keyset.",
 		helpLinkUri: "https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/blob/main/docs/diagnostics.md#KeysetPagination1000");
 #pragma warning restore IDE0090 // Use 'new(...)'
 }
