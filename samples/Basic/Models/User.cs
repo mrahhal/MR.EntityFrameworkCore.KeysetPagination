@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+#nullable enable
+
 namespace Basic.Models
 {
 	[Index(nameof(Created), nameof(Id))]
@@ -7,7 +9,7 @@ namespace Basic.Models
 	{
 		public int Id { get; set; }
 
-		public string Name { get; set; }
+		public string Name { get; set; } = default!;
 
 		public DateTime Created { get; set; }
 
@@ -16,7 +18,7 @@ namespace Basic.Models
 		public DateTime NullableDateComputed { get; }
 		// ---
 
-		public UserDetails Details { get; set; }
+		public UserDetails Details { get; set; } = default!;
 
 		public UserDetails? NullableDetails { get; set; }
 	}

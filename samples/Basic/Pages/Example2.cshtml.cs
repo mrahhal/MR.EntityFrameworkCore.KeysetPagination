@@ -92,6 +92,7 @@ namespace Basic.Pages
 		}
 
 #pragma warning disable IDE0051
+#nullable enable
 		private void TestingTheAnalyzer()
 		{
 			// ===
@@ -122,6 +123,7 @@ namespace Basic.Pages
 
 			// ===
 		}
+#nullable disable
 #pragma warning restore IDE0051
 	}
 }
