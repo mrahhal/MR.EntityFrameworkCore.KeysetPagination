@@ -11,6 +11,8 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 internal abstract class KeysetColumn<T>
 	where T : class
 {
+	private static readonly Func<string, string> DefaultIncompatibleMessageFunc = propertyName => $"A matching property '{propertyName}' was not found on this object";
+
 	public KeysetColumn(
 		bool isDescending)
 	{
@@ -32,9 +34,19 @@ internal abstract class KeysetColumn<T>
 
 	public abstract object ObtainValue(object reference);
 
-	protected Exception CreateIncompatibleObjectException(string propertyName) =>
+	protected Exception CreateIncompatibleObjectException(string propertyName, Func<string, string>? messageFunc = null) =>
 		new KeysetPaginationIncompatibleObjectException(
-			   $"A matching property '{propertyName}' was not found on this object. Refer to the following document for more info: https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/blob/main/docs/loose-typing.md");
+			$"{(messageFunc ?? DefaultIncompatibleMessageFunc)(propertyName)}");
+
+	protected object CheckForNullAndReturn(object? value, string propertyName)
+	{
+		if (value == null)
+		{
+			throw new KeysetPaginationUnexpectedNullException(propertyName);
+		}
+
+		return value;
+	}
 }
 
 /// <summary>
@@ -82,7 +94,7 @@ internal class KeysetColumnSimple<T, TProp> : KeysetColumn<T>
 			throw CreateIncompatibleObjectException(propertyName);
 		}
 
-		return value;
+		return CheckForNullAndReturn(value, propertyName);
 	}
 
 	private Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>()
@@ -153,18 +165,31 @@ internal class KeysetColumnNested<T, TProp> : KeysetColumn<T>
 	public override object ObtainValue(object reference)
 	{
 		var lastValue = reference;
-		foreach (var prop in Properties)
+		var lastPropertyName = string.Empty;
+		for (var i = 0; i < Properties.Count; i++)
 		{
-			var accessor = Accessor.Obtain(lastValue.GetType());
-			var propertyName = prop.Name;
+			var property = Properties[i];
+			// Suppression: This can't be null. It can only become null when we're already breaking out of the loop.
+			var accessor = Accessor.Obtain(lastValue!.GetType());
+			var propertyName = lastPropertyName = property.Name;
 			if (!accessor.TryGetPropertyValue(lastValue, propertyName, out var value))
 			{
 				throw CreateIncompatibleObjectException(propertyName);
 			}
+
+			// An intermediate being null means it probably wasn't loaded, so let's throw a clear error.
+			if (i != Properties.Count - 1 && value == null)
+			{
+				// Chain might have not been loaded properly.
+				throw CreateIncompatibleObjectException(
+					propertyName,
+					propertyName => $"A nested property had a null in the chain ('{propertyName}'). Did you properly load the chain?");
+			}
+
 			lastValue = value;
 		}
 
-		return lastValue;
+		return CheckForNullAndReturn(lastValue, lastPropertyName);
 	}
 
 	private Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>()

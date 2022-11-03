@@ -295,6 +295,43 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	}
 
 	[Fact]
+	public async Task HasPreviousAsync_Incompatible_Nested_ChainPartNull()
+	{
+		var keysetContext = DbContext.NestedModels.KeysetPaginate(
+			b => b.Ascending(x => x.Inner.Id));
+		var items = await keysetContext.Query
+			.Take(20)
+			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
+
+		// Emulate not loading the chain.
+		var dtos = items.Select(x => new { Inner = (object)null }).ToList();
+
+		await Assert.ThrowsAsync<KeysetPaginationIncompatibleObjectException>(async () =>
+		{
+			await keysetContext.HasPreviousAsync(dtos);
+		});
+	}
+
+	[Fact]
+	public async Task HasPreviousAsync_Null()
+	{
+		var keysetContext = DbContext.ComputedModels.KeysetPaginate(
+			b => b.Ascending(x => x.Created)); // Analyzer would have detected this
+		var items = await keysetContext.Query
+			.Take(20)
+			.ToListAsync();
+		keysetContext.EnsureCorrectOrder(items);
+
+		var dtos = items.Select(x => new { Created = (DateTime?)null }).ToList();
+
+		await Assert.ThrowsAsync<KeysetPaginationUnexpectedNullException>(async () =>
+		{
+			await keysetContext.HasPreviousAsync(dtos);
+		});
+	}
+
+	[Fact]
 	public async Task EnsureCorrectOrder_Forward()
 	{
 		var keysetContext = DbContext.IntModels.KeysetPaginate(
