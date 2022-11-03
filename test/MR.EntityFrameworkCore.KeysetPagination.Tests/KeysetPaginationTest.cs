@@ -314,10 +314,11 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	}
 
 	[Fact]
-	public async Task HasPreviousAsync_Null()
+	public async Task HasPreviousAsync_Null_DoesNotThrow()
 	{
 		var keysetContext = DbContext.ComputedModels.KeysetPaginate(
-			b => b.Ascending(x => x.Created)); // Analyzer would have detected this
+			// Analyzer would have detected this, but assuming we suppressed the error...
+			b => b.Ascending(x => x.Created));
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
@@ -325,10 +326,8 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 
 		var dtos = items.Select(x => new { Created = (DateTime?)null }).ToList();
 
-		await Assert.ThrowsAsync<KeysetPaginationUnexpectedNullException>(async () =>
-		{
-			await keysetContext.HasPreviousAsync(dtos);
-		});
+		// Shouldn't throw if the user suppressed the analyzer error and knows what they're doing.
+		await keysetContext.HasPreviousAsync(dtos);
 	}
 
 	[Fact]

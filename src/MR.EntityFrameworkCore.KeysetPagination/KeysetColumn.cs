@@ -38,14 +38,14 @@ internal abstract class KeysetColumn<T>
 		new KeysetPaginationIncompatibleObjectException(
 			$"{(messageFunc ?? DefaultIncompatibleMessageFunc)(propertyName)}");
 
-	protected object CheckForNullAndReturn(object? value, string propertyName)
+#pragma warning disable IDE0060 // Remove unused parameter
+	protected object CheckAndReturn(object? value, string propertyName)
+#pragma warning restore IDE0060 // Remove unused parameter
 	{
-		if (value == null)
-		{
-			throw new KeysetPaginationUnexpectedNullException(propertyName);
-		}
+		// We don't want to throw on nulls because even though we don't support it in the keyset,
+		// we want the analyzer to take care of warning the user to allow them the flexibility of suppressing it.
 
-		return value;
+		return value!;
 	}
 }
 
@@ -94,7 +94,7 @@ internal class KeysetColumnSimple<T, TProp> : KeysetColumn<T>
 			throw CreateIncompatibleObjectException(propertyName);
 		}
 
-		return CheckForNullAndReturn(value, propertyName);
+		return CheckAndReturn(value, propertyName);
 	}
 
 	private Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>()
@@ -189,7 +189,7 @@ internal class KeysetColumnNested<T, TProp> : KeysetColumn<T>
 			lastValue = value;
 		}
 
-		return CheckForNullAndReturn(lastValue, lastPropertyName);
+		return CheckAndReturn(lastValue, lastPropertyName);
 	}
 
 	private Expression<Func<T, TKey>> MakeMemberAccessLambda<TKey>()
