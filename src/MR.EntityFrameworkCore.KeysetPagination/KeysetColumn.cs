@@ -4,10 +4,14 @@ using System.Reflection;
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
 
-internal abstract class KeysetPaginationItem<T>
+/// <summary>
+/// Represents a configured keyset column.
+/// </summary>
+/// <typeparam name="T">The type of the entity.</typeparam>
+internal abstract class KeysetColumn<T>
 	where T : class
 {
-	public KeysetPaginationItem(
+	public KeysetColumn(
 		bool isDescending)
 	{
 		IsDescending = isDescending;
@@ -16,7 +20,7 @@ internal abstract class KeysetPaginationItem<T>
 	public bool IsDescending { get; }
 
 	/// <summary>
-	/// The property that represents the keyset column of this item.
+	/// The property that represents the actual column.
 	/// </summary>
 	public abstract PropertyInfo Property { get; }
 
@@ -29,10 +33,13 @@ internal abstract class KeysetPaginationItem<T>
 	public abstract object ObtainValue(object reference);
 }
 
-internal class KeysetPaginationItemSimple<T, TProp> : KeysetPaginationItem<T>
+/// <summary>
+/// A <see cref="KeysetColumn{T}"/> for a simple property access: x => x.Column
+/// </summary>
+internal class KeysetColumnSimple<T, TProp> : KeysetColumn<T>
 	where T : class
 {
-	public KeysetPaginationItemSimple(
+	public KeysetColumnSimple(
 		PropertyInfo property,
 		bool isDescending)
 		: base(isDescending)
@@ -89,10 +96,13 @@ internal class KeysetPaginationItemSimple<T, TProp> : KeysetPaginationItem<T>
 	}
 }
 
-internal class KeysetPaginationItemNested<T, TProp> : KeysetPaginationItem<T>
+/// <summary>
+/// A <see cref="KeysetColumn{T}"/> for a nested property access: x => x.Nested.Column
+/// </summary>
+internal class KeysetColumnNested<T, TProp> : KeysetColumn<T>
 	where T : class
 {
-	public KeysetPaginationItemNested(
+	public KeysetColumnNested(
 		List<PropertyInfo> properties,
 		bool isDescending)
 		: base(isDescending)

@@ -6,12 +6,12 @@ public class KeysetPaginationContext<T>
 	internal KeysetPaginationContext(
 		IQueryable<T> query,
 		IOrderedQueryable<T> orderedQuery,
-		IReadOnlyList<KeysetPaginationItem<T>> items,
+		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction)
 	{
 		Query = query;
 		OrderedQuery = orderedQuery;
-		Items = items;
+		Columns = columns;
 		Direction = direction;
 	}
 
@@ -30,5 +30,5 @@ public class KeysetPaginationContext<T>
 	/// </summary>
 	public KeysetPaginationDirection Direction { get; }
 
-	internal IReadOnlyList<KeysetPaginationItem<T>> Items { get; }
+	internal IReadOnlyList<KeysetColumn<T>> Columns { get; }
 }

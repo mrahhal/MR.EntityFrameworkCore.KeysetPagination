@@ -17,7 +17,7 @@ public static class KeysetPaginationExtensions
 	/// <summary>
 	/// Paginates using keyset pagination.
 	/// </summary>
-	/// <typeparam name="T">The type of the elements of source.</typeparam>
+	/// <typeparam name="T">The type of the entity.</typeparam>
 	/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
 	/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
 	/// <param name="direction">The direction to take. Default is Forward.</param>
@@ -46,19 +46,19 @@ public static class KeysetPaginationExtensions
 
 		var builder = new KeysetPaginationBuilder<T>();
 		builderAction(builder);
-		var items = builder.Items;
+		var columns = builder.Columns;
 
-		if (!items.Any())
+		if (!columns.Any())
 		{
-			throw new InvalidOperationException("There should be at least one property you're acting on.");
+			throw new InvalidOperationException("There should be at least one configured column in the keyset.");
 		}
 
 		// Order
 
-		var orderedQuery = items[0].ApplyOrderBy(source, direction);
-		for (var i = 1; i < items.Count; i++)
+		var orderedQuery = columns[0].ApplyOrderBy(source, direction);
+		for (var i = 1; i < columns.Count; i++)
 		{
-			orderedQuery = items[i].ApplyThenOrderBy(orderedQuery, direction);
+			orderedQuery = columns[i].ApplyThenOrderBy(orderedQuery, direction);
 		}
 
 		// Filter
@@ -66,17 +66,17 @@ public static class KeysetPaginationExtensions
 		var filteredQuery = orderedQuery.AsQueryable();
 		if (reference != null)
 		{
-			var keysetFilterPredicateLambda = BuildKeysetFilterPredicateExpression(items, direction, reference);
+			var keysetFilterPredicateLambda = BuildKeysetFilterPredicateExpression(columns, direction, reference);
 			filteredQuery = filteredQuery.Where(keysetFilterPredicateLambda);
 		}
 
-		return new KeysetPaginationContext<T>(filteredQuery, orderedQuery, items, direction);
+		return new KeysetPaginationContext<T>(filteredQuery, orderedQuery, columns, direction);
 	}
 
 	/// <summary>
 	/// Paginates using keyset pagination.
 	/// </summary>
-	/// <typeparam name="T">The type of the elements of source.</typeparam>
+	/// <typeparam name="T">The type of the entity.</typeparam>
 	/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
 	/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
 	/// <param name="direction">The direction to take. Default is Forward.</param>
@@ -100,7 +100,7 @@ public static class KeysetPaginationExtensions
 	/// <summary>
 	/// Returns true when there is more data before the list.
 	/// </summary>
-	/// <typeparam name="T">The type of the elements of source.</typeparam>
+	/// <typeparam name="T">The type of the entity.</typeparam>
 	/// <typeparam name="T2">The type of the elements of the data.</typeparam>
 	/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
 	/// <param name="data">The data list.</param>
@@ -131,7 +131,7 @@ public static class KeysetPaginationExtensions
 	/// <summary>
 	/// Returns true when there is more data after the list.
 	/// </summary>
-	/// <typeparam name="T">The type of the elements of source.</typeparam>
+	/// <typeparam name="T">The type of the entity.</typeparam>
 	/// <typeparam name="T2">The type of the elements of the data.</typeparam>
 	/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
 	/// <param name="data">The data list.</param>
@@ -166,19 +166,19 @@ public static class KeysetPaginationExtensions
 		where T : class
 	{
 		var lambda = BuildKeysetFilterPredicateExpression(
-			context.Items, direction, reference);
+			context.Columns, direction, reference);
 		return context.OrderedQuery.AnyAsync(lambda);
 	}
 
 	private static List<object> GetValues<T>(
-		IReadOnlyList<KeysetPaginationItem<T>> items,
+		IReadOnlyList<KeysetColumn<T>> columns,
 		object reference)
 		where T : class
 	{
-		var referenceValues = new List<object>(capacity: items.Count);
-		foreach (var item in items)
+		var referenceValues = new List<object>(capacity: columns.Count);
+		foreach (var column in columns)
 		{
-			var value = item.ObtainValue(reference);
+			var value = column.ObtainValue(reference);
 			referenceValues.Add(value);
 		}
 		return referenceValues;
@@ -188,7 +188,7 @@ public static class KeysetPaginationExtensions
 	/// Ensures the data list is correctly ordered.
 	/// Basically applies a reverse on the data if the KeysetPaginate direction was Backward.
 	/// </summary>
-	/// <typeparam name="T">The type of the elements of source.</typeparam>
+	/// <typeparam name="T">The type of the entity.</typeparam>
 	/// <typeparam name="T2">The type of the elements of the data.</typeparam>
 	/// <param name="context">The <see cref="KeysetPaginationContext{T}"/> object.</param>
 	/// <param name="data">The data list.</param>
@@ -213,7 +213,7 @@ public static class KeysetPaginationExtensions
 	}
 
 	private static Expression<Func<T, bool>> BuildKeysetFilterPredicateExpression<T>(
-		IReadOnlyList<KeysetPaginationItem<T>> items,
+		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
 		object reference)
 		where T : class
@@ -246,7 +246,7 @@ public static class KeysetPaginationExtensions
 		// more than one column we're acting on, which would allow the db to use it as an access predicate on the 1st column.
 		// See here: https://use-the-index-luke.com/sql/partial-results/fetch-next-page#sb-equivalent-logic
 
-		var referenceValues = GetValues(items, reference);
+		var referenceValues = GetValues(columns, reference);
 
 		var firstMemberAccessExpression = default(MemberExpression);
 		var firstReferenceValueExpression = default(Expression);
@@ -257,7 +257,7 @@ public static class KeysetPaginationExtensions
 		var orExpression = default(BinaryExpression)!;
 		var innerLimit = 1;
 		// This loop compounds the outer OR expressions.
-		for (var i = 0; i < items.Count; i++)
+		for (var i = 0; i < columns.Count; i++)
 		{
 			var andExpression = default(BinaryExpression)!;
 
@@ -266,8 +266,8 @@ public static class KeysetPaginationExtensions
 			for (var j = 0; j < innerLimit; j++)
 			{
 				var isInnerLastOperation = j + 1 == innerLimit;
-				var item = items[j];
-				var memberAccess = item.MakeMemberAccessExpression(param);
+				var column = columns[j];
+				var memberAccess = column.MakeMemberAccessExpression(param);
 				var referenceValue = referenceValues[j];
 				Expression<Func<object>> referenceValueFunc = () => referenceValue;
 				var referenceValueExpression = referenceValueFunc.Body;
@@ -288,9 +288,9 @@ public static class KeysetPaginationExtensions
 				}
 				else
 				{
-					var compare = GetComparisonExpressionToApply(direction, item, orEqual: false);
+					var compare = GetComparisonExpressionToApply(direction, column, orEqual: false);
 					innerExpression = MakeComparisonExpression(
-						item,
+						column,
 						memberAccess, referenceValueExpression,
 						compare);
 				}
@@ -304,7 +304,7 @@ public static class KeysetPaginationExtensions
 		}
 
 		var finalExpression = orExpression;
-		if (items.Count > 1)
+		if (columns.Count > 1)
 		{
 			// Implement the optimization that allows an access predicate on the 1st column.
 			// This is done by generating the following expression:
@@ -313,10 +313,10 @@ public static class KeysetPaginationExtensions
 			// This effectively adds a redundant clause on the 1st column, but it's a clause all dbs
 			// understand and can use as an access predicate (most commonly when the column is indexed).
 
-			var firstItem = items[0];
-			var compare = GetComparisonExpressionToApply(direction, firstItem, orEqual: true);
+			var firstColumn = columns[0];
+			var compare = GetComparisonExpressionToApply(direction, firstColumn, orEqual: true);
 			var accessPredicateClause = MakeComparisonExpression(
-				firstItem,
+				firstColumn,
 				firstMemberAccessExpression!, firstReferenceValueExpression!,
 				compare);
 			finalExpression = Expression.And(accessPredicateClause, finalExpression);
@@ -326,12 +326,12 @@ public static class KeysetPaginationExtensions
 	}
 
 	private static BinaryExpression MakeComparisonExpression<T>(
-		KeysetPaginationItem<T> item,
+		KeysetColumn<T> column,
 		MemberExpression memberAccess, Expression referenceValue,
 		Func<Expression, Expression, BinaryExpression> compare)
 		where T : class
 	{
-		var propertyType = item.Property.PropertyType;
+		var propertyType = column.Property.PropertyType;
 		if (TypeToCompareToMethod.TryGetValue(propertyType, out var compareToMethod))
 		{
 			// LessThan/GreaterThan operators are not valid for some types such as strings and guids.
@@ -374,15 +374,15 @@ public static class KeysetPaginationExtensions
 	}
 
 	private static Func<Expression, Expression, BinaryExpression> GetComparisonExpressionToApply<T>(
-		KeysetPaginationDirection direction, KeysetPaginationItem<T> item, bool orEqual)
+		KeysetPaginationDirection direction, KeysetColumn<T> column, bool orEqual)
 		where T : class
 	{
 		var greaterThan = direction switch
 		{
-			KeysetPaginationDirection.Forward when !item.IsDescending => true,
-			KeysetPaginationDirection.Forward when item.IsDescending => false,
-			KeysetPaginationDirection.Backward when !item.IsDescending => false,
-			KeysetPaginationDirection.Backward when item.IsDescending => true,
+			KeysetPaginationDirection.Forward when !column.IsDescending => true,
+			KeysetPaginationDirection.Forward when column.IsDescending => false,
+			KeysetPaginationDirection.Backward when !column.IsDescending => false,
+			KeysetPaginationDirection.Backward when column.IsDescending => true,
 			_ => throw new NotImplementedException(),
 		};
 
