@@ -35,14 +35,8 @@ public static class KeysetPaginationExtensions
 		object? reference = null)
 		where T : class
 	{
-		if (source == null)
-		{
-			throw new ArgumentNullException(nameof(source));
-		}
-		if (builderAction == null)
-		{
-			throw new ArgumentNullException(nameof(builderAction));
-		}
+		if (source == null) throw new ArgumentNullException(nameof(source));
+		if (builderAction == null) throw new ArgumentNullException(nameof(builderAction));
 
 		var builder = new KeysetPaginationBuilder<T>();
 		builderAction(builder);
@@ -109,14 +103,8 @@ public static class KeysetPaginationExtensions
 		IReadOnlyList<T2> data)
 		where T : class
 	{
-		if (data == null)
-		{
-			throw new ArgumentNullException(nameof(data));
-		}
-		if (context == null)
-		{
-			throw new ArgumentNullException(nameof(context));
-		}
+		if (data == null) throw new ArgumentNullException(nameof(data));
+		if (context == null) throw new ArgumentNullException(nameof(context));
 
 		if (!data.Any())
 		{
@@ -140,14 +128,8 @@ public static class KeysetPaginationExtensions
 		IReadOnlyList<T2> data)
 		where T : class
 	{
-		if (data == null)
-		{
-			throw new ArgumentNullException(nameof(data));
-		}
-		if (context == null)
-		{
-			throw new ArgumentNullException(nameof(context));
-		}
+		if (data == null) throw new ArgumentNullException(nameof(data));
+		if (context == null) throw new ArgumentNullException(nameof(context));
 
 		if (!data.Any())
 		{
@@ -197,14 +179,8 @@ public static class KeysetPaginationExtensions
 		List<T2> data)
 		where T : class
 	{
-		if (data == null)
-		{
-			throw new ArgumentNullException(nameof(data));
-		}
-		if (context == null)
-		{
-			throw new ArgumentNullException(nameof(context));
-		}
+		if (data == null) throw new ArgumentNullException(nameof(data));
+		if (context == null) throw new ArgumentNullException(nameof(context));
 
 		if (context.Direction == KeysetPaginationDirection.Backward)
 		{
