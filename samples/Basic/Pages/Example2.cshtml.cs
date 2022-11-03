@@ -114,6 +114,10 @@ namespace Basic.Pages
 				//                      HERE
 				b => b.Ascending(x => x.NullableDate));
 
+			_dbContext.Users.KeysetPaginateQuery(
+				//                      HERE
+				b => b.Ascending(x => x.NullableDetails.Id));
+
 #pragma warning restore KeysetPagination1000 // Keyset contains a nullable property
 
 			// ===

@@ -17,6 +17,8 @@ namespace Basic.Models
 		// ---
 
 		public UserDetails Details { get; set; }
+
+		public UserDetails? NullableDetails { get; set; }
 	}
 
 	[Index(nameof(Created))]

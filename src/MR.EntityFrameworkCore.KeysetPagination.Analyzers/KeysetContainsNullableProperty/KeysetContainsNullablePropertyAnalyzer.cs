@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 
@@ -36,16 +37,18 @@ public class KeysetContainsNullablePropertyAnalyzer : DiagnosticAnalyzer
 			return;
 		}
 
-		// The argument is the lambda (IConversionOperation). Traverse down to find the first property ref.
-		var prop = argument.Descendants()
-			.OfType<IPropertyReferenceOperation>()
-			.FirstOrDefault();
-		if (prop != null && prop.Property.NullableAnnotation == NullableAnnotation.Annotated)
+		// The argument is the lambda (IConversionOperation). Traverse down and find property refs.
+		var props = argument.Descendants()
+			.OfType<IPropertyReferenceOperation>();
+		foreach (var prop in props)
 		{
-			context.ReportDiagnostic(Diagnostic.Create(
-				DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableProperty,
-				prop.Syntax.GetLocation(),
-				prop.Property.Name));
+			if (prop.Property.NullableAnnotation == NullableAnnotation.Annotated)
+			{
+				context.ReportDiagnostic(Diagnostic.Create(
+					DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableProperty,
+					(prop.Syntax as MemberAccessExpressionSyntax)?.Name.GetLocation() ?? prop.Syntax.GetLocation(),
+					prop.Property.Name));
+			}
 		}
 	}
 
