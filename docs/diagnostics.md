@@ -1,6 +1,6 @@
 # Diagnostics
 
-This library ships with analyzers to help you with using properly. The analyzers can detect and report the following diagnostics.
+This library ships with analyzers that help with detecting misuse and offering suggestions. The analyzers can detect and report the following diagnostics.
 
 ## KeysetPagination1000
 
