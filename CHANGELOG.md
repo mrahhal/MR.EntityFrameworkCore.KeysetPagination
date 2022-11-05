@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.2.0 - 2022-11-03
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.1.0...v1.2.0)
-
 ### Improved
 
 - Improve exception messages and catch more problems to expose clearer messages
@@ -18,41 +16,41 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add NULL caveat doc and add tests/samples/guiding around the computed workaround ([#25](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/25) by [@mrahhal](https://github.com/mrahhal))
 - Add an analyzer that detects unsupported nullable properties in the keyset ([#26](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/26) by [@mrahhal](https://github.com/mrahhal))
 
-## 1.1.0 - 2022-10-24
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.1.0...v1.2.0)
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.3...v1.1.0)
+## 1.1.0 - 2022-10-24
 
 ### Added
 
 - Support nested properties when defining a keyset ([#23](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/23) by [@mrahhal](https://github.com/mrahhal))
 
-## 1.0.3 - 2022-06-16
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.3...v1.1.0)
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.2...v1.0.3)
+## 1.0.3 - 2022-06-16
 
 ### Improved
 
 - Generate expressions to use sql parameters instead of constants ([#19](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/19))
 
-## 1.0.2 - 2022-05-14
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.2...v1.0.3)
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.1...v1.0.2)
+## 1.0.2 - 2022-05-14
 
 ### Added
 
 - Support booleans ([#16](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/16))
 
-## 1.0.1 - 2022-02-18
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.1...v1.0.2)
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.0...v1.0.1)
+## 1.0.1 - 2022-02-18
 
 ### Fixed
 
 - Fix problem with nullable props ([#14](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/14))
 
-## 1.0.0 - 2021-12-01
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.0.0...v1.0.1)
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v0.2.0...v1.0.0)
+## 1.0.0 - 2021-12-01
 
 ### Improved
 
@@ -63,17 +61,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add EnsureCorrectOrder to KeysetContext
 
-## 0.2.1 - 2021-11-24
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v0.2.0...v1.0.0)
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v0.2.0...v0.2.1)
+## 0.2.1 - 2021-11-24
 
 ### Fixed
 
 - Fix order of expressions generated for the order by when acting on more than one column
 
-## 0.2.0 - 2021-11-23
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v0.2.0...v0.2.1)
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v0.1.3...v0.2.0)
+## 0.2.0 - 2021-11-23
 
 This version targets .net 6.
 
@@ -84,6 +82,8 @@ This version targets .net 6.
 ### Changed
 
 - Update to .net 6
+
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v0.1.3...v0.2.0)
 
 ## 0.1.3 - 2021-11-01
 
