@@ -45,45 +45,30 @@ namespace Basic.Pages
 			if (first)
 			{
 				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Forward);
-				Users = await keysetContext.Query
-					.Include(x => x.Details)
-					.Take(size)
-					.ToListAsync();
 			}
 			else if (last)
 			{
 				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Backward);
-				Users = await keysetContext.Query
-					.Include(x => x.Details)
-					.Take(size)
-					.ToListAsync();
 			}
 			else if (after != null)
 			{
 				var reference = await _dbContext.Users.Include(x => x.Details).FirstOrDefaultAsync(x => x.Id == after.Value);
 				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Forward, reference);
-				Users = await keysetContext.Query
-					.Include(x => x.Details)
-					.Take(size)
-					.ToListAsync();
 			}
 			else if (before != null)
 			{
 				var reference = await _dbContext.Users.Include(x => x.Details).FirstOrDefaultAsync(x => x.Id == before.Value);
 				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Backward, reference);
-				Users = await keysetContext.Query
-					.Include(x => x.Details)
-					.Take(size)
-					.ToListAsync();
 			}
 			else
 			{
 				keysetContext = query.KeysetPaginate(keysetBuilderAction);
-				Users = await keysetContext.Query
-					.Include(x => x.Details)
-					.Take(size)
-					.ToListAsync();
 			}
+
+			Users = await keysetContext.Query
+				.Include(x => x.Details)
+				.Take(size)
+				.ToListAsync();
 
 			keysetContext.EnsureCorrectOrder(Users);
 

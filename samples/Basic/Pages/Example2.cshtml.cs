@@ -46,40 +46,29 @@ namespace Basic.Pages
 			if (first)
 			{
 				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Forward);
-				Users = await keysetContext.Query
-				  .Take(size)
-				  .ToListAsync();
 			}
 			else if (last)
 			{
 				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Backward);
-				Users = await keysetContext.Query
-				  .Take(size)
-				  .ToListAsync();
 			}
 			else if (after != null)
 			{
 				var reference = await _dbContext.Users.FindAsync(after.Value);
 				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Forward, reference);
-				Users = await keysetContext.Query
-				  .Take(size)
-				  .ToListAsync();
 			}
 			else if (before != null)
 			{
 				var reference = await _dbContext.Users.FindAsync(before.Value);
 				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Backward, reference);
-				Users = await keysetContext.Query
-				  .Take(size)
-				  .ToListAsync();
 			}
 			else
 			{
 				keysetContext = query.KeysetPaginate(keysetBuilderAction);
-				Users = await keysetContext.Query
-				  .Take(size)
-				  .ToListAsync();
 			}
+
+			Users = await keysetContext.Query
+				.Take(size)
+				.ToListAsync();
 
 			keysetContext.EnsureCorrectOrder(Users);
 
