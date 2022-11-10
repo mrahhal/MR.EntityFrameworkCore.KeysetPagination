@@ -30,8 +30,6 @@ public class TestDbContext : DbContext
 
 	public DbSet<ComputedModel> ComputedModels { get; set; }
 
-	public DbSet<NestedJsonModel> NestedJsonModels { get; set; }
-
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		optionsBuilder.LogTo(message =>
@@ -46,6 +44,12 @@ public class TestDbContext : DbContext
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		base.OnModelCreating(builder);
+
+		if (DatabaseFixture.UsePostgresqlServer)
+		{
+			builder.Entity<NestedJsonModel>().HasIndex(e => new { e.Id })
+												.IsUnique();
+		}
 
 		builder.Entity<EnumModel>(entity =>
 		{

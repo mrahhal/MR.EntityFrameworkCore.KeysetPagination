@@ -7,7 +7,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 public class DatabaseFixture : IDisposable
 {
 	public static readonly bool UseSqlServer = false;
-	public static readonly bool UsePostgresqlServer = true;
+	public static readonly bool UsePostgresqlServer = false;
 
 	private static readonly object _lock = new();
 	private static bool _initialized;
@@ -106,14 +106,17 @@ public class DatabaseFixture : IDisposable
 					Created = created,
 				},
 			});
-			context.NestedJsonModels.Add(new NestedJsonModel
+			if (UsePostgresqlServer)
 			{
-				Inner = new NestedInnerJsonModel
+				context.Set<NestedJsonModel>().Add(new NestedJsonModel
 				{
-					Created = created,
-					Data = System.Text.Json.JsonDocument.Parse($"{{\"nbInt\":{i},\"nbString\":\"{i}\",\"created\":\"{created}\"}}")
-				},
-			});
+					Inner = new NestedInnerJsonModel
+					{
+						Created = created,
+						Data = System.Text.Json.JsonDocument.Parse($"{{\"nbInt\":{i},\"nbString\":\"{i}\",\"created\":\"{created}\"}}")
+					},
+				});
+			}
 			context.ComputedModels.Add(new ComputedModel
 			{
 				Created = null,

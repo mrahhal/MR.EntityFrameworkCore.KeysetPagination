@@ -281,11 +281,12 @@ public static class KeysetPaginationExtensions
 			{
 				var isInnerLastOperation = j + 1 == innerLimit;
 				var column = columns[j];
-				Expression memberAccess = column.MakeMemberAccessExpression(param);
+				var memberAccess = column.MakeMemberAccessExpression(param);
 				var referenceValue = referenceValues[j];
 				Expression<Func<object>> referenceValueFunc = () => referenceValue;
-				Expression referenceValueExpression = referenceValueFunc.Body;
+				var referenceValueExpression = referenceValueFunc.Body;
 
+				// Handle Enum access by casting it to underlying type and using it as constant expression
 				if (memberAccess.Type.IsEnum)
 				{
 					var enumBaseType = Enum.GetUnderlyingType(memberAccess.Type);
@@ -409,7 +410,7 @@ public static class KeysetPaginationExtensions
 		Expression memberExpression,
 		Expression targetExpression)
 	{
-		Type memberType = GetMemberExpressionType(memberExpression);
+		var memberType = GetMemberExpressionType(memberExpression);
 
 		// If the target has a different type we should convert it.
 		// Originally this happened with nullables only, but now that we use expressions

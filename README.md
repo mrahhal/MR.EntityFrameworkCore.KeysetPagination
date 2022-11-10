@@ -71,6 +71,20 @@ KeysetPaginate(
 )
 ```
 
+You can also access member using string notation:
+
+```cs
+KeysetPaginate(
+    b => b.Ascending("id")
+)
+
+// Or using dot notation for nested members
+
+KeysetPaginate(
+    b => b.Ascending("nested.id")
+)
+```
+
 **Note:** Review the "Avoiding skipping over data" section for an important note about the columns you're configuring.
 
 ## Common patterns
@@ -231,6 +245,86 @@ var result = await keysetContext.Query
     .Take(20)
     .ToListAsync();
 ```
+
+## Json properties
+
+Nested Json properties are also supported when defining a keyset. Just make sure the reference contains the same nested chain of properties.
+
+```cs
+// If you're using a loaded entity for the reference.
+var reference = await dbContext.NestedJsonEntities
+    // Load it, otherwise you won't get the correct result.
+    .Include(x => x.Inner)
+    .FirstOrDefaultAsync(x => x.Id == id);
+
+// If you're using another type for the reference.
+new NestedJsonModel
+{
+    Inner = new NestedInnerJsonModel
+    {
+        Created = created,
+        Data = System.Text.Json.JsonDocument.Parse($"{{\"nbInt\":{i},\"nbString\":\"{i}\",\"created\":\"{created}\"}}")
+    },
+};
+
+// Using member expression access
+var keysetContext = dbContext.Users.KeysetPaginate(
+    // Defining the keyset using a nested Json property.
+    b => b.Ascending(entity => entity.Inner.Data.RootElement.GetProperty("nbInt").GetInt32()),
+    direction,
+    reference);
+
+// Using string property member access with converter passed in parameter
+// Recommended to store the Getter method in a cache using member access string as key
+var keysetContext = dbContext.Users.KeysetPaginate(
+    // Defining the keyset using dot notation to access a nested Json property.
+    b => b.Ascending("inner.data.nbInt",
+                    typeof(JsonElement).GetMethod(nameof(JsonElement.GetString),
+                        bindingAttr: BindingFlags.IgnoreCase |
+                                        BindingFlags.Instance |
+                                        BindingFlags.Static |
+                                        BindingFlags.Public,
+                        null,
+                        new Type[] { }, null)),
+    direction,
+    reference);
+
+var result = await keysetContext.Query
+    // You'll want to load it here too if you plan on calling any context methods.
+    .Include(x => x.Inner)
+    .Take(20)
+    .ToListAsync();
+```
+
+## Enum support
+
+Enum properties are also supported when defining a keyset.
+
+Consider class:
+
+```cs
+public enum EnumType : int // Not mandatory to specify the underlying type
+{
+	ALL = -1,
+	None,
+}
+public class EnumModel
+{
+    public int Id { get; set; }
+
+    public EnumType EnumType { get; set; }
+}
+```
+
+You can query it:
+```cs
+var keysetContext = dbContext.Users.KeysetPaginate(
+    // Defining the keyset using a nested Json property.
+    b => b.Ascending(entity => entity.EnumType),
+    direction,
+    reference);
+```
+
 
 ## Avoiding skipping over data
 

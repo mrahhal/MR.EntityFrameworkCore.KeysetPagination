@@ -185,7 +185,7 @@ internal static class ExpressionHelper
 				}
 			}
 
-			return Expression.Lambda(nestedExpr, param);
+			return Expression.Lambda(nestedExpr!, param);
 		}
 
 		var simpleExpr = Expression.Property(param, propertyName);
@@ -194,6 +194,11 @@ internal static class ExpressionHelper
 
 	public static Expression AppendJsonElementsExpression(MemberExpression resultingExpression, List<string> props)
 	{
+		if (!props.Any())
+		{
+			throw new ArgumentException("Json properties list is empty and must contains at least one JsonElement to access.");
+		}
+
 		// Chain the root element of a JsonDocument (System:Text:JsonDocument type)
 		var documentElementProperty = Expression.Property(resultingExpression, "RootElement");
 
@@ -201,6 +206,10 @@ internal static class ExpressionHelper
 							bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
 							null,
 							new[] { typeof(string) }, null);
+		if (getPropMeth == null)
+		{
+			throw new InvalidOperationException("Connot find 'GetProperty(string)' on 'JsonElement'.");
+		}
 
 		// Iterate over Json props and chain a call to GetProperty method on it
 		var propertiesGettersExpression = default(MethodCallExpression);
@@ -211,6 +220,6 @@ internal static class ExpressionHelper
 															Expression.Constant(prop));
 		}
 
-		return propertiesGettersExpression;
+		return propertiesGettersExpression!;
 	}
 }

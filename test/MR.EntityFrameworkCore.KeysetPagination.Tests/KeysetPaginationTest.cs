@@ -129,9 +129,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_NestedJson_Int()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbInt").GetInt32()),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -142,9 +147,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_NestedJson_String()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbString").GetString()),
 			KeysetPaginationDirection.Forward,
 			reference)
@@ -155,9 +165,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_NestedJson_Int_FromString()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending("inner.data.nbInt",
 							typeof(JsonElement).GetMethod(nameof(JsonElement.GetInt32),
 								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
@@ -172,9 +187,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_NestedJson_String_FromString()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending("inner.data.nbString",
 							typeof(JsonElement).GetMethod(nameof(JsonElement.GetString),
 								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
@@ -240,9 +260,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_BeforeReference_NestedJson_Int()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbInt").GetInt32()),
 			KeysetPaginationDirection.Backward,
 			reference)
@@ -253,9 +278,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_BeforeReference_NestedJson_String()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbString").GetString()),
 			KeysetPaginationDirection.Backward,
 			reference)
@@ -266,9 +296,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_BeforeReference_NestedJson_Int_FromString()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending("inner.data.nbInt",
 							typeof(JsonElement).GetMethod(nameof(JsonElement.GetInt32),
 								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
@@ -283,9 +318,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_BeforeReference_NestedJson_String_FromString()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending("inner.data.nbString",
 							typeof(JsonElement).GetMethod(nameof(JsonElement.GetString),
 								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
@@ -300,9 +340,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_NestedJson_Int_Composite()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbInt").GetInt32())
 					.Descending(x => x.Inner.Created),
 			KeysetPaginationDirection.Forward,
@@ -314,9 +359,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_NestedJson_String_Composite()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbString").GetString())
 					.Descending("inner.created"),
 			KeysetPaginationDirection.Forward,
@@ -328,9 +378,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_NestedJson_Int_FromString_Composite()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending("inner.data.nbInt",
 							typeof(JsonElement).GetMethod(nameof(JsonElement.GetInt32),
 								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
@@ -346,9 +401,14 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_NestedJson_String_FromString_Composite()
 	{
-		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+		if (!DatabaseFixture.UsePostgresqlServer)
+		{
+			return;
+		}
 
-		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+		var reference = DbContext.Set<NestedJsonModel>().Include(x => x.Inner).First();
+
+		var result = await DbContext.Set<NestedJsonModel>().KeysetPaginateQuery(
 			b => b.Ascending("inner.data.nbString",
 							typeof(JsonElement).GetMethod(nameof(JsonElement.GetString),
 								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
