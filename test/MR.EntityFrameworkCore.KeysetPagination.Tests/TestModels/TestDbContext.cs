@@ -10,6 +10,10 @@ public class TestDbContext : DbContext
 		DbContextOptions<TestDbContext> options)
 		: base(options)
 	{
+		if (DatabaseFixture.UsePostgresqlServer)
+		{
+			AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+		}
 	}
 
 	public IEnumerable<string> LogMessages => _logMessages;
@@ -20,9 +24,13 @@ public class TestDbContext : DbContext
 
 	public DbSet<GuidModel> GuidModels { get; set; }
 
+	public DbSet<EnumModel> EnumModels { get; set; }
+
 	public DbSet<NestedModel> NestedModels { get; set; }
 
 	public DbSet<ComputedModel> ComputedModels { get; set; }
+
+	public DbSet<NestedJsonModel> NestedJsonModels { get; set; }
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
@@ -39,6 +47,14 @@ public class TestDbContext : DbContext
 	{
 		base.OnModelCreating(builder);
 
+		builder.Entity<EnumModel>(entity =>
+		{
+			entity.Property(e => e.EnumType)
+					.HasMaxLength(50)
+					.HasConversion(x => x.ToString(), // to converter
+									x => (EnumType)Enum.Parse(typeof(EnumType), x));// from converter
+		});
+
 		var computedPropertyBuilder = builder.Entity<ComputedModel>()
 			.Property(x => x.CreatedComputed);
 
@@ -51,6 +67,14 @@ public class TestDbContext : DbContext
 				// Has to be deterministic to be able to create an index for it, that's why we need
 				// to use CONVERT.
 				.HasComputedColumnSql("COALESCE(Created, CONVERT(datetime2, '9999-12-31', 102))");
+		}
+		else if (DatabaseFixture.UsePostgresqlServer)
+		{
+			// For Postgres:
+			computedPropertyBuilder
+				// Has to be deterministic to be able to create an index for it, that's why we need
+				// to use CONVERT.
+				.HasComputedColumnSql("COALESCE(\"Created\", '9999-12-31 00:00:00')", stored: true);
 		}
 		else
 		{

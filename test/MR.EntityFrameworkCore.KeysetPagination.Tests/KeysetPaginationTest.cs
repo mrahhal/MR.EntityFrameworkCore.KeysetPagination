@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MR.EntityFrameworkCore.KeysetPagination.TestModels;
 using Xunit;
@@ -79,6 +81,19 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	}
 
 	[Fact]
+	public async Task KeysetPaginate_AfterReference_Enum()
+	{
+		var reference = DbContext.EnumModels.First();
+
+		var result = await DbContext.EnumModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.EnumType).Ascending(x => x.Id),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
 	public async Task KeysetPaginate_AfterReference_Nested()
 	{
 		var reference = DbContext.NestedModels.Include(x => x.Inner).First();
@@ -107,6 +122,66 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 			b => b.Ascending(x => x.Inner.Created),
 			KeysetPaginationDirection.Forward,
 			referenceDto)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_NestedJson_Int()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbInt").GetInt32()),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_NestedJson_String()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbString").GetString()),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_NestedJson_Int_FromString()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending("inner.data.nbInt",
+							typeof(JsonElement).GetMethod(nameof(JsonElement.GetInt32),
+								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
+								null,
+								new Type[] { }, null)),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_NestedJson_String_FromString()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending("inner.data.nbString",
+							typeof(JsonElement).GetMethod(nameof(JsonElement.GetString),
+								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
+								null,
+								new Type[] { }, null)),
+			KeysetPaginationDirection.Forward,
+			reference)
 			.Take(20)
 			.ToListAsync();
 	}
@@ -145,6 +220,142 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		var result = await DbContext.GuidModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Backward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_BeforeReference_Enum()
+	{
+		var reference = DbContext.EnumModels.First();
+
+		var result = await DbContext.EnumModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.EnumType).Ascending(x => x.Id),
+			KeysetPaginationDirection.Backward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+	[Fact]
+	public async Task KeysetPaginate_BeforeReference_NestedJson_Int()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbInt").GetInt32()),
+			KeysetPaginationDirection.Backward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_BeforeReference_NestedJson_String()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbString").GetString()),
+			KeysetPaginationDirection.Backward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_BeforeReference_NestedJson_Int_FromString()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending("inner.data.nbInt",
+							typeof(JsonElement).GetMethod(nameof(JsonElement.GetInt32),
+								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
+								null,
+								new Type[] { }, null)),
+			KeysetPaginationDirection.Backward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_BeforeReference_NestedJson_String_FromString()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending("inner.data.nbString",
+							typeof(JsonElement).GetMethod(nameof(JsonElement.GetString),
+								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
+								null,
+								new Type[] { }, null)),
+			KeysetPaginationDirection.Backward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_NestedJson_Int_Composite()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbInt").GetInt32())
+					.Descending(x => x.Inner.Created),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_NestedJson_String_Composite()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending(x => x.Inner.Data.RootElement.GetProperty("nbString").GetString())
+					.Descending("inner.created"),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_NestedJson_Int_FromString_Composite()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending("inner.data.nbInt",
+							typeof(JsonElement).GetMethod(nameof(JsonElement.GetInt32),
+								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
+								null,
+								new Type[] { }, null))
+					.Descending("inner.created"),
+			KeysetPaginationDirection.Forward,
+			reference)
+			.Take(20)
+			.ToListAsync();
+	}
+
+	[Fact]
+	public async Task KeysetPaginate_AfterReference_NestedJson_String_FromString_Composite()
+	{
+		var reference = DbContext.NestedJsonModels.Include(x => x.Inner).First();
+
+		var result = await DbContext.NestedJsonModels.KeysetPaginateQuery(
+			b => b.Ascending("inner.data.nbString",
+							typeof(JsonElement).GetMethod(nameof(JsonElement.GetString),
+								bindingAttr: BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public,
+								null,
+								new Type[] { }, null))
+					.Descending(x => x.Inner.Created),
+			KeysetPaginationDirection.Forward,
 			reference)
 			.Take(20)
 			.ToListAsync();

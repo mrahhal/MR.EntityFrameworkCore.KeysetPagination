@@ -7,6 +7,7 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 public class DatabaseFixture : IDisposable
 {
 	public static readonly bool UseSqlServer = false;
+	public static readonly bool UsePostgresqlServer = true;
 
 	private static readonly object _lock = new();
 	private static bool _initialized;
@@ -24,6 +25,10 @@ public class DatabaseFixture : IDisposable
 			if (UseSqlServer)
 			{
 				options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=KeysetPaginationTest;Trusted_Connection=True;MultipleActiveResultSets=true");
+			}
+			else if (UsePostgresqlServer)
+			{
+				options.UseNpgsql("Host='localhost';Database='KeysetPaginationTest';Username='postgres';Password='azerty'");
 			}
 			else
 			{
@@ -90,11 +95,23 @@ public class DatabaseFixture : IDisposable
 				Id = Guid.NewGuid(),
 				Created = created,
 			});
+			context.EnumModels.Add(new EnumModel
+			{
+				EnumType = i%2 == 0 ? EnumType.None : EnumType.ALL,
+			});
 			context.NestedModels.Add(new NestedModel
 			{
 				Inner = new NestedInnerModel
 				{
 					Created = created,
+				},
+			});
+			context.NestedJsonModels.Add(new NestedJsonModel
+			{
+				Inner = new NestedInnerJsonModel
+				{
+					Created = created,
+					Data = System.Text.Json.JsonDocument.Parse($"{{\"nbInt\":{i},\"nbString\":\"{i}\",\"created\":\"{created}\"}}")
 				},
 			});
 			context.ComputedModels.Add(new ComputedModel

@@ -1,4 +1,6 @@
-﻿namespace MR.EntityFrameworkCore.KeysetPagination;
+﻿using MR.EntityFrameworkCore.KeysetPagination.Columns;
+
+namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public class KeysetPaginationContext<T>
 	where T : class
@@ -6,7 +8,7 @@ public class KeysetPaginationContext<T>
 	internal KeysetPaginationContext(
 		IQueryable<T> query,
 		IOrderedQueryable<T> orderedQuery,
-		IReadOnlyList<KeysetColumn<T>> columns,
+		IReadOnlyList<IKeysetColumn<T>> columns,
 		KeysetPaginationDirection direction)
 	{
 		Query = query;
@@ -30,5 +32,5 @@ public class KeysetPaginationContext<T>
 	/// </summary>
 	public KeysetPaginationDirection Direction { get; }
 
-	internal IReadOnlyList<KeysetColumn<T>> Columns { get; }
+	internal IReadOnlyList<IKeysetColumn<T>> Columns { get; }
 }

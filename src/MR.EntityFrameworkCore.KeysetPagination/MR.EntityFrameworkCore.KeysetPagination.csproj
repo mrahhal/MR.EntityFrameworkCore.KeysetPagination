@@ -11,8 +11,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Analyzers">
-    <ProjectReference Include="..\$(AnalyzersAssemblyName)\$(AnalyzersAssemblyName).csproj"
-                      PrivateAssets="contentfiles;build" />
+    <ProjectReference Include="..\$(AnalyzersAssemblyName)\$(AnalyzersAssemblyName).csproj" PrivateAssets="contentfiles;build" />
   </ItemGroup>
 
 </Project>

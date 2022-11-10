@@ -132,7 +132,7 @@ function TestProjects() {
 	}
 
 	foreach ($testProject in $buildInfo.TestProjects) {
-		Invoke-Expression "dotnet test $testProject -c Release $testLoggersArg"
+		Invoke-Expression "dotnet test $testProject -c Debug $testLoggersArg"
 	}
 	ExitIfFailed
 }
