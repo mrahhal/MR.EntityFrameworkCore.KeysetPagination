@@ -20,11 +20,11 @@ Learn about why the standard offset based pagination (`Take().Skip()`) is bad in
 
 ```cs
 KeysetPaginate(
-    // This configures the columns and their order.
+    // This configures the keyset columns and their order.
     b => b.Ascending(entity => entity.Id),
     // The direction we want to walk relative to the order above (Forward/Backward). Default is Forward.
     direction,
-    // The reference entity (used to query previous/next pages). Default is null.
+    // The reference object (used to query previous/next pages). Default is null.
     reference
 )
 ```
