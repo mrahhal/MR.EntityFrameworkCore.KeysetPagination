@@ -8,7 +8,7 @@ This is why having a nullable column as part of the keyset _is not supported_ in
 
 ### Workaround
 
-The recommended why of working around this when you naturally have a nullable column that you want as part of your keyset is through using a non-nullable computed column (one for each nullable column in your keyset) and using that in your keyset instead.
+The recommended way of working around this when you naturally have a nullable column that you want as part of your keyset is through using a non-nullable computed column (one for each nullable column in your keyset) and using that in your keyset instead.
 
 You'll have to do this with any kind of nullable column type, but let's look at an example for a DateTime column.
 
