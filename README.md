@@ -276,7 +276,7 @@ Check [this document](docs/caveats.md) on a few caveats to keep in mind when wor
 
 ## Benchmarks
 
-To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table record counts.
+To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table records counts.
 
 As a simple example, this is for when the data is ordered in `Created` descending.
 
