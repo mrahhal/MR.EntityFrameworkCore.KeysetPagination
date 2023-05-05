@@ -282,7 +282,7 @@ As a simple example, this is for when the data is ordered in `Created` descendin
 
 <img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDesc.png" width="600" />
 
-Another example for with a more complicated order, a composite keyset of `Created` descending + `Id` Descending.
+Another example with a more complicated order, a composite keyset of `Created` descending + `Id` Descending.
 
 <img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDescIdDesc.png" width="600" />
 
