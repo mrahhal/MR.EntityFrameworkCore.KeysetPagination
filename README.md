@@ -12,6 +12,8 @@ Keyset pagination for EF Core (Entity Framework Core). Also known as seek pagina
 
 Learn about why the standard offset based pagination (`Take().Skip()`) is bad in many common cases [here](http://use-the-index-luke.com/no-offset).
 
+Check the [benchmarks](#benchmarks) section below for a quick look at the different performance characteristics between offset and keyset.
+
 **Note:** If you're using ASP.NET Core, you can use [MR.AspNetCore.Pagination](https://github.com/mrahhal/MR.AspNetCore.Pagination) which wraps this package and offers an easier to consume keyset pagination behavior with additional features for ASP.NET Core. This is a lower level library that implements keyset pagination for EF Core.
 
 ## Usage
@@ -276,12 +278,19 @@ Check [this document](docs/caveats.md) on a few caveats to keep in mind when wor
 
 To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table record counts.
 
+As a simple example, this is for when the data is ordered in `Created` descending.
+
 <img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDesc.png" width="600" />
+
+Another example for with a more complicated order, a composite keyset of `Created` descending + `Id` Descending.
+
+<img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDescIdDesc.png" width="600" />
 
 Check the [benchmarks](benchmarks) folder for the source code.
 
 A more detailed post looking into the different benchmarks coming soon.
-<!-- For a more detailed look into the benchmark results, check this post. -->
+
+<!-- TODO: For a more detailed look into the benchmark results, check this post. -->
 
 ## Samples
 
