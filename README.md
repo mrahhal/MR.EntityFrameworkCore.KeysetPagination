@@ -12,6 +12,8 @@ Keyset pagination for EF Core (Entity Framework Core). Also known as seek pagina
 
 Learn about why the standard offset based pagination (`Take().Skip()`) is bad in many common cases [here](http://use-the-index-luke.com/no-offset).
 
+Check the [benchmarks](#benchmarks) section below for a quick look at the different performance characteristics between offset and keyset.
+
 **Note:** If you're using ASP.NET Core, you can use [MR.AspNetCore.Pagination](https://github.com/mrahhal/MR.AspNetCore.Pagination) which wraps this package and offers an easier to consume keyset pagination behavior with additional features for ASP.NET Core. This is a lower level library that implements keyset pagination for EF Core.
 
 ## Usage
@@ -242,9 +244,11 @@ Doing this correctly means you'll never skip over or duplicate data, a behavior 
 
 ## Indexing
 
-Keyset pagination, as is the case with any other kind of query, can benefit a lot from good database indexing. In the case of keyset pagination, you'll want to add a composite index that is compatible with the columns and the order of the query.
+Keyset pagination, as is the case with any other kind of query, can benefit a lot from good database indexing. Said in other words, not having a proper index defeats the purpose of using keyset pagination in the first place.
 
-Here's an example. Let's say we're doing the following pagination query:
+You'll want to add a composite index that is compatible with the columns and the order of your keyset.
+
+Here's an example. Let's say we're doing the following:
 
 ```cs
 KeysetPaginate(
@@ -253,7 +257,7 @@ KeysetPaginate(
 )
 ```
 
-You'll want to add an index on the `Created` column for this query to be as fast as it can.
+We should add an index on the `Created` column for this query to be as fast as it can.
 
 Another more complex example:
 
@@ -264,9 +268,31 @@ KeysetPaginate(
 )
 ```
 
-In this case you'll want to create a composite index on `Score` + `Id`, but make sure they're compatible with the order above. i.e You'll want to make the index descending on `Score` and ascending on `Id` (or the opposite) for it to be effective.
+In this case you'll want to create a composite index on `Score` + `Id`, but make sure they're compatible with the order above. i.e You should make the index descending on `Score` and ascending on `Id` (or the opposite) for it to be effective.
 
-**Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core. Note that right now you can't specify the sorting of the index in EF Core when creating a composite index. You might have to create the index in raw sql if you need to do that. This issue is tracked here: https://github.com/dotnet/efcore/issues/4150.
+**Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core. Note that support for specifying sort order in a composite index was introduced in EF Core 7.0.
+
+## Benchmarks
+
+To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table records counts.
+
+As a simple example, this is for when the data is ordered in `Created` descending.
+
+<img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDesc.png" width="600" />
+
+The keyset bars (green) are barely visible. This shows a major advantage of keyset pagination over offset pagination: the stable performance characteristic over large amounts of data.
+
+Also notice that when querying the first page, offset pagination does just as well as keyset. Offset pagination starts falling behind remarkably the further away the page you want to read is. Do consider this when choosing what method you want to use.
+
+<!-- Another example with a more complicated order, a composite keyset of `Created` descending + `Id` Descending.
+
+<img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDescIdDesc.png" width="600" /> -->
+
+Check the [benchmarks](benchmarks) folder for the source code.
+
+A more detailed post looking into the different benchmarks coming soon.
+
+<!-- TODO: For a more detailed look into the benchmark results, check this post. -->
 
 ## Caveats
 
