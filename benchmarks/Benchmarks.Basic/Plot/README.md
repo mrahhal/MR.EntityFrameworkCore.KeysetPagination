@@ -1,5 +1,7 @@
 # Plot
 
+This folder contains the main R script that reads the benchmark's measurements and generates images of different useful graphs.
+
 ## Prerequisites
 
 - Install R and define an R_HOME environment variable: https://benchmarkdotnet.org/articles/configs/exporters.html#plots
