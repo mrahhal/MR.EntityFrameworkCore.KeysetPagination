@@ -274,9 +274,11 @@ Check [this document](docs/caveats.md) on a few caveats to keep in mind when wor
 
 ## Benchmarks
 
-To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table record counts:
+To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table record counts.
 
 <img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDesc.png" width="600" />
+
+Check the [benchmarks](benchmarks) folder for the source code.
 
 A more detailed post looking into the different benchmarks coming soon.
 <!-- For a more detailed look into the benchmark results, check this post. -->
