@@ -270,10 +270,6 @@ In this case you'll want to create a composite index on `Score` + `Id`, but make
 
 **Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core. Note that right now you can't specify the sorting of the index in EF Core when creating a composite index. You might have to create the index in raw sql if you need to do that. This issue is tracked here: https://github.com/dotnet/efcore/issues/4150.
 
-## Caveats
-
-Check [this document](docs/caveats.md) on a few caveats to keep in mind when working with keyset pagination.
-
 ## Benchmarks
 
 To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table records counts.
@@ -291,6 +287,10 @@ Check the [benchmarks](benchmarks) folder for the source code.
 A more detailed post looking into the different benchmarks coming soon.
 
 <!-- TODO: For a more detailed look into the benchmark results, check this post. -->
+
+## Caveats
+
+Check [this document](docs/caveats.md) on a few caveats to keep in mind when working with keyset pagination.
 
 ## Samples
 
