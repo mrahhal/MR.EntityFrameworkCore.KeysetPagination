@@ -244,9 +244,11 @@ Doing this correctly means you'll never skip over or duplicate data, a behavior 
 
 ## Indexing
 
-Keyset pagination, as is the case with any other kind of query, can benefit a lot from good database indexing. In the case of keyset pagination, you'll want to add a composite index that is compatible with the columns and the order of the query.
+Keyset pagination, as is the case with any other kind of query, can benefit a lot from good database indexing. Said in other words, not having a proper index defeats the purpose of using keyset pagination in the first place.
 
-Here's an example. Let's say we're doing the following pagination query:
+You'll want to add a composite index that is compatible with the columns and the order of your keyset.
+
+Here's an example. Let's say we're doing the following:
 
 ```cs
 KeysetPaginate(
@@ -255,7 +257,7 @@ KeysetPaginate(
 )
 ```
 
-You'll want to add an index on the `Created` column for this query to be as fast as it can.
+We should add an index on the `Created` column for this query to be as fast as it can.
 
 Another more complex example:
 
@@ -266,9 +268,9 @@ KeysetPaginate(
 )
 ```
 
-In this case you'll want to create a composite index on `Score` + `Id`, but make sure they're compatible with the order above. i.e You'll want to make the index descending on `Score` and ascending on `Id` (or the opposite) for it to be effective.
+In this case you'll want to create a composite index on `Score` + `Id`, but make sure they're compatible with the order above. i.e You should make the index descending on `Score` and ascending on `Id` (or the opposite) for it to be effective.
 
-**Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core. Note that right now you can't specify the sorting of the index in EF Core when creating a composite index. You might have to create the index in raw sql if you need to do that. This issue is tracked here: https://github.com/dotnet/efcore/issues/4150.
+**Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core. Note that support for specifying sort order in a composite index was introduced in EF Core 7.0.
 
 ## Benchmarks
 
