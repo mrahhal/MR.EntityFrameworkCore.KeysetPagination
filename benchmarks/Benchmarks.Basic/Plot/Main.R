@@ -57,7 +57,6 @@ plot <- function(
     order,
     include_10m = TRUE,
     additional_keyset_methods = FALSE) {
-
     N_axis_labels <- c("1K", "10K", "100K", "1M")
 
     if (include_10m) {
@@ -85,25 +84,27 @@ plot <- function(
     result <- filter(
         result_original,
         Target_Method %in% method_names
-    )
+    ) %>% filter(Order == order)
 
     if (!include_10m) {
-        result <- result %>% filter(N != "10000000")
+        result <- filter(result, N != "10000000")
     }
 
-    result <- result %>% filter(Order == order)
-
+    # Even though calls to this plot function uses mutually exclusive rows
+    # in the data. Assign to a new prop so that the original measurements
+    # remain untouched.
+    result$Measurement <- result$Measurement_Value
     time_unit <- "s"
-    if (max(result$Measurement_Value) < 1) {
-        result$Measurement_Value <- result$Measurement_Value * 1000
+    if (max(result$Measurement) < 1) {
+        result$Measurement <- result$Measurement * 1000
         time_unit <- "ms"
     }
-    if (max(result$Measurement_Value) < 1) {
-        result$Measurement_Value <- result$Measurement_Value * 1000
+    if (max(result$Measurement) < 1) {
+        result$Measurement <- result$Measurement * 1000
         time_unit <- "us"
     }
-    if (max(result$Measurement_Value) < 1) {
-        result$Measurement_Value <- result$Measurement_Value * 1000
+    if (max(result$Measurement) < 1) {
+        result$Measurement <- result$Measurement * 1000
         time_unit <- "ns"
     }
 
@@ -115,7 +116,7 @@ plot <- function(
         levels = method_names
     )
 
-    p_bar <- ggplot(result, aes(x = N, y = Measurement_Value, fill = Target_Method)) +
+    p_bar <- ggplot(result, aes(x = N, y = Measurement, fill = Target_Method)) +
         geom_bar(position = "dodge", stat = "identity") +
         scale_fill_manual("Method", values = methods) +
         labs(
