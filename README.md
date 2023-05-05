@@ -280,6 +280,10 @@ As a simple example, this is for when the data is ordered in `Created` descendin
 
 <img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDesc.png" width="600" />
 
+The keyset bars (green) are barely visible. This shows a major advantage of keyset pagination over offset pagination: the stable performance characteristic over large amounts of data.
+
+Also notice that when querying the first page, offset pagination does just as well as keyset. Offset pagination starts falling behind remarkably the further away the page you want to read is. Do consider this when choosing what method you want to use.
+
 <!-- Another example with a more complicated order, a composite keyset of `Created` descending + `Id` Descending.
 
 <img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDescIdDesc.png" width="600" /> -->
