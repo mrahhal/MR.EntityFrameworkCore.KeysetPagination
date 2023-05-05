@@ -272,6 +272,15 @@ In this case you'll want to create a composite index on `Score` + `Id`, but make
 
 Check [this document](docs/caveats.md) on a few caveats to keep in mind when working with keyset pagination.
 
+## Benchmarks
+
+To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table record counts:
+
+<img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDesc.png" width="600" />
+
+A more detailed post looking into the different benchmarks coming soon.
+<!-- For a more detailed look into the benchmark results, check this post. -->
+
 ## Samples
 
 Check the [samples](samples) folder for project samples.
