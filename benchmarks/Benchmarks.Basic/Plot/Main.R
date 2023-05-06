@@ -23,7 +23,17 @@ if (!dir.exists(out_dir)) {
     dir.create(out_dir)
 }
 
-result_original <- read.csv("Benchmarks-measurements.csv", sep = ",") %>%
+file_to_read <- "Benchmarks-measurements.csv"
+if (!file.exists(file_to_read)) {
+    file_to_read <- "../BenchmarkDotNet.Artifacts/results/Benchmarks-measurements.csv"
+}
+if (!file.exists(file_to_read)) {
+    stop("Couldn't find a measurements file to read.")
+}
+
+message("Reading measurements from file: ", file_to_read)
+
+result_original <- read.csv(file_to_read, sep = ",") %>%
     filter(Measurement_IterationStage == "Result") %>%
     subset(
         select = c(
