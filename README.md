@@ -278,7 +278,7 @@ To give you an idea about the performance gains, here's a graph comparing using 
 
 As a simple example, this is for when the data is ordered in `Created` descending.
 
-<img src="benchmarks/Benchmarks.Basic/Plot/out/benchmark-CreatedDesc.png" width="600" />
+<img src="images/benchmarks/benchmark-CreatedDesc.png" width="600" />
 
 The keyset bars (green) are barely visible. This shows a major advantage of keyset pagination over offset pagination: the stable performance characteristic over large amounts of data.
 
