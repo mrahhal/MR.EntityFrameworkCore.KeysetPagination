@@ -287,7 +287,7 @@ For a common use case, this is when the data is ordered in `Created` descending 
 
 Notice that when querying the first page, offset pagination does just as well as keyset. Offset pagination starts falling behind remarkably the further away the page you want to read is. Do consider this when choosing what method you want to use.
 
-To that point, the keyset bars (green) are barely visible in the MidPage and LastPage graphs. This shows a major advantage of keyset pagination over offset pagination, that is the stable performance characteristic over large amounts of data.
+To that point, the keyset bars (green) are barely visible in the MidPage and LastPage graphs. This shows a major advantage of keyset pagination over offset pagination, that is the stable performance characteristic over large amounts of data even when querying _further away_ pages.
 
 <!-- Another example with a more complicated order, a composite keyset of `Created` descending + `Id` Descending.
 
