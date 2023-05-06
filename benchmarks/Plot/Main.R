@@ -115,22 +115,21 @@ get_result_for <- function(measurements_original, include_10m, methods) {
         measurements <- filter(measurements, N != "10000000")
     }
 
-    # Even though calls to this plot function uses mutually exclusive rows
-    # in the data. Assign to a new prop so that the original measurements
-    # remain untouched.
-    measurements$Measurement <- measurements$Measurement_Value
     time_unit <- "s"
-    if (max(measurements$Measurement) < 1) {
-        measurements$Measurement <- measurements$Measurement * 1000
-        time_unit <- "ms"
-    }
-    if (max(measurements$Measurement) < 1) {
-        measurements$Measurement <- measurements$Measurement * 1000
-        time_unit <- "us"
-    }
-    if (max(measurements$Measurement) < 1) {
-        measurements$Measurement <- measurements$Measurement * 1000
-        time_unit <- "ns"
+    if (nrow(measurements) > 0) {
+        measurements$Measurement <- measurements$Measurement_Value
+        if (max(measurements$Measurement) < 1) {
+            measurements$Measurement <- measurements$Measurement * 1000
+            time_unit <- "ms"
+        }
+        if (max(measurements$Measurement) < 1) {
+            measurements$Measurement <- measurements$Measurement * 1000
+            time_unit <- "us"
+        }
+        if (max(measurements$Measurement) < 1) {
+            measurements$Measurement <- measurements$Measurement * 1000
+            time_unit <- "ns"
+        }
     }
 
     # Reorder groups.
@@ -151,12 +150,12 @@ plot_main <- function(
     N_axis_labels <- get_N_axis_labels(include_10m)
     methods <- get_methods(include_additional_keyset_methods)
 
-    result <- get_result_for(measurements_main, include_10m, methods)
-    measurements <- result$measurements
-    time_unit <- result$time_unit
-
-    if (nrow(measurements) > 0) {
+    if (nrow(measurements_main) > 0) {
         # Main plot combining all methods in one graph.
+        result <- get_result_for(measurements_main, include_10m, methods)
+        measurements <- result$measurements
+        time_unit <- result$time_unit
+
         p_bar <- ggplot(measurements, aes(x = N, y = Measurement, fill = Target_Method)) +
             geom_bar(position = "dodge", stat = "identity") +
             scale_fill_manual("Method", values = methods) +
@@ -184,9 +183,12 @@ plot_main <- function(
         )
         plist <- list()
         for (g in method_groups) {
-            method_group_measurements <- measurements %>% filter(Target_Method %in% g)
-            if (nrow(method_group_measurements) > 0) {
-                p <- ggplot(method_group_measurements, aes(x = N, y = Measurement, fill = Target_Method)) +
+            method_group_measurements <- measurements_main %>% filter(Target_Method %in% g)
+            result <- get_result_for(method_group_measurements, include_10m, methods)
+            measurements <- result$measurements
+            time_unit <- result$time_unit
+            if (nrow(measurements) > 0) {
+                p <- ggplot(measurements, aes(x = N, y = Measurement, fill = Target_Method)) +
                     geom_bar(position = "dodge", stat = "identity") +
                     scale_fill_manual("Method", values = methods) +
                     labs(
@@ -216,17 +218,16 @@ plot_opt <- function(
     N_axis_labels <- get_N_axis_labels(include_10m)
     methods <- get_methods(include_additional_keyset_methods)
 
-    result <- get_result_for(measurements_opt, include_10m, methods)
-    measurements <- result$measurements
-    time_unit <- result$time_unit
-
     name_includes_10m <- ifelse(include_10m, "-10m", "")
 
     plist <- list()
     for (method in names(methods)) {
-        method_measurements <- measurements %>% filter(Target_Method == method)
-        if (nrow(method_measurements) > 0) {
-            p <- ggplot(method_measurements, aes(x = N, y = Measurement, fill = OptEnabled)) +
+        method_measurements <- measurements_opt %>% filter(Target_Method == method)
+        result <- get_result_for(method_measurements, include_10m, methods)
+        measurements <- result$measurements
+        time_unit <- result$time_unit
+        if (nrow(measurements) > 0) {
+            p <- ggplot(measurements, aes(x = N, y = Measurement, fill = OptEnabled)) +
                 geom_bar(position = "dodge", stat = "identity") +
                 scale_fill_manual("OptEnabled", values = c("True" = color_green, "False" = color_red)) +
                 labs(
