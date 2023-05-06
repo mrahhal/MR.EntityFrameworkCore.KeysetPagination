@@ -22,7 +22,7 @@ public abstract class BenchmarksBase
 	protected BenchmarkDbContext GetDbContext() => _provider.GetRequiredService<BenchmarkDbContext>();
 
 	[GlobalSetup]
-	public void Setup()
+	public virtual void Setup()
 	{
 		var services = new ServiceCollection();
 
@@ -78,7 +78,7 @@ public abstract class BenchmarksBase
 	}
 
 	[GlobalCleanup]
-	public void Cleanup()
+	public virtual void Cleanup()
 	{
 		_provider.Dispose();
 	}

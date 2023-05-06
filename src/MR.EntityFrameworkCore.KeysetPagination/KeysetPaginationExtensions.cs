@@ -14,6 +14,8 @@ public static class KeysetPaginationExtensions
 	};
 	private static readonly ConstantExpression ConstantExpression0 = Expression.Constant(0);
 
+	internal static bool EnableFirstColPredicateOpt = true;
+
 	/// <summary>
 	/// Paginates using keyset pagination.
 	/// </summary>
@@ -280,7 +282,7 @@ public static class KeysetPaginationExtensions
 		}
 
 		var finalExpression = orExpression;
-		if (columns.Count > 1)
+		if (EnableFirstColPredicateOpt && columns.Count > 1)
 		{
 			// Implement the optimization that allows an access predicate on the 1st column.
 			// This is done by generating the following expression:
