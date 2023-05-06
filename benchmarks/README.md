@@ -2,7 +2,7 @@
 
 ## Run
 
-Run any benchmark by going into its folder and running:
+Run the benchmarks:
 ```ps1
 dotnet run -c Release
 ```
