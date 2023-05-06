@@ -274,15 +274,20 @@ In this case you'll want to create a composite index on `Score` + `Id`, but make
 
 ## Benchmarks
 
-To give you an idea about the performance gains, here's a graph comparing using offset pagination vs keyset pagination from this library when querying first, middle, and last pages under different table records counts.
+To give you an idea of the performance gains, here's a graph comparing using offset pagination vs keyset pagination when querying first, middle, and last pages under different table records counts.
 
-As a simple example, this is for when the data is ordered in `Created` descending.
+The following are the different methods being benchmarked:
+- FirstPage: Query the first page
+- MidPage: Query the middle page (i.e for N=1K this benchmark queries the data starting from the 500's record)
+- LastPage: Query the last page
 
-<img src="images/benchmarks/benchmark-CreatedDesc.png" width="600" />
+For a common use case, this is when the data is ordered in `Created` descending (a `DateTime` property).
 
-The keyset bars (green) are barely visible. This shows a major advantage of keyset pagination over offset pagination: the stable performance characteristic over large amounts of data.
+<img src="images/benchmarks/benchmark-CreatedDesc-grid.png" width="600" />
 
-Also notice that when querying the first page, offset pagination does just as well as keyset. Offset pagination starts falling behind remarkably the further away the page you want to read is. Do consider this when choosing what method you want to use.
+Notice that when querying the first page, offset pagination does just as well as keyset. Offset pagination starts falling behind remarkably the further away the page you want to read is. Do consider this when choosing what method you want to use.
+
+To that point, the keyset bars (green) are barely visible in the MidPage and LastPage graphs. This shows a major advantage of keyset pagination over offset pagination, that is the stable performance characteristic over large amounts of data.
 
 <!-- Another example with a more complicated order, a composite keyset of `Created` descending + `Id` Descending.
 
