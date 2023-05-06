@@ -5,5 +5,3 @@ artifacts/
 *.db
 *.db-shm
 *.db-wal
-
-/benchmarks/*/BenchmarkDotNet.Artifacts
