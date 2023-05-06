@@ -156,6 +156,7 @@ plot_main <- function(
     time_unit <- result$time_unit
 
     if (nrow(measurements) > 0) {
+        # Main plot combining all methods in one graph.
         p_bar <- ggplot(measurements, aes(x = N, y = Measurement, fill = Target_Method)) +
             geom_bar(position = "dodge", stat = "identity") +
             scale_fill_manual("Method", values = methods) +
@@ -174,6 +175,37 @@ plot_main <- function(
         filename_bar <- paste(out_dir_main, "/benchmark-", order, name_includes_10m, ".png", sep = "")
 
         save(filename_bar, p_bar)
+
+        # Second plot arranging a few separate method groups in a grid.
+        method_groups <- list(
+            c("Offset_FirstPage", "Keyset_FirstPage"),
+            c("Offset_MidPage", "Keyset_MidPage"),
+            c("Offset_LastPage", "Keyset_LastPage")
+        )
+        plist <- list()
+        for (g in method_groups) {
+            method_group_measurements <- measurements %>% filter(Target_Method %in% g)
+            if (nrow(method_group_measurements) > 0) {
+                p <- ggplot(method_group_measurements, aes(x = N, y = Measurement, fill = Target_Method)) +
+                    geom_bar(position = "dodge", stat = "identity") +
+                    scale_fill_manual("Method", values = methods) +
+                    labs(
+                        title = paste("Order=", order, " (Lower is better)", sep = ""),
+                        x = "Table records count",
+                        y = paste("Time (in ", time_unit, ")", sep = "")
+                    ) +
+                    scale_x_discrete(labels = N_axis_labels) +
+                    theme(
+                        panel.grid.major.x = element_blank(),
+                        panel.grid.minor.x = element_blank()
+                    )
+
+                plist <- append(plist, list(p))
+            }
+        }
+        filename_bar <- paste(out_dir_main, "/benchmark-", order, "-grid", name_includes_10m, ".png", sep = "")
+
+        save(filename_bar, grid.arrange(grobs = plist))
     }
 }
 
@@ -191,7 +223,6 @@ plot_opt <- function(
     name_includes_10m <- ifelse(include_10m, "-10m", "")
 
     plist <- list()
-
     for (method in names(methods)) {
         method_measurements <- measurements %>% filter(Target_Method == method)
         if (nrow(method_measurements) > 0) {
@@ -215,8 +246,7 @@ plot_opt <- function(
 
     filename_bar <- paste(out_dir_opt, "/benchmark-", order, name_includes_10m, ".png", sep = "")
 
-    arranged <- grid.arrange(grobs = plist)
-    save(filename_bar, arranged)
+    save(filename_bar, grid.arrange(grobs = plist))
 }
 
 if (!is.null(measurements_main)) {
