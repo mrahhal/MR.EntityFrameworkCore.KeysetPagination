@@ -5,7 +5,8 @@ using Xunit;
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
 
-public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
+[Collection(DatabaseCollection.Name)]
+public class KeysetPaginationTest
 {
 	public KeysetPaginationTest(DatabaseFixture fixture)
 	{
