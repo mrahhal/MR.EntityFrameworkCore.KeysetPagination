@@ -14,18 +14,12 @@ public class TestDbContext : DbContext
 
 	public IEnumerable<string> LogMessages => _logMessages;
 
-	public DbSet<IntModel> IntModels { get; set; }
-
-	public DbSet<StringModel> StringModels { get; set; }
-
-	public DbSet<GuidModel> GuidModels { get; set; }
-
-	public DbSet<NestedModel> NestedModels { get; set; }
-
-	public DbSet<ComputedModel> ComputedModels { get; set; }
+	public DbSet<MainModel> MainModels { get; set; }
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
+		optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
 		optionsBuilder.LogTo(message =>
 		{
 			lock (_logMessages)
@@ -39,12 +33,12 @@ public class TestDbContext : DbContext
 	{
 		base.OnModelCreating(builder);
 
-		var computedPropertyBuilder = builder.Entity<ComputedModel>()
+		var computedPropertyBuilder = builder.Entity<MainModel>()
 			.Property(x => x.CreatedComputed);
 
 		// We're coalescing NULLs into a max date.
 		// This results in NULLs effectively being sorted last (if ASC), irrelevant of the Db.
-		if (DatabaseFixture.UseSqlServer)
+		if (Database.IsSqlServer())
 		{
 			// For Sql Server:
 			computedPropertyBuilder
@@ -60,9 +54,5 @@ public class TestDbContext : DbContext
 				// right format or you might get wrong results.
 				.HasComputedColumnSql("COALESCE(Created, '9999-12-31 00:00:00')");
 		}
-
-		// Make sure to properly index columns as per your expected queries.
-		builder.Entity<ComputedModel>()
-			.HasIndex(x => x.CreatedComputed);
 	}
 }

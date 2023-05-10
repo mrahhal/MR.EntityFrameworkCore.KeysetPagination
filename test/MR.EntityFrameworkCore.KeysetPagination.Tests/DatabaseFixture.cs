@@ -4,11 +4,8 @@ using MR.EntityFrameworkCore.KeysetPagination.TestModels;
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
 
-public class DatabaseFixture : IDisposable
+public abstract class DatabaseFixture : IDisposable
 {
-	public static readonly bool UseSqlServer = false;
-
-	private static readonly object _lock = new();
 	private static bool _initialized;
 
 	public DatabaseFixture()
@@ -21,19 +18,14 @@ public class DatabaseFixture : IDisposable
 		var services = new ServiceCollection();
 		services.AddDbContext<TestDbContext>(options =>
 		{
-			if (UseSqlServer)
-			{
-				options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=KeysetPaginationTest;Trusted_Connection=True;MultipleActiveResultSets=true");
-			}
-			else
-			{
-				options.UseSqlite("Data Source=test.db");
-			}
+			ConfigureDb(options);
 			options.EnableSensitiveDataLogging();
 		});
 		configureServices?.Invoke(services);
 		return services.BuildServiceProvider();
 	}
+
+	protected abstract void ConfigureDb(DbContextOptionsBuilder options);
 
 	public IServiceProvider BuildForService<T>(Action<IServiceCollection> configureServices = null)
 		where T : class
@@ -52,58 +44,59 @@ public class DatabaseFixture : IDisposable
 
 	private void SetupDatabase()
 	{
-		lock (_lock)
-		{
-			if (_initialized) return;
+		if (_initialized) return;
 
-			var provider = BuildServices();
+		var provider = BuildServices();
 
-			using var scope = provider.CreateScope();
-			var context = scope.ServiceProvider.GetService<TestDbContext>();
-			context.Database.EnsureDeleted();
-			context.Database.EnsureCreated();
+		using var scope = provider.CreateScope();
+		var context = scope.ServiceProvider.GetService<TestDbContext>();
+		context.Database.EnsureDeleted();
+		context.Database.EnsureCreated();
 
-			Seed(context);
+		Seed(context);
 
-			_initialized = true;
-		}
+		_initialized = true;
 	}
 
 	private void Seed(TestDbContext context)
 	{
 		var now = DateTime.Now.AddYears(-1);
 
-		for (var i = 1; i < 1001; i++)
+		for (var i = 1; i < 100; i++)
 		{
 			var created = now.AddMinutes(i);
-			context.StringModels.Add(new StringModel
+			context.MainModels.Add(new MainModel
 			{
-				Id = i.ToString(),
+				String = i.ToString(),
+				Guid = Guid.NewGuid(),
+				IsDone = i % 2 == 0,
 				Created = created,
-			});
-			context.IntModels.Add(new IntModel
-			{
-				Created = created,
-			});
-			context.GuidModels.Add(new GuidModel
-			{
-				Id = Guid.NewGuid(),
-				Created = created,
-			});
-			context.NestedModels.Add(new NestedModel
-			{
+				CreatedNullable = i % 2 == 0 ? created : null,
+				//CreatedNormal = DateTime.Parse("9999-12-31T00:00:00.0000000"),
 				Inner = new NestedInnerModel
 				{
 					Created = created,
 				},
 			});
-			context.ComputedModels.Add(new ComputedModel
-			{
-				Created = null,
-				CreatedNormal = UseSqlServer ? DateTime.Parse("9999-12-31T00:00:00.0000000") : DateTime.Parse("9999-12-31 00:00:00"),
-			});
 		}
 
 		context.SaveChanges();
+	}
+}
+
+public class SqlServerDatabaseFixture : DatabaseFixture
+{
+	protected override void ConfigureDb(DbContextOptionsBuilder options)
+	{
+		options.UseSqlServer(
+			  "Server=(localdb)\\mssqllocaldb;Database=KeysetPaginationTest;Trusted_Connection=True;MultipleActiveResultSets=true");
+	}
+}
+
+public class SqliteDatabaseFixture : DatabaseFixture
+{
+	protected override void ConfigureDb(DbContextOptionsBuilder options)
+	{
+		options.UseSqlite("Data Source=test.db");
 	}
 }
