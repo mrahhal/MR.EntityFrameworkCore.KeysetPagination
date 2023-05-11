@@ -73,7 +73,7 @@ KeysetPaginate(
 )
 ```
 
-**Note:** Review the "Avoiding skipping over data" section for an important note about the columns you're configuring.
+**Note:** Make sure to read the "Deterministic keysets" and "Indexing" sections for important notes about configuring keysets.
 
 ## Common patterns
 
@@ -244,17 +244,33 @@ var result = await keysetContext.Query
     .ToListAsync();
 ```
 
-## Avoiding skipping over data
+## Deterministic keysets
 
-You'll want to make sure the combination of the columns you configure uniquely identify an entity, otherwise you might skip over data while navigating pages. This is a general rule to keep in mind when doing keyset pagination.
+A deterministic keyset is a keyset that can uniquely identify entities. This is an important concept to understand, so let's start by looking at an example.
 
-If you have configured some columns that don't uniquely identify entities, an easy fix is to just add the `Id` column to the configured columns.
+```
+b.Ascending(x => x.Created)
+```
 
-Doing this correctly means you'll never skip over or duplicate data, a behavior that offset based pagination can never guarantee.
+The keyset above consists of only one column that accesses `Created`. If by design multiple entities might have the same `Created`, then this is *not* a deterministic keyset.
+
+There are a few problems with a non deterministic keyset. Most importantly, you'll be skipping over data when paginating. This is a side effect of how keyset pagination works.
+
+Fixing this is easy enough. In most cases, you can just add more columns to make it deterministic. Most commonly, you can add a column that access `Id`.
+
+```
+b.Ascending(x => x.Created).Ascending(x => x.Id)
+```
+
+This makes the keyset deterministic because the combination of these particular columns will always resolve to uniquely identified entities.
+
+If you can maintain this rule, and if your keyset's data doesn't change, you'll never skip over or duplicate data, a behavior that offset based pagination can never guarantee. We call this behavior _stable pagination_.
+
+But keep in mind that to get the most performance out of this we should have proper indexing that takes into account this composite keyset. This is discussed in the next section.
 
 ## Indexing
 
-Keyset pagination, as is the case with any other kind of query, can benefit a lot from good database indexing. Said in other words, not having a proper index defeats the purpose of using keyset pagination in the first place.
+Keyset pagination — as is the case with any other kind of database query — can benefit a lot from good database indexing. Said in other words, not having a proper index defeats the purpose of using keyset pagination in the first place.
 
 You'll want to add a composite index that is compatible with the columns and the order of your keyset.
 
