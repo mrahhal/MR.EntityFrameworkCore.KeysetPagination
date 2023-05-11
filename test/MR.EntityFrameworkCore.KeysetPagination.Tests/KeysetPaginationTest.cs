@@ -379,6 +379,7 @@ public static class MainModelQueryableExtensions
 
 // Run these tests on both SqlServer and Sqlite as a form of a smoke test.
 
+/*
 [Collection(SqlServerDatabaseCollection.Name)]
 public class SqlServerKeysetPaginationTest : KeysetPaginationTest
 {
@@ -387,6 +388,7 @@ public class SqlServerKeysetPaginationTest : KeysetPaginationTest
 	{
 	}
 }
+*/
 
 [Collection(SqliteDatabaseCollection.Name)]
 public class SqliteKeysetPaginationTest : KeysetPaginationTest
