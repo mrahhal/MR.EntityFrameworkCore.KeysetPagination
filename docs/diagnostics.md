@@ -4,8 +4,8 @@ This library ships with analyzers that help with detecting misuse and offering s
 
 ## KeysetPagination1000
 
-Keyset contains a nullable property.
+Keyset contains a nullable column.
 
-Nullable properties are not supported in the keyset.
+Nullable columns are not supported in the keyset.
 
 Check the caveat document about [NULLs](./caveats.md#null) for more info about the problem and a workaround using computed columns.

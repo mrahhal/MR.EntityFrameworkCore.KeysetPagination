@@ -94,20 +94,20 @@ namespace Basic.Pages
 
 			var analyzerTestKeysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
 			{
-				//                  HERE
+				//                HERE
 				b.Descending(x => x.NullableDate).Ascending(x => x.Id);
 			};
 
 			_dbContext.Users.KeysetPaginate(
-				//                       HERE
+				//                     HERE
 				b => b.Descending(x => x.NullableDate).Ascending(x => x.Id));
 
 			_dbContext.Users.KeysetPaginateQuery(
-				//                      HERE
+				//                    HERE
 				b => b.Ascending(x => x.NullableDate));
 
 			_dbContext.Users.KeysetPaginateQuery(
-				//                      HERE
+				//                    HERE (CS8602 warning)
 				b => b.Ascending(x => x.NullableDetails.Id));
 
 #pragma warning restore KeysetPagination1000 // Keyset contains a nullable property
