@@ -22,6 +22,7 @@ public abstract class KeysetPaginationTest
 		CreatedDescId,
 		IdCreated,
 		NullCoalescing,
+		NullCoalescing2,
 		Count,
 	}
 
@@ -53,6 +54,7 @@ public abstract class KeysetPaginationTest
 			QueryType.IdCreated => q => q.OrderBy(x => x.Id).ThenBy(x => x.Created),
 			QueryType.CreatedDescId => q => q.OrderByDescending(x => x.Created).ThenBy(x => x.Id),
 			QueryType.NullCoalescing => q => q.OrderBy(x => x.CreatedNullable ?? DateTime.MinValue).ThenBy(x => x.Id),
+			QueryType.NullCoalescing2 => q => q.OrderBy(x => x.CreatedNullable ?? x.Created).ThenBy(x => x.Id),
 			QueryType.Count => q => q.OrderBy(x => x.Inners2.Count).ThenBy(x => x.Id),
 			_ => throw new NotImplementedException(),
 		};
@@ -68,6 +70,7 @@ public abstract class KeysetPaginationTest
 			QueryType.IdCreated => b => b.Ascending(x => x.Id).Ascending(x => x.Created),
 			QueryType.CreatedDescId => b => b.Descending(x => x.Created).Ascending(x => x.Id),
 			QueryType.NullCoalescing => b => b.Ascending(x => x.CreatedNullable ?? DateTime.MinValue).Ascending(x => x.Id),
+			QueryType.NullCoalescing2 => b => b.Ascending(x => x.CreatedNullable ?? x.Created).Ascending(x => x.Id),
 			QueryType.Count => b => b.Ascending(x => x.Inners2.Count).Ascending(x => x.Id),
 			_ => throw new NotImplementedException(),
 		};
