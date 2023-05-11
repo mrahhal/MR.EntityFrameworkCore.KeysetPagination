@@ -6,28 +6,9 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 
 internal static class ExpressionHelper
 {
-	public static Expression UnwrapConvertAndLambda<T, TProp>(
-		Expression<Func<T, TProp>> expression)
-	{
-		if (expression.Body.NodeType != ExpressionType.Convert)
-		{
-			return expression.Body;
-		}
-
-		return ((UnaryExpression)expression.Body).Operand;
-	}
-
-	public static bool IsSimpleMemberAccess(
-		Expression expression)
-	{
-		ValidateExpressionUnwrapped(expression);
-
-		return expression is MemberExpression memberExpression
-			&& memberExpression.Expression is not MemberExpression;
-	}
-
 	/// <summary>
-	/// Gets the first expression from a <see cref="MemberExpression"/>. This is the `x` in `x.Prop1.Prop2`.
+	/// Gets the first expression from a <see cref="MemberExpression"/>.
+	/// This is the `x` in `x.Prop1.Prop2`.
 	/// </summary>
 	public static Expression GetStartingExpression(
 		MemberExpression expression)
@@ -43,15 +24,11 @@ internal static class ExpressionHelper
 		return current!;
 	}
 
-	public static PropertyInfo GetSimpleProperty(
-		MemberExpression expression)
-	{
-		ValidateExpressionUnwrapped(expression);
-
-		return GetPropertyInfoMember(expression);
-	}
-
-	public static List<PropertyInfo> GetNestedProperties(
+	/// <summary>
+	/// Gets the chain of properties that make up the <see cref="MemberExpression"/>.
+	/// This is the list `[Prop1, Prop2]` in `x.Prop1.Prop2`.
+	/// </summary>
+	public static List<PropertyInfo> GetPropertyChain(
 		MemberExpression expression)
 	{
 		ValidateExpressionUnwrapped(expression);

@@ -93,7 +93,7 @@ internal class KeysetTypeAdaptingExpressionVisitor<T, TColumn> : KeysetParameter
 		// Replace the chain of properties with the equivalent in the new type.
 		var currentReplacementExpression = (Expression)Expression.Convert(Visit(startingExpression), _newType);
 
-		var properties = ExpressionHelper.GetNestedProperties(node);
+		var properties = ExpressionHelper.GetPropertyChain(node);
 
 		foreach (var property in properties)
 		{
