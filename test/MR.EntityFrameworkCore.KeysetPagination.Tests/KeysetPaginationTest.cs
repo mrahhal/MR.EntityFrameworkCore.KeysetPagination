@@ -22,6 +22,7 @@ public abstract class KeysetPaginationTest
 		CreatedDescId,
 		IdCreated,
 		NullCoalescing,
+		Count,
 	}
 
 	private const int Size = 10;
@@ -52,6 +53,7 @@ public abstract class KeysetPaginationTest
 			QueryType.IdCreated => q => q.OrderBy(x => x.Id).ThenBy(x => x.Created),
 			QueryType.CreatedDescId => q => q.OrderByDescending(x => x.Created).ThenBy(x => x.Id),
 			QueryType.NullCoalescing => q => q.OrderBy(x => x.CreatedNullable ?? DateTime.MinValue).ThenBy(x => x.Id),
+			QueryType.Count => q => q.OrderBy(x => x.Inners2.Count).ThenBy(x => x.Id),
 			_ => throw new NotImplementedException(),
 		};
 		Action<KeysetPaginationBuilder<MainModel>> keysetPaginationBuilder = queryType switch
@@ -66,6 +68,7 @@ public abstract class KeysetPaginationTest
 			QueryType.IdCreated => b => b.Ascending(x => x.Id).Ascending(x => x.Created),
 			QueryType.CreatedDescId => b => b.Descending(x => x.Created).Ascending(x => x.Id),
 			QueryType.NullCoalescing => b => b.Ascending(x => x.CreatedNullable ?? DateTime.MinValue).Ascending(x => x.Id),
+			QueryType.Count => b => b.Ascending(x => x.Inners2.Count).Ascending(x => x.Id),
 			_ => throw new NotImplementedException(),
 		};
 
@@ -97,11 +100,11 @@ public abstract class KeysetPaginationTest
 		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
 		var reference = await offsetOrderer(DbContext.MainModels)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Skip(Size)
 			.FirstAsync();
 		var expectedResult = await offsetOrderer(DbContext.MainModels)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Skip(Size + 1)
 			.Take(Size)
 			.ToListAsync();
@@ -110,7 +113,7 @@ public abstract class KeysetPaginationTest
 			keysetBuilder,
 			KeysetPaginationDirection.Forward,
 			reference)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Take(Size)
 			.ToListAsync();
 
@@ -123,7 +126,7 @@ public abstract class KeysetPaginationTest
 		var (offsetOrderer, keysetBuilder) = GetForQuery(QueryType.Nested);
 
 		var reference = await offsetOrderer(DbContext.MainModels)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Skip(Size)
 			.FirstAsync();
 		var referenceDto = new
@@ -155,11 +158,11 @@ public abstract class KeysetPaginationTest
 		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
 		var reference = await offsetOrderer(DbContext.MainModels)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Skip(Size)
 			.FirstAsync();
 		var expectedResult = await offsetOrderer(DbContext.MainModels)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Take(Size)
 			.ToListAsync();
 
@@ -167,7 +170,7 @@ public abstract class KeysetPaginationTest
 			keysetBuilder,
 			KeysetPaginationDirection.Backward,
 			reference)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Take(Size)
 			.ToListAsync();
 
@@ -181,7 +184,7 @@ public abstract class KeysetPaginationTest
 		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
 		var reference = await offsetOrderer(DbContext.MainModels)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.FirstAsync();
 
 		var result = await DbContext.MainModels.KeysetPaginateQuery(
@@ -203,7 +206,7 @@ public abstract class KeysetPaginationTest
 		var keysetContext = DbContext.MainModels.KeysetPaginate(
 			keysetBuilder);
 		var items = await keysetContext.Query
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Take(Size)
 			.ToListAsync();
 		keysetContext.EnsureCorrectOrder(items);
@@ -220,7 +223,7 @@ public abstract class KeysetPaginationTest
 		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
 		var reference = await offsetOrderer(DbContext.MainModels)
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Skip(1)
 			.FirstAsync();
 
@@ -229,7 +232,7 @@ public abstract class KeysetPaginationTest
 			KeysetPaginationDirection.Forward,
 			reference);
 		var items = await keysetContext.Query
-			.Include(x => x.Inner)
+			.IncludeStuff()
 			.Take(Size)
 			.ToListAsync();
 		keysetContext.EnsureCorrectOrder(items);
@@ -362,6 +365,13 @@ public abstract class KeysetPaginationTest
 		result.Should().HaveCount(expectedResult.Count);
 		result.Select(x => x.Id).Should().BeEquivalentTo(expectedResult.Select(x => x.Id));
 	}
+}
+
+public static class MainModelQueryableExtensions
+{
+	public static IQueryable<MainModel> IncludeStuff(this IQueryable<MainModel> q) => q
+		.Include(x => x.Inner)
+		.Include(x => x.Inners2);
 }
 
 // Run these tests on both SqlServer and Sqlite as a form of a smoke test.

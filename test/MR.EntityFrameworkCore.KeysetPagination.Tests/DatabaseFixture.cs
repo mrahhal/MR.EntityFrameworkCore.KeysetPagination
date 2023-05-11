@@ -61,6 +61,7 @@ public abstract class DatabaseFixture : IDisposable
 	private void Seed(TestDbContext context)
 	{
 		var now = DateTime.Now.AddYears(-1);
+		var rand = new Random(3999);
 
 		for (var i = 1; i < 100; i++)
 		{
@@ -77,6 +78,7 @@ public abstract class DatabaseFixture : IDisposable
 				{
 					Created = created,
 				},
+				Inners2 = Enumerable.Range(0, rand.Next(10)).Select(i => new NestedInner2Model()).ToList(),
 			});
 		}
 

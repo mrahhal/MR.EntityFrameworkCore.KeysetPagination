@@ -24,6 +24,8 @@ public class MainModel
 	public DateTime CreatedComputed { get; }
 
 	public NestedInnerModel Inner { get; set; }
+
+	public List<NestedInner2Model> Inners2 { get; set; }
 }
 
 [Index(nameof(Created))]
@@ -32,4 +34,13 @@ public class NestedInnerModel
 	public int Id { get; set; }
 
 	public DateTime Created { get; set; }
+}
+
+public class NestedInner2Model
+{
+	public int Id { get; set; }
+
+	public int MainModelId { get; set; }
+
+	public MainModel MainModel { get; set; }
 }
