@@ -12,7 +12,7 @@ public abstract class KeysetPaginationTest
 {
 	public enum QueryType
 	{
-		Int,
+		Id,
 		String,
 		Guid,
 		Bool,
@@ -20,7 +20,8 @@ public abstract class KeysetPaginationTest
 		CreatedDesc,
 		Nested,
 		CreatedDescId,
-		IntCreated,
+		IdCreated,
+		NullCoalescing,
 	}
 
 	private const int Size = 10;
@@ -41,28 +42,30 @@ public abstract class KeysetPaginationTest
 	{
 		Func<IQueryable<MainModel>, IQueryable<MainModel>> offsetOrderer = queryType switch
 		{
-			QueryType.Int => q => q.OrderBy(x => x.Id),
+			QueryType.Id => q => q.OrderBy(x => x.Id),
 			QueryType.String => q => q.OrderBy(x => x.String),
 			QueryType.Guid => q => q.OrderBy(x => x.Guid),
 			QueryType.Bool => q => q.OrderBy(x => x.IsDone).ThenBy(x => x.Id),
 			QueryType.Created => q => q.OrderBy(x => x.Created),
 			QueryType.CreatedDesc => q => q.OrderByDescending(x => x.Created),
 			QueryType.Nested => q => q.OrderBy(x => x.Inner.Created),
-			QueryType.IntCreated => q => q.OrderBy(x => x.Id).ThenBy(x => x.Created),
+			QueryType.IdCreated => q => q.OrderBy(x => x.Id).ThenBy(x => x.Created),
 			QueryType.CreatedDescId => q => q.OrderByDescending(x => x.Created).ThenBy(x => x.Id),
+			QueryType.NullCoalescing => q => q.OrderBy(x => x.CreatedNullable ?? DateTime.MinValue).ThenBy(x => x.Id),
 			_ => throw new NotImplementedException(),
 		};
 		Action<KeysetPaginationBuilder<MainModel>> keysetPaginationBuilder = queryType switch
 		{
-			QueryType.Int => b => b.Ascending(x => x.Id),
+			QueryType.Id => b => b.Ascending(x => x.Id),
 			QueryType.String => b => b.Ascending(x => x.String),
-			QueryType.Guid => q => q.Ascending(x => x.Guid),
-			QueryType.Bool => q => q.Ascending(x => x.IsDone).Ascending(x => x.Id),
+			QueryType.Guid => b => b.Ascending(x => x.Guid),
+			QueryType.Bool => b => b.Ascending(x => x.IsDone).Ascending(x => x.Id),
 			QueryType.Created => b => b.Ascending(x => x.Created),
 			QueryType.CreatedDesc => b => b.Descending(x => x.Created),
-			QueryType.Nested => q => q.Ascending(x => x.Inner.Created),
-			QueryType.IntCreated => q => q.Ascending(x => x.Id).Ascending(x => x.Created),
-			QueryType.CreatedDescId => q => q.Descending(x => x.Created).Ascending(x => x.Id),
+			QueryType.Nested => b => b.Ascending(x => x.Inner.Created),
+			QueryType.IdCreated => b => b.Ascending(x => x.Id).Ascending(x => x.Created),
+			QueryType.CreatedDescId => b => b.Descending(x => x.Created).Ascending(x => x.Id),
+			QueryType.NullCoalescing => b => b.Ascending(x => x.CreatedNullable ?? DateTime.MinValue).Ascending(x => x.Id),
 			_ => throw new NotImplementedException(),
 		};
 
@@ -360,6 +363,8 @@ public abstract class KeysetPaginationTest
 		result.Select(x => x.Id).Should().BeEquivalentTo(expectedResult.Select(x => x.Id));
 	}
 }
+
+// Run these tests on both SqlServer and Sqlite as a form of a smoke test.
 
 [Collection(SqlServerDatabaseCollection.Name)]
 public class SqlServerKeysetPaginationTest : KeysetPaginationTest
