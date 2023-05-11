@@ -226,7 +226,7 @@ public static class KeysetPaginationExtensions
 
 		var referenceValues = GetValues(columns, reference);
 
-		var firstMemberAccessExpression = default(MemberExpression);
+		var firstMemberAccessExpression = default(Expression);
 		var firstReferenceValueExpression = default(Expression);
 
 		// entity =>
@@ -245,7 +245,7 @@ public static class KeysetPaginationExtensions
 			{
 				var isInnerLastOperation = j + 1 == innerLimit;
 				var column = columns[j];
-				var memberAccess = column.MakeMemberAccessExpression(param);
+				var memberAccess = column.MakeAccessExpression(param);
 				var referenceValue = referenceValues[j];
 				Expression<Func<object>> referenceValueFunc = () => referenceValue;
 				var referenceValueExpression = referenceValueFunc.Body;
@@ -305,12 +305,11 @@ public static class KeysetPaginationExtensions
 
 	private static BinaryExpression MakeComparisonExpression<T>(
 		KeysetColumn<T> column,
-		MemberExpression memberAccess, Expression referenceValue,
+		Expression memberAccess, Expression referenceValue,
 		Func<Expression, Expression, BinaryExpression> compare)
 		where T : class
 	{
-		var propertyType = column.Property.PropertyType;
-		if (TypeToCompareToMethod.TryGetValue(propertyType, out var compareToMethod))
+		if (TypeToCompareToMethod.TryGetValue(column.Type, out var compareToMethod))
 		{
 			// LessThan/GreaterThan operators are not valid for some types such as strings and guids.
 			// We use the CompareTo method on these types instead.
@@ -336,7 +335,7 @@ public static class KeysetPaginationExtensions
 	}
 
 	private static Expression EnsureMatchingType(
-		MemberExpression memberExpression,
+		Expression memberExpression,
 		Expression targetExpression)
 	{
 		// If the target has a different type we should convert it.
@@ -371,7 +370,7 @@ public static class KeysetPaginationExtensions
 
 	private static MethodInfo GetCompareToMethod(Type type)
 	{
-		var methodInfo = type.GetTypeInfo().GetMethod(nameof(string.CompareTo), new Type[] { type });
+		var methodInfo = type.GetTypeInfo().GetMethod(nameof(string.CompareTo), new[] { type });
 		if (methodInfo == null)
 		{
 			throw new InvalidOperationException($"Didn't find a CompareTo method on type {type.Name}.");

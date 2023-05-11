@@ -26,27 +26,43 @@ internal static class ExpressionHelper
 			&& memberExpression.Expression is not MemberExpression;
 	}
 
-	public static PropertyInfo GetSimplePropertyFromMemberAccess(
-		Expression expression)
+	/// <summary>
+	/// Gets the first expression from a <see cref="MemberExpression"/>. This is the `x` in `x.Prop1.Prop2`.
+	/// </summary>
+	public static Expression GetStartingExpression(
+		MemberExpression expression)
 	{
 		ValidateExpressionUnwrapped(expression);
 
-		var memberExpression = (MemberExpression)expression;
-		return GetPropertyInfoMember(memberExpression);
+		var current = (Expression)expression;
+		while (current is MemberExpression memberExpression)
+		{
+			current = memberExpression.Expression;
+		}
+
+		return current!;
 	}
 
-	public static List<PropertyInfo> GetNestedPropertiesFromMemberAccess(
-		Expression expression)
+	public static PropertyInfo GetSimpleProperty(
+		MemberExpression expression)
+	{
+		ValidateExpressionUnwrapped(expression);
+
+		return GetPropertyInfoMember(expression);
+	}
+
+	public static List<PropertyInfo> GetNestedProperties(
+		MemberExpression expression)
 	{
 		ValidateExpressionUnwrapped(expression);
 
 		var properties = new List<PropertyInfo>();
 
-		var next = expression;
-		while (next is MemberExpression memberExpression)
+		var current = (Expression)expression;
+		while (current is MemberExpression memberExpression)
 		{
 			properties.Add(GetPropertyInfoMember(memberExpression));
-			next = memberExpression.Expression;
+			current = memberExpression.Expression;
 		}
 
 		properties.Reverse();
