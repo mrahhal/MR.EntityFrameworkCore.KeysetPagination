@@ -39,7 +39,8 @@ internal abstract class KeysetColumn<T>
 internal sealed class KeysetColumn<T, TColumn> : KeysetColumn<T>
 	where T : class
 {
-	private readonly ConcurrentDictionary<Type, Func<object, TColumn>> _typeToCompiledAccessMap = new();
+	// Cached reference type to compiled access of the lambda of this column.
+	private readonly ConcurrentDictionary<Type, Func<object, TColumn>> _referenceTypeToCompiledAccessMap = new();
 
 	public KeysetColumn(
 		bool isDescending,
@@ -83,7 +84,7 @@ internal sealed class KeysetColumn<T, TColumn> : KeysetColumn<T>
 	{
 		if (reference == null) throw new ArgumentNullException(nameof(reference));
 
-		var compiledAccess = _typeToCompiledAccessMap.GetOrAdd(reference.GetType(), type =>
+		var compiledAccess = _referenceTypeToCompiledAccessMap.GetOrAdd(reference.GetType(), type =>
 		{
 			// Loose typing support: We'll need to adapt the lambda to the type.
 			var adaptedLambdaExpression = KeysetAdaptingExpressionVisitor.AdaptType(LambdaExpression, type);
