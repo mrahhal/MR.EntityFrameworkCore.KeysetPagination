@@ -2,6 +2,10 @@
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
 
+/// <summary>
+/// Builder for a keyset definition.
+/// </summary>
+/// <typeparam name="T">The type of the entity.</typeparam>
 public class KeysetPaginationBuilder<T>
 	where T : class
 {
@@ -9,12 +13,18 @@ public class KeysetPaginationBuilder<T>
 
 	internal IReadOnlyList<KeysetColumn<T>> Columns => _columns;
 
+	/// <summary>
+	/// Configures an ascending column as part of the keyset.
+	/// </summary>
 	public KeysetPaginationBuilder<T> Ascending<TColumn>(
 		Expression<Func<T, TColumn>> columnExpression)
 	{
 		return ConfigureColumn(columnExpression, isDescending: false);
 	}
 
+	/// <summary>
+	/// Configures a descending column as part of the keyset.
+	/// </summary>
 	public KeysetPaginationBuilder<T> Descending<TColumn>(
 		Expression<Func<T, TColumn>> columnExpression)
 	{
