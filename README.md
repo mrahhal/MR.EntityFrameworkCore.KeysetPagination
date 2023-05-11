@@ -43,7 +43,7 @@ Here's a small visual representation:
 
 The columns and their configured order are used to order the data, and then the direction decides if we're getting the data before or after the reference row.
 
-**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order. There's a helper method on KeysetContext for this, shown in a snippet later.
+**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order. There's a helper method on `KeysetContext` for this, shown in a snippet later.
 
 `KeysetPaginate` returns a context object which you can use to get secondary info and get the data result.
 
@@ -55,7 +55,7 @@ KeysetPaginate(
 )
 ```
 
-It works with composite keyset as well. Just configure all the columns you want:
+Configuring a composite keyset is easy as well. Just add all the columns you want:
 
 ```cs
 KeysetPaginate(
@@ -86,6 +86,16 @@ Not specifying direction and reference gives you the first page of data.
 ```cs
 KeysetPaginate(
     b => ...
+)
+```
+
+This is equivalent to the following:
+
+```cs
+KeysetPaginate(
+    b => ...,
+    KeysetPaginationDirection.Forward,
+    null
 )
 ```
 
@@ -312,3 +322,5 @@ Check the [samples](samples) folder for project samples.
 ## Talks
 
 [.NET Standup session](https://www.youtube.com/watch?v=DIKH-q-gJNU) where we discuss pagination and showcase this package.
+
+[![.NET Standup session](https://img.youtube.com/vi/DIKH-q-gJNU/0.jpg)](https://www.youtube.com/watch?v=DIKH-q-gJNU)
