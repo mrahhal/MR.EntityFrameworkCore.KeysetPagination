@@ -2,6 +2,10 @@
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
 
+/// <summary>
+/// Builder for a keyset definition.
+/// </summary>
+/// <typeparam name="T">The type of the entity.</typeparam>
 public class KeysetPaginationBuilder<T>
 	where T : class
 {
@@ -9,38 +13,29 @@ public class KeysetPaginationBuilder<T>
 
 	internal IReadOnlyList<KeysetColumn<T>> Columns => _columns;
 
-	public KeysetPaginationBuilder<T> Ascending<TProp>(
-		Expression<Func<T, TProp>> propertyExpression)
+	/// <summary>
+	/// Configures an ascending column as part of the keyset.
+	/// </summary>
+	public KeysetPaginationBuilder<T> Ascending<TColumn>(
+		Expression<Func<T, TColumn>> columnExpression)
 	{
-		return ConfigureColumn(propertyExpression, isDescending: false);
+		return ConfigureColumn(columnExpression, isDescending: false);
 	}
 
-	public KeysetPaginationBuilder<T> Descending<TProp>(
-		Expression<Func<T, TProp>> propertyExpression)
+	/// <summary>
+	/// Configures a descending column as part of the keyset.
+	/// </summary>
+	public KeysetPaginationBuilder<T> Descending<TColumn>(
+		Expression<Func<T, TColumn>> columnExpression)
 	{
-		return ConfigureColumn(propertyExpression, isDescending: true);
+		return ConfigureColumn(columnExpression, isDescending: true);
 	}
 
-	private KeysetPaginationBuilder<T> ConfigureColumn<TProp>(
-		Expression<Func<T, TProp>> propertyExpression,
+	private KeysetPaginationBuilder<T> ConfigureColumn<TColumn>(
+		Expression<Func<T, TColumn>> columnExpression,
 		bool isDescending)
 	{
-		var unwrapped = ExpressionHelper.UnwrapConvertAndLambda(propertyExpression);
-		if (ExpressionHelper.IsSimpleMemberAccess(unwrapped))
-		{
-			var property = ExpressionHelper.GetSimplePropertyFromMemberAccess(unwrapped);
-			_columns.Add(new KeysetColumnSimple<T, TProp>(
-				property,
-				isDescending));
-		}
-		else
-		{
-			var properties = ExpressionHelper.GetNestedPropertiesFromMemberAccess(unwrapped);
-			_columns.Add(new KeysetColumnNested<T, TProp>(
-				properties,
-				isDescending));
-		}
-
+		_columns.Add(new KeysetColumn<T, TColumn>(isDescending, columnExpression));
 		return this;
 	}
 }

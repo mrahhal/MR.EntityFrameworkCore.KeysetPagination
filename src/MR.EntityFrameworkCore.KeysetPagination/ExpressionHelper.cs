@@ -6,47 +6,40 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 
 internal static class ExpressionHelper
 {
-	public static Expression UnwrapConvertAndLambda<T, TProp>(
-		Expression<Func<T, TProp>> expression)
+	/// <summary>
+	/// Gets the first expression from a <see cref="MemberExpression"/>.
+	/// This is the `x` in `x.Prop1.Prop2`.
+	/// </summary>
+	public static Expression GetStartingExpression(
+		MemberExpression expression)
 	{
-		if (expression.Body.NodeType != ExpressionType.Convert)
+		ValidateExpressionUnwrapped(expression);
+
+		var current = (Expression)expression;
+		while (current is MemberExpression memberExpression)
 		{
-			return expression.Body;
+			current = memberExpression.Expression;
 		}
 
-		return ((UnaryExpression)expression.Body).Operand;
+		return current!;
 	}
 
-	public static bool IsSimpleMemberAccess(
-		Expression expression)
-	{
-		ValidateExpressionUnwrapped(expression);
-
-		return expression is MemberExpression memberExpression
-			&& memberExpression.Expression is not MemberExpression;
-	}
-
-	public static PropertyInfo GetSimplePropertyFromMemberAccess(
-		Expression expression)
-	{
-		ValidateExpressionUnwrapped(expression);
-
-		var memberExpression = (MemberExpression)expression;
-		return GetPropertyInfoMember(memberExpression);
-	}
-
-	public static List<PropertyInfo> GetNestedPropertiesFromMemberAccess(
-		Expression expression)
+	/// <summary>
+	/// Gets the chain of properties that make up the <see cref="MemberExpression"/>.
+	/// This is the list `[Prop1, Prop2]` in `x.Prop1.Prop2`.
+	/// </summary>
+	public static List<PropertyInfo> GetPropertyChain(
+		MemberExpression expression)
 	{
 		ValidateExpressionUnwrapped(expression);
 
 		var properties = new List<PropertyInfo>();
 
-		var next = expression;
-		while (next is MemberExpression memberExpression)
+		var current = (Expression)expression;
+		while (current is MemberExpression memberExpression)
 		{
 			properties.Add(GetPropertyInfoMember(memberExpression));
-			next = memberExpression.Expression;
+			current = memberExpression.Expression;
 		}
 
 		properties.Reverse();

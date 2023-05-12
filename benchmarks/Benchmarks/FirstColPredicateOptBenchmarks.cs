@@ -24,7 +24,7 @@ public class FirstColPredicateOptBenchmarks : BenchmarksBase
 	{
 		base.Setup();
 
-		KeysetPaginationExtensions.EnableFirstColPredicateOpt = OptEnabled;
+		KeysetFilterPredicateStrategyMethod1.EnableFirstColPredicateOpt = OptEnabled;
 	}
 
 	[Benchmark]

@@ -79,43 +79,5 @@ namespace Basic.Pages
 
 			ElapsedTotal = sw.ElapsedMilliseconds.ToString();
 		}
-
-#pragma warning disable IDE0051
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#nullable enable
-		private void TestingTheAnalyzer()
-		{
-			// ===
-			// Testing that the analyzer properly detects the following cases.
-			// Removing the suppression should reveal errors on HEREs.
-
-			// Uncomment the following pragma to see the analyzer reported diags.
-#pragma warning disable KeysetPagination1000 // Keyset contains a nullable property
-
-			var analyzerTestKeysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
-			{
-				//                  HERE
-				b.Descending(x => x.NullableDate).Ascending(x => x.Id);
-			};
-
-			_dbContext.Users.KeysetPaginate(
-				//                       HERE
-				b => b.Descending(x => x.NullableDate).Ascending(x => x.Id));
-
-			_dbContext.Users.KeysetPaginateQuery(
-				//                      HERE
-				b => b.Ascending(x => x.NullableDate));
-
-			_dbContext.Users.KeysetPaginateQuery(
-				//                      HERE
-				b => b.Ascending(x => x.NullableDetails.Id));
-
-#pragma warning restore KeysetPagination1000 // Keyset contains a nullable property
-
-			// ===
-		}
-#nullable disable
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore IDE0051
 	}
 }

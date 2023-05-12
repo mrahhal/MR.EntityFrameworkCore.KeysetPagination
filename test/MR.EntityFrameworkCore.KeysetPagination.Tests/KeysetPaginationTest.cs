@@ -1,12 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MR.EntityFrameworkCore.KeysetPagination.TestModels;
 using Xunit;
 
 namespace MR.EntityFrameworkCore.KeysetPagination;
 
-public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
+#pragma warning disable CA1825 // Avoid zero-length array allocations
+
+public abstract class KeysetPaginationTest
 {
+	public enum QueryType
+	{
+		Id,
+		String,
+		Guid,
+		Bool,
+		Created,
+		CreatedDesc,
+		Nested,
+		CreatedDescId,
+		IdCreated,
+		BoolCreatedId,
+		NullCoalescing,
+		NullCoalescing2,
+		Count,
+	}
+
+	private const int Size = 10;
+
 	public KeysetPaginationTest(DatabaseFixture fixture)
 	{
 		var provider = fixture.BuildServices();
@@ -15,86 +37,104 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 
 	public TestDbContext DbContext { get; }
 
-	[Fact]
-	public async Task KeysetPaginate_Raw()
-	{
-		var result = await DbContext.IntModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id))
-			.Take(20)
-			.ToListAsync();
+	public static IEnumerable<object[]> Queries =>
+		Enum.GetValues<QueryType>()
+			.Select(value => new object[] { value });
 
-		Assert.Equal(20, result.Count);
+	private (Func<IQueryable<MainModel>, IQueryable<MainModel>> offsetOrderer, Action<KeysetPaginationBuilder<MainModel>> keysetPaginationBuilder) GetForQuery(QueryType queryType)
+	{
+		Func<IQueryable<MainModel>, IQueryable<MainModel>> offsetOrderer = queryType switch
+		{
+			QueryType.Id => q => q.OrderBy(x => x.Id),
+			QueryType.String => q => q.OrderBy(x => x.String),
+			QueryType.Guid => q => q.OrderBy(x => x.Guid),
+			QueryType.Bool => q => q.OrderBy(x => x.IsDone).ThenBy(x => x.Id),
+			QueryType.Created => q => q.OrderBy(x => x.Created),
+			QueryType.CreatedDesc => q => q.OrderByDescending(x => x.Created),
+			QueryType.Nested => q => q.OrderBy(x => x.Inner.Created),
+			QueryType.IdCreated => q => q.OrderBy(x => x.Id).ThenBy(x => x.Created),
+			QueryType.BoolCreatedId => q => q.OrderBy(x => x.IsDone).ThenBy(x => x.Created).ThenBy(x => x.Id),
+			QueryType.CreatedDescId => q => q.OrderByDescending(x => x.Created).ThenBy(x => x.Id),
+			QueryType.NullCoalescing => q => q.OrderBy(x => x.CreatedNullable ?? DateTime.MinValue).ThenBy(x => x.Id),
+			QueryType.NullCoalescing2 => q => q.OrderBy(x => x.CreatedNullable ?? x.Created).ThenBy(x => x.Id),
+			QueryType.Count => q => q.OrderBy(x => x.Inners2.Count).ThenBy(x => x.Id),
+			_ => throw new NotImplementedException(),
+		};
+		Action<KeysetPaginationBuilder<MainModel>> keysetPaginationBuilder = queryType switch
+		{
+			QueryType.Id => b => b.Ascending(x => x.Id),
+			QueryType.String => b => b.Ascending(x => x.String),
+			QueryType.Guid => b => b.Ascending(x => x.Guid),
+			QueryType.Bool => b => b.Ascending(x => x.IsDone).Ascending(x => x.Id),
+			QueryType.Created => b => b.Ascending(x => x.Created),
+			QueryType.CreatedDesc => b => b.Descending(x => x.Created),
+			QueryType.Nested => b => b.Ascending(x => x.Inner.Created),
+			QueryType.IdCreated => b => b.Ascending(x => x.Id).Ascending(x => x.Created),
+			QueryType.BoolCreatedId => b => b.Ascending(x => x.IsDone).Ascending(x => x.Created).Ascending(x => x.Id),
+			QueryType.CreatedDescId => b => b.Descending(x => x.Created).Ascending(x => x.Id),
+			QueryType.NullCoalescing => b => b.Ascending(x => x.CreatedNullable ?? DateTime.MinValue).Ascending(x => x.Id),
+			QueryType.NullCoalescing2 => b => b.Ascending(x => x.CreatedNullable ?? x.Created).Ascending(x => x.Id),
+			QueryType.Count => b => b.Ascending(x => x.Inners2.Count).Ascending(x => x.Id),
+			_ => throw new NotImplementedException(),
+		};
+
+		return (offsetOrderer, keysetPaginationBuilder);
 	}
 
-	[Fact]
-	public async Task KeysetPaginate_bool()
+	[Theory]
+	[MemberData(nameof(Queries))]
+	public async Task KeysetPaginate_Basic(QueryType queryType)
 	{
-		var reference = DbContext.IntModels.First();
+		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
-		var result = await DbContext.IntModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.IsDone),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
+		var expectedResult = await offsetOrderer(DbContext.MainModels)
+			.Take(Size)
 			.ToListAsync();
+
+		var result = await DbContext.MainModels.KeysetPaginateQuery(
+			keysetBuilder)
+			.Take(Size)
+			.ToListAsync();
+
+		AssertResult(expectedResult, result);
 	}
 
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_int()
+	[Theory]
+	[MemberData(nameof(Queries))]
+	public async Task KeysetPaginate_AfterReference(QueryType queryType)
 	{
-		var reference = DbContext.IntModels.First();
+		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
-		var result = await DbContext.IntModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id),
+		var reference = await offsetOrderer(DbContext.MainModels)
+			.IncludeStuff()
+			.Skip(Size)
+			.FirstAsync();
+		var expectedResult = await offsetOrderer(DbContext.MainModels)
+			.IncludeStuff()
+			.Skip(Size + 1)
+			.Take(Size)
+			.ToListAsync();
+
+		var result = await DbContext.MainModels.KeysetPaginateQuery(
+			keysetBuilder,
 			KeysetPaginationDirection.Forward,
 			reference)
-			.Take(20)
+			.IncludeStuff()
+			.Take(Size)
 			.ToListAsync();
-	}
 
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_string()
-	{
-		var reference = DbContext.StringModels.First();
-
-		var result = await DbContext.StringModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Guid()
-	{
-		var reference = DbContext.GuidModels.First();
-
-		var result = await DbContext.GuidModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Nested()
-	{
-		var reference = DbContext.NestedModels.Include(x => x.Inner).First();
-
-		var result = await DbContext.NestedModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Inner.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
+		AssertResult(expectedResult, result);
 	}
 
 	[Fact]
 	public async Task KeysetPaginate_AfterReference_Nested_DtoReference()
 	{
-		var reference = DbContext.NestedModels.Include(x => x.Inner).First();
+		var (offsetOrderer, keysetBuilder) = GetForQuery(QueryType.Nested);
+
+		var reference = await offsetOrderer(DbContext.MainModels)
+			.IncludeStuff()
+			.Skip(Size)
+			.FirstAsync();
 		var referenceDto = new
 		{
 			Inner = new
@@ -102,183 +142,116 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 				reference.Inner.Created,
 			},
 		};
+		var expectedResult = await offsetOrderer(DbContext.MainModels)
+			.Skip(Size + 1)
+			.Take(Size)
+			.ToListAsync();
 
-		var result = await DbContext.NestedModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Inner.Created),
+		var result = await DbContext.MainModels.KeysetPaginateQuery(
+			keysetBuilder,
 			KeysetPaginationDirection.Forward,
 			referenceDto)
-			.Take(20)
+			.Take(Size)
 			.ToListAsync();
+
+		AssertResult(expectedResult, result);
 	}
 
-	[Fact]
-	public async Task KeysetPaginate_BeforeReference_int()
+	[Theory]
+	[MemberData(nameof(Queries))]
+	public async Task KeysetPaginate_BeforeReference(QueryType queryType)
 	{
-		var reference = DbContext.IntModels.First();
+		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
-		var result = await DbContext.IntModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id),
+		var reference = await offsetOrderer(DbContext.MainModels)
+			.IncludeStuff()
+			.Skip(Size)
+			.FirstAsync();
+		var expectedResult = await offsetOrderer(DbContext.MainModels)
+			.IncludeStuff()
+			.Take(Size)
+			.ToListAsync();
+
+		var result = await DbContext.MainModels.KeysetPaginateQuery(
+			keysetBuilder,
 			KeysetPaginationDirection.Backward,
 			reference)
-			.Take(20)
+			.IncludeStuff()
+			.Take(Size)
 			.ToListAsync();
+
+		AssertResult(expectedResult, result);
 	}
 
-	[Fact]
-	public async Task KeysetPaginate_BeforeReference_string()
+	[Theory]
+	[MemberData(nameof(Queries))]
+	public async Task KeysetPaginate_BeforeFirstReference_Empty(QueryType queryType)
 	{
-		var reference = DbContext.StringModels.First();
+		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
-		var result = await DbContext.StringModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id),
+		var reference = await offsetOrderer(DbContext.MainModels)
+			.IncludeStuff()
+			.FirstAsync();
+
+		var result = await DbContext.MainModels.KeysetPaginateQuery(
+			keysetBuilder,
 			KeysetPaginationDirection.Backward,
 			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_BeforeReference_Guid()
-	{
-		var reference = DbContext.GuidModels.First();
-
-		var result = await DbContext.GuidModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id),
-			KeysetPaginationDirection.Backward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_int()
-	{
-		var reference = DbContext.IntModels.First();
-
-		var result = await DbContext.IntModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_string()
-	{
-		var reference = DbContext.StringModels.First();
-
-		var result = await DbContext.StringModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Guid()
-	{
-		var reference = DbContext.GuidModels.First();
-
-		var result = await DbContext.GuidModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Mixed_int()
-	{
-		var reference = DbContext.IntModels.First();
-
-		var result = await DbContext.IntModels.KeysetPaginateQuery(
-			b => b.Descending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Mixed_string()
-	{
-		var reference = DbContext.StringModels.First();
-
-		var result = await DbContext.StringModels.KeysetPaginateQuery(
-			b => b.Descending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_AfterReference_Composite_Mixed_Guid()
-	{
-		var reference = DbContext.GuidModels.First();
-
-		var result = await DbContext.GuidModels.KeysetPaginateQuery(
-			b => b.Descending(x => x.Id).Ascending(x => x.Created),
-			KeysetPaginationDirection.Forward,
-			reference)
-			.Take(20)
-			.ToListAsync();
-	}
-
-	[Fact]
-	public async Task KeysetPaginate_BeforeFirstReference_Empty()
-	{
-		var reference = DbContext.IntModels.First();
-
-		var result = await DbContext.IntModels.KeysetPaginateQuery(
-			b => b.Ascending(x => x.Id),
-			KeysetPaginationDirection.Backward,
-			reference)
-			.Take(20)
+			.Take(Size)
 			.ToListAsync();
 
-		Assert.Empty(result);
+		result.Should().BeEmpty();
 	}
 
-	[Fact]
-	public async Task HasPreviousAsync_False()
+	[Theory]
+	[MemberData(nameof(Queries))]
+	public async Task HasPreviousAsync_False(QueryType queryType)
 	{
-		var keysetContext = DbContext.IntModels.KeysetPaginate(
-			b => b.Ascending(x => x.Id));
+		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
+
+		var keysetContext = DbContext.MainModels.KeysetPaginate(
+			keysetBuilder);
 		var items = await keysetContext.Query
-			.Take(20)
+			.IncludeStuff()
+			.Take(Size)
 			.ToListAsync();
 		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
-		Assert.False(result);
+
+		result.Should().BeFalse();
 	}
 
-	[Fact]
-	public async Task HasPreviousAsync_True()
+	[Theory]
+	[MemberData(nameof(Queries))]
+	public async Task HasPreviousAsync_True(QueryType queryType)
 	{
-		var reference = DbContext.IntModels.Skip(1).First();
+		var (offsetOrderer, keysetBuilder) = GetForQuery(queryType);
 
-		var keysetContext = DbContext.IntModels.KeysetPaginate(
-			b => b.Ascending(x => x.Id),
+		var reference = await offsetOrderer(DbContext.MainModels)
+			.IncludeStuff()
+			.Skip(1)
+			.FirstAsync();
+
+		var keysetContext = DbContext.MainModels.KeysetPaginate(
+			keysetBuilder,
 			KeysetPaginationDirection.Forward,
 			reference);
 		var items = await keysetContext.Query
-			.Take(20)
+			.IncludeStuff()
+			.Take(Size)
 			.ToListAsync();
 		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
-		Assert.True(result);
+
+		result.Should().BeTrue();
 	}
 
 	[Fact]
 	public async Task HasPreviousAsync_Incompatible()
 	{
-		var keysetContext = DbContext.IntModels.KeysetPaginate(
+		var keysetContext = DbContext.MainModels.KeysetPaginate(
 			b => b.Ascending(x => x.Id));
 		var items = await keysetContext.Query
 			.Take(20)
@@ -297,7 +270,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task HasPreviousAsync_Incompatible_Nested_ChainPartNull()
 	{
-		var keysetContext = DbContext.NestedModels.KeysetPaginate(
+		var keysetContext = DbContext.MainModels.KeysetPaginate(
 			b => b.Ascending(x => x.Inner.Id));
 		var items = await keysetContext.Query
 			.Take(20)
@@ -316,15 +289,15 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task HasPreviousAsync_Null_DoesNotThrow()
 	{
-		var keysetContext = DbContext.ComputedModels.KeysetPaginate(
+		var keysetContext = DbContext.MainModels.KeysetPaginate(
 			// Analyzer would have detected this, but assuming we suppressed the error...
-			b => b.Ascending(x => x.Created));
+			b => b.Ascending(x => x.CreatedNullable));
 		var items = await keysetContext.Query
 			.Take(20)
 			.ToListAsync();
 		keysetContext.EnsureCorrectOrder(items);
 
-		var dtos = items.Select(x => new { Created = (DateTime?)null }).ToList();
+		var dtos = items.Select(x => new { CreatedNullable = (DateTime?)null }).ToList();
 
 		// Shouldn't throw if the user suppressed the analyzer error and knows what they're doing.
 		await keysetContext.HasPreviousAsync(dtos);
@@ -333,7 +306,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task EnsureCorrectOrder_Forward()
 	{
-		var keysetContext = DbContext.IntModels.KeysetPaginate(
+		var keysetContext = DbContext.MainModels.KeysetPaginate(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward);
 		var items = await keysetContext.Query
@@ -348,7 +321,7 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task EnsureCorrectOrder_Backward()
 	{
-		var keysetContext = DbContext.IntModels.KeysetPaginate(
+		var keysetContext = DbContext.MainModels.KeysetPaginate(
 			b => b.Ascending(x => x.Id),
 			KeysetPaginationDirection.Backward);
 		var items = await keysetContext.Query
@@ -363,23 +336,23 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task KeysetPaginate_DbComputed()
 	{
-		var reference = DbContext.ComputedModels.OrderBy(x => x.Id).First();
+		var reference = DbContext.MainModels.OrderBy(x => x.Id).First();
 
-		var result = await DbContext.ComputedModels.KeysetPaginateQuery(
+		var result = await DbContext.MainModels.KeysetPaginateQuery(
 			b => b.Ascending(x => x.CreatedComputed).Ascending(x => x.Id),
 			KeysetPaginationDirection.Forward,
 			reference)
-			.Take(20)
+			.Take(Size)
 			.ToListAsync();
 
-		Assert.True(result.Any());
+		result.Should().NotBeEmpty();
 	}
 
 	[Fact]
 	public async Task HasNext_DbComputed()
 	{
-		// The last page
-		var keysetContext = DbContext.ComputedModels.KeysetPaginate(
+		// The last page.
+		var keysetContext = DbContext.MainModels.KeysetPaginate(
 			b => b.Ascending(x => x.CreatedComputed).Ascending(x => x.Id),
 			KeysetPaginationDirection.Backward);
 		var data = await keysetContext.Query
@@ -390,26 +363,41 @@ public class KeysetPaginationTest : IClassFixture<DatabaseFixture>
 		// Next on the last page => should be false
 		var hasNext = await keysetContext.HasNextAsync(data);
 
-		Assert.False(hasNext);
+		hasNext.Should().BeFalse();
 	}
 
-	private void AssertRange(int from, int to, List<IntModel> actual)
+	private static void AssertResult(List<MainModel> expectedResult, List<MainModel> result)
 	{
-		AssertRange(from, to, actual.Select(x => x.Id).ToList());
+		result.Should().HaveCount(expectedResult.Count);
+		result.Select(x => x.Id).Should().BeEquivalentTo(expectedResult.Select(x => x.Id));
 	}
+}
 
-	private void AssertRange(int from, int to, List<StringModel> actual)
+public static class MainModelQueryableExtensions
+{
+	public static IQueryable<MainModel> IncludeStuff(this IQueryable<MainModel> q) => q
+		.Include(x => x.Inner)
+		.Include(x => x.Inners2);
+}
+
+// Run these tests on both SqlServer and Sqlite as a form of a smoke test.
+
+/*
+[Collection(SqlServerDatabaseCollection.Name)]
+public class SqlServerKeysetPaginationTest : KeysetPaginationTest
+{
+	public SqlServerKeysetPaginationTest(SqlServerDatabaseFixture fixture)
+		: base(fixture)
 	{
-		AssertRange(from, to, actual.Select(x => int.Parse(x.Id)).ToList());
 	}
+}
+*/
 
-	private void AssertRange(int from, int to, List<int> actual)
+[Collection(SqliteDatabaseCollection.Name)]
+public class SqliteKeysetPaginationTest : KeysetPaginationTest
+{
+	public SqliteKeysetPaginationTest(SqliteDatabaseFixture fixture)
+		: base(fixture)
 	{
-		var expected = new List<int>();
-		for (var i = from; i < to; i++)
-		{
-			expected.Add(i);
-		}
-		Assert.Equal(expected, actual);
 	}
 }

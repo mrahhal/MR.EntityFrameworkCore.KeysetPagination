@@ -7,10 +7,10 @@ using Microsoft.CodeAnalysis.Operations;
 namespace MR.EntityFrameworkCore.KeysetPagination.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class KeysetContainsNullablePropertyAnalyzer : DiagnosticAnalyzer
+public class KeysetContainsNullableColumnAnalyzer : DiagnosticAnalyzer
 {
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(
-		DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableProperty);
+		DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableColumn);
 
 	public override void Initialize(AnalysisContext context)
 	{
@@ -37,18 +37,19 @@ public class KeysetContainsNullablePropertyAnalyzer : DiagnosticAnalyzer
 			return;
 		}
 
-		// The argument is the lambda (IConversionOperation). Traverse down and find property refs.
-		var props = argument.Descendants()
-			.OfType<IPropertyReferenceOperation>();
-		foreach (var prop in props)
+		// The argument is the lambda. Traverse down and find the return operation.
+		var returnOperation = argument.Descendants().OfType<IReturnOperation>().FirstOrDefault();
+		if (returnOperation == null) return;
+
+		// Find out the type of the expression.
+		var typeInfo = operation.SemanticModel?.GetTypeInfo(returnOperation.Syntax);
+		if (typeInfo == null) return;
+
+		if (typeInfo.Value.Nullability.FlowState == NullableFlowState.MaybeNull)
 		{
-			if (prop.Property.NullableAnnotation == NullableAnnotation.Annotated)
-			{
-				context.ReportDiagnostic(Diagnostic.Create(
-					DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableProperty,
-					(prop.Syntax as MemberAccessExpressionSyntax)?.Name.GetLocation() ?? prop.Syntax.GetLocation(),
-					prop.Property.Name));
-			}
+			context.ReportDiagnostic(Diagnostic.Create(
+				DiagnosticDescriptors.KeysetPagination1000_KeysetContainsNullableColumn,
+				returnOperation.Syntax.GetLocation()));
 		}
 	}
 
