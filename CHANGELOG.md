@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Improved
 
 - Expression adapting ([#37](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/37) by [@mrahhal](https://github.com/mrahhal))
+- Unify expression accessing reference values ([#42](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/42) by [@mrahhal](https://github.com/mrahhal))
 
 [**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.2.0...HEAD)
 

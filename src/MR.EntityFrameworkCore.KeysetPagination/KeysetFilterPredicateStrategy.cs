@@ -34,11 +34,18 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 		where T : class
 	{
 		var referenceValues = GetValues(columns, reference);
+		var referenceValueExpressions = new Expression<Func<object>>[referenceValues.Count];
+		for (var i = 0; i < referenceValues.Count; i++)
+		{
+			var referenceValue = referenceValues[i];
+			Expression<Func<object>> referenceValueExpression = () => referenceValue;
+			referenceValueExpressions[i] = referenceValueExpression;
+		}
 
 		// entity =>
 		var param = Expression.Parameter(typeof(T), "entity");
 
-		var finalExpression = BuildExpressionCore(columns, direction, referenceValues, param);
+		var finalExpression = BuildExpressionCore(columns, direction, referenceValueExpressions, param);
 
 		return Expression.Lambda<Func<T, bool>>(finalExpression, param);
 	}
@@ -46,7 +53,7 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 	protected abstract Expression BuildExpressionCore<T>(
 		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
-		List<object> referenceValues,
+		IReadOnlyList<Expression<Func<object>>> referenceValueExpressions,
 		ParameterExpression param)
 		where T : class;
 
@@ -156,7 +163,7 @@ internal class KeysetFilterPredicateStrategyMethod1 : KeysetFilterPredicateStrat
 	protected override Expression BuildExpressionCore<T>(
 		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
-		List<object> referenceValues,
+		IReadOnlyList<Expression<Func<object>>> referenceValueExpressions,
 		ParameterExpression param)
 		where T : class
 	{
@@ -207,9 +214,7 @@ internal class KeysetFilterPredicateStrategyMethod1 : KeysetFilterPredicateStrat
 				var isInnerLastOperation = j + 1 == innerLimit;
 				var column = columns[j];
 				var memberAccess = column.MakeAccessExpression(param);
-				var referenceValue = referenceValues[j];
-				Expression<Func<object>> referenceValueFunc = () => referenceValue;
-				var referenceValueExpression = referenceValueFunc.Body;
+				var referenceValueExpression = referenceValueExpressions[j].Body;
 
 				if (firstMemberAccessExpression == null)
 				{
@@ -277,7 +282,7 @@ internal class KeysetFilterPredicateStrategyMethod2 : KeysetFilterPredicateStrat
 	protected override Expression BuildExpressionCore<T>(
 		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
-		List<object> referenceValues,
+		IReadOnlyList<Expression<Func<object>>> referenceValueExpressions,
 		ParameterExpression param)
 		where T : class
 	{
@@ -320,9 +325,7 @@ internal class KeysetFilterPredicateStrategyMethod2 : KeysetFilterPredicateStrat
 				var isInnerLastOperation = j + 1 == innerLimit;
 				var column = columns[j];
 				var memberAccess = column.MakeAccessExpression(param);
-				var referenceValue = referenceValues[j];
-				Expression<Func<object>> referenceValueFunc = () => referenceValue;
-				var referenceValueExpression = referenceValueFunc.Body;
+				var referenceValueExpression = referenceValueExpressions[j].Body;
 
 				BinaryExpression innerExpression;
 				if (!isInnerLastOperation)
