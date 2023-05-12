@@ -256,7 +256,7 @@ The keyset above consists of only one column that accesses `Created`. If by desi
 
 There are a few problems with a non deterministic keyset. Most importantly, you'll be skipping over data when paginating. This is a side effect of how keyset pagination works.
 
-Fixing this is easy enough. In most cases, you can just add more columns to make it deterministic. Most commonly, you can add a column that access `Id`.
+Fixing this is easy enough. In most cases, you can just add more columns until it becomes deterministic. Most commonly, you can add a column that accesses `Id`.
 
 ```
 b.Ascending(x => x.Created).Ascending(x => x.Id)
@@ -266,7 +266,7 @@ This makes the keyset deterministic because the combination of these particular 
 
 If you can maintain this rule, and if your keyset's data doesn't change, you'll never skip over or duplicate data, a behavior that offset based pagination can never guarantee. We call this behavior _stable pagination_.
 
-But keep in mind that to get the most performance out of this we should have proper indexing that takes into account this composite keyset. This is discussed in the next section.
+Keep in mind that to get the most performance out of this we should have proper indexing that takes into account this composite keyset. This is discussed in the next section.
 
 ## Indexing
 
