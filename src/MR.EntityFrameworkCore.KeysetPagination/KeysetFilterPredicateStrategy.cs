@@ -154,7 +154,7 @@ internal class KeysetFilterPredicateStrategyMethod1 : KeysetFilterPredicateStrat
 {
 	public static readonly KeysetFilterPredicateStrategyMethod1 Instance = new();
 
-	public static bool EnableFirstColPredicateOpt = false;
+	public static bool EnableFirstColPredicateOpt = true;
 
 	private KeysetFilterPredicateStrategyMethod1()
 	{
