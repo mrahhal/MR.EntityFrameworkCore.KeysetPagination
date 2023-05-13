@@ -11,7 +11,6 @@ public static class KeysetQuery
 	/// <exception cref="ArgumentNullException"><paramref name="builderAction"/> is null.</exception>
 	public static KeysetQueryDefinition<T> Build<T>(
 		Action<KeysetPaginationBuilder<T>> builderAction)
-		where T : class
 	{
 		if (builderAction == null) throw new ArgumentNullException(nameof(builderAction));
 
@@ -21,7 +20,6 @@ public static class KeysetQuery
 
 	internal static IReadOnlyList<KeysetColumn<T>> BuildColumns<T>(
 		Action<KeysetPaginationBuilder<T>> builderAction)
-		where T : class
 	{
 		var builder = new KeysetPaginationBuilder<T>();
 		builderAction(builder);

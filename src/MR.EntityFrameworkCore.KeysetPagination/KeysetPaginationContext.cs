@@ -1,7 +1,6 @@
 ﻿namespace MR.EntityFrameworkCore.KeysetPagination;
 
 public class KeysetPaginationContext<T>
-	where T : class
 {
 	internal KeysetPaginationContext(
 		IQueryable<T> query,

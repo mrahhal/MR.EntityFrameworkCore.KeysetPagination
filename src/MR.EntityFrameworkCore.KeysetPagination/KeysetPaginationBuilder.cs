@@ -7,7 +7,6 @@ namespace MR.EntityFrameworkCore.KeysetPagination;
 /// </summary>
 /// <typeparam name="T">The type of the entity.</typeparam>
 public class KeysetPaginationBuilder<T>
-	where T : class
 {
 	private readonly List<KeysetColumn<T>> _columns = new();
 

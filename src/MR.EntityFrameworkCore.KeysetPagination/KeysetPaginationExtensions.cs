@@ -27,7 +27,6 @@ public static class KeysetPaginationExtensions
 		KeysetQueryDefinition<T> keysetQueryDefinition,
 		KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
 		object? reference = null)
-		where T : class
 	{
 		if (source == null) throw new ArgumentNullException(nameof(source));
 		if (keysetQueryDefinition == null) throw new ArgumentNullException(nameof(keysetQueryDefinition));
@@ -57,7 +56,6 @@ public static class KeysetPaginationExtensions
 		Action<KeysetPaginationBuilder<T>> builderAction,
 		KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
 		object? reference = null)
-		where T : class
 	{
 		if (source == null) throw new ArgumentNullException(nameof(source));
 		if (builderAction == null) throw new ArgumentNullException(nameof(builderAction));
@@ -71,7 +69,6 @@ public static class KeysetPaginationExtensions
 		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
 		object? reference)
-		where T : class
 	{
 		if (source == null) throw new ArgumentNullException(nameof(source));
 
@@ -122,7 +119,6 @@ public static class KeysetPaginationExtensions
 		KeysetQueryDefinition<T> keysetQueryDefinition,
 		KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
 		object? reference = null)
-		where T : class
 	{
 		return KeysetPaginate(source, keysetQueryDefinition, direction, reference).Query;
 	}
@@ -149,7 +145,6 @@ public static class KeysetPaginationExtensions
 		Action<KeysetPaginationBuilder<T>> builderAction,
 		KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
 		object? reference = null)
-		where T : class
 	{
 		return KeysetPaginate(source, builderAction, direction, reference).Query;
 	}
@@ -168,7 +163,6 @@ public static class KeysetPaginationExtensions
 	public static Task<bool> HasPreviousAsync<T, T2>(
 		this KeysetPaginationContext<T> context,
 		IReadOnlyList<T2> data)
-		where T : class
 	{
 		if (context == null) throw new ArgumentNullException(nameof(context));
 		if (data == null) throw new ArgumentNullException(nameof(data));
@@ -197,7 +191,6 @@ public static class KeysetPaginationExtensions
 	public static Task<bool> HasNextAsync<T, T2>(
 		this KeysetPaginationContext<T> context,
 		IReadOnlyList<T2> data)
-		where T : class
 	{
 		if (context == null) throw new ArgumentNullException(nameof(context));
 		if (data == null) throw new ArgumentNullException(nameof(data));
@@ -216,7 +209,6 @@ public static class KeysetPaginationExtensions
 		this KeysetPaginationContext<T> context,
 		KeysetPaginationDirection direction,
 		object reference)
-		where T : class
 	{
 		var lambda = BuildKeysetFilterPredicateExpression(
 			context.Columns, direction, reference);
@@ -238,7 +230,6 @@ public static class KeysetPaginationExtensions
 	public static void EnsureCorrectOrder<T, T2>(
 		this KeysetPaginationContext<T> context,
 		List<T2> data)
-		where T : class
 	{
 		if (context == null) throw new ArgumentNullException(nameof(context));
 		if (data == null) throw new ArgumentNullException(nameof(data));
@@ -253,7 +244,6 @@ public static class KeysetPaginationExtensions
 		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
 		object reference)
-		where T : class
 	{
 		return KeysetFilterPredicateStrategy.Default.BuildKeysetFilterPredicateExpression(
 			columns,

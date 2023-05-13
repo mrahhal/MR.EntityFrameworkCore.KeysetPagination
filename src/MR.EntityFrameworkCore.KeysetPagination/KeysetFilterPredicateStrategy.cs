@@ -11,8 +11,7 @@ internal interface IKeysetFilterPredicateStrategy
 	Expression<Func<T, bool>> BuildKeysetFilterPredicateExpression<T>(
 		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
-		object reference)
-		where T : class;
+		object reference);
 }
 
 internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateStrategy
@@ -31,7 +30,6 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
 		object reference)
-		where T : class
 	{
 		var referenceValues = GetValues(columns, reference);
 		var referenceValueExpressions = new Expression<Func<object>>[referenceValues.Count];
@@ -54,13 +52,11 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 		IReadOnlyList<KeysetColumn<T>> columns,
 		KeysetPaginationDirection direction,
 		IReadOnlyList<Expression<Func<object>>> referenceValueExpressions,
-		ParameterExpression param)
-		where T : class;
+		ParameterExpression param);
 
 	protected static List<object> GetValues<T>(
 		IReadOnlyList<KeysetColumn<T>> columns,
 		object reference)
-		where T : class
 	{
 		var referenceValues = new List<object>(capacity: columns.Count);
 		foreach (var column in columns)
@@ -75,7 +71,6 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 		KeysetColumn<T> column,
 		Expression memberAccess, Expression referenceValue,
 		Func<Expression, Expression, BinaryExpression> compare)
-		where T : class
 	{
 		if (TypeToCompareToMethod.TryGetValue(column.Type, out var compareToMethod))
 		{
@@ -120,7 +115,6 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 
 	protected static Func<Expression, Expression, BinaryExpression> GetComparisonExpressionToApply<T>(
 		KeysetPaginationDirection direction, KeysetColumn<T> column, bool orEqual)
-		where T : class
 	{
 		var greaterThan = direction switch
 		{
@@ -165,7 +159,6 @@ internal class KeysetFilterPredicateStrategyMethod1 : KeysetFilterPredicateStrat
 		KeysetPaginationDirection direction,
 		IReadOnlyList<Expression<Func<object>>> referenceValueExpressions,
 		ParameterExpression param)
-		where T : class
 	{
 		// A composite keyset pagination in sql looks something like this:
 		//   (x, y, ...) > (a, b, ...)
@@ -284,7 +277,6 @@ internal class KeysetFilterPredicateStrategyMethod2 : KeysetFilterPredicateStrat
 		KeysetPaginationDirection direction,
 		IReadOnlyList<Expression<Func<object>>> referenceValueExpressions,
 		ParameterExpression param)
-		where T : class
 	{
 		// Similar to method 1, but supposedly leads to a more performant query in the database.
 		// Reference: https://use-the-index-luke.com/sql/partial-results/fetch-next-page

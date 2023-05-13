@@ -37,7 +37,6 @@ internal abstract class KeysetColumn<T>
 /// <typeparam name="T">The type of the entity.</typeparam>
 /// <typeparam name="TColumn">The type of the column.</typeparam>
 internal sealed class KeysetColumn<T, TColumn> : KeysetColumn<T>
-	where T : class
 {
 	// Cached reference type to compiled access of the lambda of this column.
 	private readonly ConcurrentDictionary<Type, Func<object, TColumn>> _referenceTypeToCompiledAccessMap = new();
