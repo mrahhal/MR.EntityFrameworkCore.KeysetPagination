@@ -75,22 +75,6 @@ KeysetPaginate(
 
 **Note:** Make sure to read the "Deterministic keysets" and "Indexing" sections for important notes about configuring keysets.
 
-## Prebuilt keyset query definition
-
-Although all the examples here build the keyset directly inside the `KeysetPaginate` call for brevity, the recommended way of doing this is to prebuild the keyset query definition. Prebuilding will allow reusing of internal caches, leading to more performance and less allocations.
-
-To prebuild, all you need to do is move the keyset building code out of the `KeysetPaginate` call and into a long lived instance (such as a static field).
-
-```cs
-// In the ctor or someplace similar, set this to a static field for example.
-_usersKeysetQuery = KeysetQuery.Build<User>(b => b.Ascending(x => x.Id));
-
-// Then when calling KeysetPaginate, we use the prebuilt definition.
-dbContext.Users.KeysetPaginate(
-    _usersQueryKeyset,
-    ...);
-```
-
 ## Common patterns
 
 Here are the 4 most common patterns of using `KeysetPaginate`.
@@ -148,6 +132,22 @@ KeysetPaginate(
     KeysetPaginationDirection.Forward,
     reference
 )
+```
+
+## Prebuilt keyset query definition
+
+Although all the examples here build the keyset directly inside the `KeysetPaginate` call for brevity, the recommended way of doing this is to prebuild the keyset query definition. Prebuilding will allow reusing of internal caches, leading to more performance and less allocations.
+
+To prebuild, all you need to do is move the keyset building code out of the `KeysetPaginate` call and into a long lived instance (such as a static field).
+
+```cs
+// In the ctor or someplace similar, set this to a static field for example.
+_usersKeysetQuery = KeysetQuery.Build<User>(b => b.Ascending(x => x.Id));
+
+// Then when calling KeysetPaginate, we use the prebuilt definition.
+dbContext.Users.KeysetPaginate(
+    _usersQueryKeyset,
+    ...);
 ```
 
 ## Getting the data
