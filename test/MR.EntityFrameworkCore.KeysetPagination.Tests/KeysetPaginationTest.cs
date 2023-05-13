@@ -99,6 +99,22 @@ public abstract class KeysetPaginationTest
 		AssertResult(expectedResult, result);
 	}
 
+	[Fact]
+	public async Task KeysetPaginate_Prebuilt()
+	{
+		var keyset = KeysetQuery.Build<MainModel>(b => b.Ascending(x => x.Id));
+
+		var result1 = await DbContext.MainModels.KeysetPaginateQuery(keyset)
+			.Take(Size)
+			.ToListAsync();
+
+		var result2 = await DbContext.MainModels.KeysetPaginateQuery(keyset)
+			.Take(Size)
+			.ToListAsync();
+
+		AssertResult(result1, result2);
+	}
+
 	[Theory]
 	[MemberData(nameof(Queries))]
 	public async Task KeysetPaginate_AfterReference(QueryType queryType)

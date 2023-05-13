@@ -8,6 +8,10 @@ namespace Basic.Pages
 {
 	public class IndexModel : PageModel
 	{
+		// Using a prebuilt keyset query is the recommended method.
+		private static readonly KeysetQueryDefinition<User> _userKeysetQuery =
+			KeysetQuery.Build<User>(b => b.Ascending(x => x.Id));
+
 		private readonly AppDbContext _dbContext;
 
 		public IndexModel(
@@ -32,11 +36,6 @@ namespace Basic.Pages
 		{
 			var size = 20;
 
-			var keysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
-			{
-				b.Ascending(x => x.Id);
-			};
-
 			var sw = Stopwatch.StartNew();
 
 			var query = _dbContext.Users.AsQueryable();
@@ -44,25 +43,25 @@ namespace Basic.Pages
 			KeysetPaginationContext<User> keysetContext;
 			if (first)
 			{
-				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Forward);
+				keysetContext = query.KeysetPaginate(_userKeysetQuery, KeysetPaginationDirection.Forward);
 			}
 			else if (last)
 			{
-				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Backward);
+				keysetContext = query.KeysetPaginate(_userKeysetQuery, KeysetPaginationDirection.Backward);
 			}
 			else if (after != null)
 			{
 				var reference = await _dbContext.Users.FindAsync(after.Value);
-				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Forward, reference);
+				keysetContext = query.KeysetPaginate(_userKeysetQuery, KeysetPaginationDirection.Forward, reference);
 			}
 			else if (before != null)
 			{
 				var reference = await _dbContext.Users.FindAsync(before.Value);
-				keysetContext = query.KeysetPaginate(keysetBuilderAction, KeysetPaginationDirection.Backward, reference);
+				keysetContext = query.KeysetPaginate(_userKeysetQuery, KeysetPaginationDirection.Backward, reference);
 			}
 			else
 			{
-				keysetContext = query.KeysetPaginate(keysetBuilderAction);
+				keysetContext = query.KeysetPaginate(_userKeysetQuery);
 			}
 
 			Users = await keysetContext.Query

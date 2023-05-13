@@ -34,7 +34,7 @@ namespace Basic.Pages
 
 			var keysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
 			{
-				// It kind of doesn't make sense to add the Id here since Created will be unique, but this is just a sample.
+				// It kind of doesn't make sense to add the Id here since we seeded Created to be unique in this app, but this is just a sample.
 				b.Descending(x => x.Created).Ascending(x => x.Id);
 			};
 
