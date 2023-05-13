@@ -81,7 +81,7 @@ Although all the examples here build the keyset directly inside the `KeysetPagin
 
 To prebuild, all you need to do is move the keyset building code out of the `KeysetPaginate` call and into a long lived instance (such as a static field).
 
-```
+```cs
 // In the ctor or someplace similar, set this to a static field for example.
 _usersKeysetQuery = KeysetQuery.Build<User>(b => b.Ascending(x => x.Id));
 
