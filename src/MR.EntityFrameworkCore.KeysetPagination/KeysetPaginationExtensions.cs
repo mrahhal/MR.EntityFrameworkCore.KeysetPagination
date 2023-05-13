@@ -10,12 +10,39 @@ public static class KeysetPaginationExtensions
 	/// </summary>
 	/// <typeparam name="T">The type of the entity.</typeparam>
 	/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
+	/// <param name="keysetQueryDefinition">The prebuilt keyset query definition.</param>
+	/// <param name="direction">The direction to take. Default is Forward.</param>
+	/// <param name="reference">The reference object. Needs to have properties with exact names matching the configured properties. Doesn't necessarily need to be the same type as T.</param>
+	/// <returns>An object containing the modified queryable. Can be used with other helper methods related to keyset pagination.</returns>
+	/// <exception cref="ArgumentNullException">source or keysetQueryDefinition is null.</exception>
+	/// <exception cref="InvalidOperationException">If no columns were registered with the builder.</exception>
+	/// <remarks>
+	/// Note that calling this method will override any OrderBy calls you have done before.
+	/// </remarks>
+	public static KeysetPaginationContext<T> KeysetPaginate<T>(
+		this IQueryable<T> source,
+		KeysetQueryDefinition<T> keysetQueryDefinition,
+		KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
+		object? reference = null)
+		where T : class
+	{
+		if (source == null) throw new ArgumentNullException(nameof(source));
+		if (keysetQueryDefinition == null) throw new ArgumentNullException(nameof(keysetQueryDefinition));
+
+		return source.KeysetPaginate(keysetQueryDefinition.Columns, direction, reference);
+	}
+
+	/// <summary>
+	/// Paginates using keyset pagination.
+	/// </summary>
+	/// <typeparam name="T">The type of the entity.</typeparam>
+	/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
 	/// <param name="builderAction">An action that takes a builder and registers the columns upon which keyset pagination will work.</param>
 	/// <param name="direction">The direction to take. Default is Forward.</param>
 	/// <param name="reference">The reference object. Needs to have properties with exact names matching the configured properties. Doesn't necessarily need to be the same type as T.</param>
 	/// <returns>An object containing the modified queryable. Can be used with other helper methods related to keyset pagination.</returns>
 	/// <exception cref="ArgumentNullException">source or builderAction is null.</exception>
-	/// <exception cref="InvalidOperationException">If no properties were registered with the builder.</exception>
+	/// <exception cref="InvalidOperationException">If no columns were registered with the builder.</exception>
 	/// <remarks>
 	/// Note that calling this method will override any OrderBy calls you have done before.
 	/// </remarks>
@@ -29,9 +56,18 @@ public static class KeysetPaginationExtensions
 		if (source == null) throw new ArgumentNullException(nameof(source));
 		if (builderAction == null) throw new ArgumentNullException(nameof(builderAction));
 
-		var builder = new KeysetPaginationBuilder<T>();
-		builderAction(builder);
-		var columns = builder.Columns;
+		var columns = KeysetQuery.BuildColumns(builderAction);
+		return source.KeysetPaginate(columns, direction, reference);
+	}
+
+	private static KeysetPaginationContext<T> KeysetPaginate<T>(
+		this IQueryable<T> source,
+		IReadOnlyList<KeysetColumn<T>> columns,
+		KeysetPaginationDirection direction,
+		object? reference)
+		where T : class
+	{
+		if (source == null) throw new ArgumentNullException(nameof(source));
 
 		if (!columns.Any())
 		{
@@ -80,6 +116,30 @@ public static class KeysetPaginationExtensions
 		where T : class
 	{
 		return KeysetPaginate(source, builderAction, direction, reference).Query;
+	}
+
+	/// <summary>
+	/// Paginates using keyset pagination.
+	/// </summary>
+	/// <typeparam name="T">The type of the entity.</typeparam>
+	/// <param name="source">An <see cref="IQueryable{T}"/> to paginate.</param>
+	/// <param name="keysetQueryDefinition">The prebuilt keyset query definition.</param>
+	/// <param name="direction">The direction to take. Default is Forward.</param>
+	/// <param name="reference">The reference object. Needs to have properties with exact names matching the configured properties. Doesn't necessarily need to be the same type as T.</param>
+	/// <returns>The modified the queryable.</returns>
+	/// <exception cref="ArgumentNullException">source or builderAction is null.</exception>
+	/// <exception cref="InvalidOperationException">If no properties were registered with the builder.</exception>
+	/// <remarks>
+	/// Note that calling this method will override any OrderBy calls you have done before.
+	/// </remarks>
+	public static IQueryable<T> KeysetPaginateQuery<T>(
+		this IQueryable<T> source,
+		KeysetQueryDefinition<T> keysetQueryDefinition,
+		KeysetPaginationDirection direction = KeysetPaginationDirection.Forward,
+		object? reference = null)
+		where T : class
+	{
+		return KeysetPaginate(source, keysetQueryDefinition, direction, reference).Query;
 	}
 
 	/// <summary>
