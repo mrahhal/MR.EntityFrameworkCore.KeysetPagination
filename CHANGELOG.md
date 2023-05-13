@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.3.0 - 2023-05-13
 
+This release overhauls how expressions that build keyset columns are dealt with. A lot more patterns are now supported, but it's up to you as the consumer to make sure that the more complicated keysets are up to the performance standard you expect.
+
 ### Improved
 
 - Expression adapting ([#37](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/issues/37) by [@mrahhal](https://github.com/mrahhal))
@@ -19,6 +21,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.2.0...v1.3.0)
 
 ## 1.2.0 - 2022-11-03
+
+The highlight of this release is an analyzer that detects possible problems when configuring keyset columns (in particular, nullable columns are not supported).
 
 ### Improved
 
