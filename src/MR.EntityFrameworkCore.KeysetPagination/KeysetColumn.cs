@@ -67,16 +67,30 @@ internal sealed class KeysetColumn<T, TColumn> : KeysetColumn<T>
 
 	public override IOrderedQueryable<T> ApplyOrderBy(IQueryable<T> query, KeysetPaginationDirection direction)
 	{
-		var lambdaExpression = MakeAccessLambdaExpression();
-		var isDescending = direction == KeysetPaginationDirection.Backward ? !IsDescending : IsDescending;
-		return isDescending ? query.OrderByDescending(lambdaExpression) : query.OrderBy(lambdaExpression);
+		return ApplyOrderByVariant(
+			query, direction,
+			Queryable.OrderBy,
+			Queryable.OrderByDescending);
 	}
 
 	public override IOrderedQueryable<T> ApplyThenOrderBy(IOrderedQueryable<T> query, KeysetPaginationDirection direction)
 	{
+		return ApplyOrderByVariant(
+			query, direction,
+			Queryable.ThenBy,
+			Queryable.ThenByDescending);
+	}
+
+	private IOrderedQueryable<T> ApplyOrderByVariant<TQueryable>(
+		TQueryable query,
+		KeysetPaginationDirection direction,
+		Func<TQueryable, Expression<Func<T, TColumn>>, IOrderedQueryable<T>> ascendingVariant,
+		Func<TQueryable, Expression<Func<T, TColumn>>, IOrderedQueryable<T>> descendingVariant)
+		where TQueryable : IQueryable<T>
+	{
 		var lambdaExpression = MakeAccessLambdaExpression();
 		var isDescending = direction == KeysetPaginationDirection.Backward ? !IsDescending : IsDescending;
-		return isDescending ? query.ThenByDescending(lambdaExpression) : query.ThenBy(lambdaExpression);
+		return isDescending ? descendingVariant(query, lambdaExpression) : ascendingVariant(query, lambdaExpression);
 	}
 
 	public override object ObtainValue<TReference>(TReference reference)
