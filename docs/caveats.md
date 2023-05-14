@@ -10,7 +10,7 @@ This is why having a nullable column as part of the keyset _is not supported_ in
 
 There are two solutions for this:
 1. Computed column: Reliable, performant, a bit harder to implement
-2. Coalescing in keyset: Extremely easy to implement, but might suffer in terms of performance
+2. Keyset coalescing: Extremely easy to implement, but might suffer in terms of performance
 
 #### Solution #1 - Computed column
 
@@ -76,7 +76,7 @@ _dbContext.Users.KeysetPaginateQuery(
 
 Check this [sample page](../samples/Basic/Pages/Computed.cshtml) for a working example you can run and play with.
 
-#### Solution #2 - Coalescing in keyset
+#### Solution #2 - Keyset coalescing
 
 This is an extremely easy solution to the NULL problem. Let's assume again we have the following keyset: `Created` + `Id`, where `Created` is nullable.
 
