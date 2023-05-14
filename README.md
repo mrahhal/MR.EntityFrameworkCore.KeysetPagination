@@ -339,7 +339,7 @@ Check the [benchmarks](benchmarks) folder for the source code.
 
 A more detailed post looking into the different benchmarks coming soon.
 
-<!-- TODO: For a more detailed look into the benchmark results, check this post. -->
+Check this [blog post](https://github.com/mrahhal/blog/blob/main/posts/2023-05-14-offset-vs-keyset-pagination/post.md) for a more detailed look into the benchmarks.
 
 ## Caveats
 
