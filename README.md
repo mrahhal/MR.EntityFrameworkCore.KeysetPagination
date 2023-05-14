@@ -337,8 +337,6 @@ To that point, the keyset bars (green) are barely visible in the MidPage and Las
 
 Check the [benchmarks](benchmarks) folder for the source code.
 
-A more detailed post looking into the different benchmarks coming soon.
-
 Check this [blog post](https://github.com/mrahhal/blog/blob/main/posts/2023-05-14-offset-vs-keyset-pagination/post.md) for a more detailed look into the benchmarks.
 
 ## Caveats
