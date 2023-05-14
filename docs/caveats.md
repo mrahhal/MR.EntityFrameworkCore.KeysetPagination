@@ -6,13 +6,19 @@ NULL is a very special value in databases. You can't compare against it as it in
 
 This is why having a nullable column as part of the keyset _is not supported_ in this library, as we can't predictably deal with its special handling in databases.
 
-### Workaround
+### Solutions
+
+There are two solutions for this:
+1. Computed column: Reliable, performant, a bit harder to implement
+2. Coalescing in keyset: Extremely easy to implement, but might suffer in terms of performance
+
+#### Solution #1 - Computed column
 
 The recommended way of working around this when you naturally have a nullable column that you want as part of your keyset is through using a non-nullable computed column (one for each nullable column in your keyset) and using that in your keyset instead.
 
 You'll have to do this with any kind of nullable column type, but let's look at an example for a DateTime column.
 
-Let's assume we want to create a keyset comprising of two columns: Created + Id. Let's assume that we need to make Created nullable for a business requirement.
+Let's assume we want to create a keyset comprising of two columns: `Created` + `Id`. Let's assume that we need to make `Created` nullable for a business requirement.
 
 First, we'll need to introduce a property in our model that we'll configure as computed along our nullable property:
 
@@ -37,7 +43,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     modelBuilder.Entity<User>()
         .Property(x => x.CreatedComputed)
         // We're coalescing NULLs into a max date.
-        // This results in NULLs effectively being sorted last (if ASC), irrelevant of the Db.
+        // This results in NULLs effectively being sorted last (if ASC), irrelevant of the database.
         // You're writing sql here, make sure you have the right format for your particular database.
         // This is for sqlite.
         .HasComputedColumnSql("COALESCE(Created, '9999-12-31 00:00:00')");
@@ -69,3 +75,20 @@ _dbContext.Users.KeysetPaginateQuery(
 ```
 
 Check this [sample page](../samples/Basic/Pages/Computed.cshtml) for a working example you can run and play with.
+
+#### Solution #2 - Coalescing in keyset
+
+This is an extremely easy solution to the NULL problem. Let's assume again we have the following keyset: `Created` + `Id`, where `Created` is nullable.
+
+Here's how to solve this:
+
+```cs
+_dbContext.Users.KeysetPaginateQuery(
+    b => b.Ascending(x => x.Created ?? DateTime.MinValue).Ascending(x => x.Id),
+    KeysetPaginationDirection.Forward,
+    reference)
+```
+
+As you can see, even though `Created` itself is nullable, the keyset above uses a null coalescing to specify the default value when it's null.
+
+In terms of the end result, this is equivalent to creating a computed column.
