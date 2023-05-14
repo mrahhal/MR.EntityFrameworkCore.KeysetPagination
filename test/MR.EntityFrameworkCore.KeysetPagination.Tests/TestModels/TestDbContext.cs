@@ -44,7 +44,7 @@ public class TestDbContext : DbContext
 			computedPropertyBuilder
 				// Has to be deterministic to be able to create an index for it, that's why we need
 				// to use CONVERT.
-				.HasComputedColumnSql("COALESCE(Created, CONVERT(datetime2, '9999-12-31', 102))");
+				.HasComputedColumnSql("COALESCE(CreatedNullable, CONVERT(datetime2, '1900-01-01', 102))");
 		}
 		else
 		{
@@ -52,7 +52,7 @@ public class TestDbContext : DbContext
 			computedPropertyBuilder
 				// This is how EF formats dates for sqlite. Be careful, you'll have to put the
 				// right format or you might get wrong results.
-				.HasComputedColumnSql("COALESCE(Created, '9999-12-31 00:00:00')");
+				.HasComputedColumnSql("COALESCE(CreatedNullable, '1900-01-01 00:00:00')");
 		}
 	}
 }
