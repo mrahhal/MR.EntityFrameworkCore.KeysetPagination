@@ -14,7 +14,8 @@ Learn about why the standard offset based pagination (`Take().Skip()`) is bad in
 
 Check the [benchmarks](#benchmarks) section below for a quick look at the different performance characteristics between offset and keyset.
 
-**Note:** If you're using ASP.NET Core, you can use [MR.AspNetCore.Pagination](https://github.com/mrahhal/MR.AspNetCore.Pagination) which wraps this package and offers an easier to consume keyset pagination behavior with additional features for ASP.NET Core. This is a lower level library that implements keyset pagination for EF Core.
+> **Note**
+> If you're using ASP.NET Core, you can use [MR.AspNetCore.Pagination](https://github.com/mrahhal/MR.AspNetCore.Pagination) which wraps this package and offers an easier to consume keyset pagination behavior with additional features for ASP.NET Core. This is a lower level library that implements keyset pagination for EF Core.
 
 ## Usage
 
@@ -43,7 +44,8 @@ Here's a small visual representation:
 
 The columns and their configured order are used to order the data, and then the direction decides if we're getting the data before or after the reference row.
 
-**Note:** You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order. There's a helper method on `KeysetContext` for this, shown in a snippet later.
+> **Warning**
+> You'll want to reverse the result whenever you use `KeysetPaginationDirection.Backward` to get the proper order of the data, since walking `Backward` gives results in the opposite order to the configured columns order. There's a helper method on `KeysetContext` for this, shown in a snippet later.
 
 `KeysetPaginate` returns a context object which you can use to get secondary info and get the data result.
 
@@ -73,7 +75,8 @@ KeysetPaginate(
 )
 ```
 
-**Note:** Make sure to read the "Deterministic keysets" and "Indexing" sections for important notes about configuring keysets.
+> **Important**
+> Make sure to read the "Deterministic keysets" and "Indexing" sections for important notes about configuring keysets.
 
 ## Common patterns
 
@@ -204,7 +207,8 @@ var hasNext = await keysetContext.HasNextAsync(users);
 
 `HasPreviousAsync`/`HasNextAsync` are useful when you want to know when to render Previous/Next (Older/Newer) buttons.
 
-**Note**: The reference/data these methods accept are loosely typed to allow flexibility when projecting your models (to DTOs for example). For more info check [this document](./docs/loose-typing.md).
+> **Note**
+> The reference/data these methods accept are loosely typed to allow flexibility when projecting your models (to DTOs for example). For more info check [this document](./docs/loose-typing.md).
 
 Here's another example showing how to obtain the total count for the data to display somewhere:
 
@@ -312,7 +316,8 @@ KeysetPaginate(
 
 In this case you'll want to create a composite index on `Score` + `Id`, but make sure they're compatible with the order above. i.e You should make the index descending on `Score` and ascending on `Id` (or the opposite) for it to be effective.
 
-**Note**: Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core. Note that support for specifying sort order in a composite index was introduced in EF Core 7.0.
+> **Note**
+> Refer to [this document](https://docs.microsoft.com/en-us/ef/core/modeling/indexes) on how to create indexes with EF Core. Note that support for specifying sort order in a composite index was introduced in EF Core 7.0.
 
 ## Benchmarks
 
