@@ -208,7 +208,7 @@ var hasNext = await keysetContext.HasNextAsync(users);
 `HasPreviousAsync`/`HasNextAsync` are useful when you want to know when to render Previous/Next (Older/Newer) buttons.
 
 > **Note**
-> The reference/data these methods accept are loosely typed to allow flexibility when projecting your models (to DTOs for example). For more info check [this document](./docs/loose-typing.md).
+> The reference/data these methods accept are loosely typed to allow flexibility when projecting your models (to DTOs for example). For more info check [this document](docs/loose-typing.md).
 
 Here's another example showing how to obtain the total count for the data to display somewhere:
 
