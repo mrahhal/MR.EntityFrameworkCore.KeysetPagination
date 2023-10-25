@@ -30,7 +30,7 @@ public class KeysetPaginationBuilder<T>
 		return ConfigureColumn(columnExpression, isDescending: true);
 	}
 
-	private KeysetPaginationBuilder<T> ConfigureColumn<TColumn>(
+	public KeysetPaginationBuilder<T> ConfigureColumn<TColumn>(
 		Expression<Func<T, TColumn>> columnExpression,
 		bool isDescending)
 	{
