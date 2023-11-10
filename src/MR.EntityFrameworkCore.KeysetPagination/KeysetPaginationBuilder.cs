@@ -34,7 +34,8 @@ public class KeysetPaginationBuilder<T>
 	/// Configures an ordered column as part of the keyset.
 	/// </summary>
 	public KeysetPaginationBuilder<T> Order<TColumn>(
-		Expression<Func<T, TColumn>> columnExpression, bool isDescending = false)
+		Expression<Func<T, TColumn>> columnExpression,
+		bool isDescending = false)
 	{
 		return ConfigureColumn(columnExpression, isDescending: isDescending);
 	}
