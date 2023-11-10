@@ -30,6 +30,15 @@ public class KeysetPaginationBuilder<T>
 		return ConfigureColumn(columnExpression, isDescending: true);
 	}
 
+	/// <summary>
+	/// Configures an ordered column as part of the keyset.
+	/// </summary>
+	public KeysetPaginationBuilder<T> Order<TColumn>(
+		Expression<Func<T, TColumn>> columnExpression, bool isDescending = false)
+	{
+		return ConfigureColumn(columnExpression, isDescending: isDescending);
+	}
+
 	private KeysetPaginationBuilder<T> ConfigureColumn<TColumn>(
 		Expression<Func<T, TColumn>> columnExpression,
 		bool isDescending)
