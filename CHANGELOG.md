@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.0 - 2024-01-28
+
+### Added
+
+- Make ConfigureColumn public ([#51](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/51) by [@dannyheard7](https://github.com/dannyheard7))
+
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.3.0...v1.4.0)
+
 ## 1.3.0 - 2023-05-13
 
 This release overhauls how expressions that build keyset columns are dealt with. A lot more patterns are now supported, but it's up to you as the consumer to make sure that the more complicated keysets are up to the performance standard you expect.
