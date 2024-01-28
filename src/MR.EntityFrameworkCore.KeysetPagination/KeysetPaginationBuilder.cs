@@ -30,6 +30,11 @@ public class KeysetPaginationBuilder<T>
 		return ConfigureColumn(columnExpression, isDescending: true);
 	}
 
+	/// <summary>
+	/// Configures a column as part of the keyset in the order specified through <paramref name="isDescending"/>.
+	///
+	/// If <paramref name="isDescending"/> is `false` the column is configured as ascending.
+	/// </summary>
 	public KeysetPaginationBuilder<T> ConfigureColumn<TColumn>(
 		Expression<Func<T, TColumn>> columnExpression,
 		bool isDescending)
