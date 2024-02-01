@@ -22,6 +22,7 @@ public class MainModel
 	public DateTime? CreatedNullable { get; set; }
 
 	public DateTime CreatedComputed { get; }
+	public EnumType EnumValue { get; set; }
 
 	public NestedInnerModel Inner { get; set; }
 
@@ -34,6 +35,8 @@ public class NestedInnerModel
 	public int Id { get; set; }
 
 	public DateTime Created { get; set; }
+
+	public EnumType NestedEnumValue { get; set; }
 }
 
 public class NestedInner2Model
@@ -43,4 +46,10 @@ public class NestedInner2Model
 	public int MainModelId { get; set; }
 
 	public MainModel MainModel { get; set; }
+}
+
+public enum EnumType
+{
+	Value1,
+	Value2,
 }

@@ -79,6 +79,7 @@ public abstract class DatabaseFixture : IDisposable
 					Created = created,
 				},
 				Inners2 = Enumerable.Range(0, rand.Next(10)).Select(i => new NestedInner2Model()).ToList(),
+				EnumValue = i % 2 == 0 ? EnumType.Value1 : EnumType.Value2,
 			});
 		}
 
