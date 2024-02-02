@@ -77,7 +77,7 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 			// LessThan/GreaterThan operators are not valid for some types such as strings and guids.
 			// We use the CompareTo method on these types instead.
 
-			// entity.Property.CompareTo(referenceValue) >|< 0
+			// entity.Property.CompareTo(referenceValue) > or < 0
 			// -----------------------------------------
 
 			// entity.Property.CompareTo(referenceValue)
@@ -86,7 +86,7 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 				compareToMethod,
 				EnsureMatchingType(memberAccess, referenceValue));
 
-			// >|< 0
+			// > or < 0
 			return compare(methodCallExpression, ConstantExpression0);
 		}
 		else
