@@ -92,9 +92,21 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 		else
 		{
 			return compare(
-				memberAccess,
-				EnsureMatchingType(memberAccess, referenceValue));
+				EnsureAdditionalConversions(memberAccess),
+				EnsureAdditionalConversions(EnsureMatchingType(memberAccess, referenceValue)));
 		}
+	}
+
+	private static Expression EnsureAdditionalConversions(Expression expression)
+	{
+		if (expression.Type.IsEnum)
+		{
+			var enumUnderlyingType = Enum.GetUnderlyingType(expression.Type);
+
+			return Expression.Convert(expression, enumUnderlyingType);
+		}
+
+		return expression;
 	}
 
 	protected static Expression EnsureMatchingType(

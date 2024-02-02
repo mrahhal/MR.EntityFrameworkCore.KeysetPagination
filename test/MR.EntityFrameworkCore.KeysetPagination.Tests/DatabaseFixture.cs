@@ -77,8 +77,10 @@ public abstract class DatabaseFixture : IDisposable
 				Inner = new NestedInnerModel
 				{
 					Created = created,
+					NestedEnumValue = i % 2 == 0 ? TestEnum.Value1 : TestEnum.Value2,
 				},
 				Inners2 = Enumerable.Range(0, rand.Next(10)).Select(i => new NestedInner2Model()).ToList(),
+				EnumValue = i % 2 == 0 ? TestEnum.Value1 : TestEnum.Value2,
 			});
 		}
 

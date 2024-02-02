@@ -25,6 +25,8 @@ public abstract class KeysetPaginationTest
 		NullCoalescing,
 		NullCoalescing2,
 		Count,
+		Enum,
+		NestedEnum,
 	}
 
 	private const int Size = 10;
@@ -58,6 +60,8 @@ public abstract class KeysetPaginationTest
 			QueryType.NullCoalescing => q => q.OrderBy(x => x.CreatedNullable ?? DateTime.MinValue).ThenBy(x => x.Id),
 			QueryType.NullCoalescing2 => q => q.OrderBy(x => x.CreatedNullable ?? x.Created).ThenBy(x => x.Id),
 			QueryType.Count => q => q.OrderBy(x => x.Inners2.Count).ThenBy(x => x.Id),
+			QueryType.Enum => q => q.OrderBy(x => x.EnumValue).ThenBy(x => x.Id),
+			QueryType.NestedEnum => q => q.OrderBy(x => x.Inner.NestedEnumValue).ThenBy(x => x.Id),
 			_ => throw new NotImplementedException(),
 		};
 		Action<KeysetPaginationBuilder<MainModel>> keysetPaginationBuilder = queryType switch
@@ -75,6 +79,8 @@ public abstract class KeysetPaginationTest
 			QueryType.NullCoalescing => b => b.Ascending(x => x.CreatedNullable ?? DateTime.MinValue).Ascending(x => x.Id),
 			QueryType.NullCoalescing2 => b => b.Ascending(x => x.CreatedNullable ?? x.Created).Ascending(x => x.Id),
 			QueryType.Count => b => b.Ascending(x => x.Inners2.Count).Ascending(x => x.Id),
+			QueryType.Enum => q => q.Ascending(x => x.EnumValue).Ascending(x => x.Id),
+			QueryType.NestedEnum => q => q.Ascending(x => x.Inner.NestedEnumValue).Ascending(x => x.Id),
 			_ => throw new NotImplementedException(),
 		};
 

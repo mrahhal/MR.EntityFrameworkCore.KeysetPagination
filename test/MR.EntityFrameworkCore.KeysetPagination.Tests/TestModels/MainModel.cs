@@ -23,6 +23,8 @@ public class MainModel
 
 	public DateTime CreatedComputed { get; }
 
+	public TestEnum EnumValue { get; set; }
+
 	public NestedInnerModel Inner { get; set; }
 
 	public List<NestedInner2Model> Inners2 { get; set; }
@@ -34,6 +36,8 @@ public class NestedInnerModel
 	public int Id { get; set; }
 
 	public DateTime Created { get; set; }
+
+	public TestEnum NestedEnumValue { get; set; }
 }
 
 public class NestedInner2Model
@@ -43,4 +47,10 @@ public class NestedInner2Model
 	public int MainModelId { get; set; }
 
 	public MainModel MainModel { get; set; }
+}
+
+public enum TestEnum
+{
+	Value1,
+	Value2,
 }
