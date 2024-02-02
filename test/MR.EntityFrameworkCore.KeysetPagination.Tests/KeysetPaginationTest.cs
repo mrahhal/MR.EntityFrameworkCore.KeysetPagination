@@ -26,7 +26,7 @@ public abstract class KeysetPaginationTest
 		NullCoalescing2,
 		Count,
 		Enum,
-		NestedEnum
+		NestedEnum,
 	}
 
 	private const int Size = 10;
