@@ -91,6 +91,8 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 		}
 		else
 		{
+			// We call EnsureAdditionalConversions only when generating comparisons as these conversions
+			// are unneeded when generating an equality (Expression.Equal).
 			return compare(
 				EnsureAdditionalConversions(memberAccess),
 				EnsureAdditionalConversions(EnsureMatchingType(memberAccess, referenceValue)));
@@ -99,11 +101,11 @@ internal abstract class KeysetFilterPredicateStrategy : IKeysetFilterPredicateSt
 
 	private static Expression EnsureAdditionalConversions(Expression expression)
 	{
+		// For enums, we need to convert to the underlying type for comparisons to work.
 		if (expression.Type.IsEnum)
 		{
-			var enumUnderlyingType = Enum.GetUnderlyingType(expression.Type);
-
-			return Expression.Convert(expression, enumUnderlyingType);
+			var underlyingType = Enum.GetUnderlyingType(expression.Type);
+			return Expression.Convert(expression, underlyingType);
 		}
 
 		return expression;
