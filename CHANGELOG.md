@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased: 1.4.1
+
+### Fixed
+
+- Add Enum support in keyset ([#54](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/54) by [@vpachta](https://github.com/vpachta))
+
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.4.0...HEAD)
+
 ## 1.4.0 - 2024-01-28
 
 ### Added
