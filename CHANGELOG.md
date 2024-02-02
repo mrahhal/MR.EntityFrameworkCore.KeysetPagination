@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add Enum support in keyset ([#54](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/54) by [@vpachta](https://github.com/vpachta))
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.4.0...HEAD)
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.4.0...v1.4.1)
 
 ## 1.4.0 - 2024-01-28
 
