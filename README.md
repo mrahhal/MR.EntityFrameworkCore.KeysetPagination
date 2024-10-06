@@ -1,7 +1,7 @@
 # MR.EntityFrameworkCore.KeysetPagination
 
 <a href="http://use-the-index-luke.com/no-offset">
-  <img src="http://use-the-index-luke.com/img/no-offset.q200.png" alt="100% offset-free" target="_blank" align="right" width="106" height="106">
+  <img src="https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/blob/4be043bf88f49cb3c4e9f96d371699b283031167/images/no-offset.png" alt="100% offset-free" target="_blank" align="right" width="120" height="120">
 </a>
 
 [![CI](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/actions/workflows/ci.yml/badge.svg)](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/actions/workflows/ci.yml)
