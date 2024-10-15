@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.2 - Unreleased
+
+### Fixed
+
+- Fix an analyzer issue ([#60](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/60) by [@mrahhal](https://github.com/mrahhal))
+
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.4.1...v1.4.2)
+
 ## 1.4.1 - 2024-02-02
 
 ### Fixed
