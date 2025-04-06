@@ -8,13 +8,13 @@
     <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <EntityFrameworkCoreVersion>6.0.0</EntityFrameworkCoreVersion>
+    <EntityFrameworkCoreVersion>8.0.0</EntityFrameworkCoreVersion>
   </PropertyGroup>
 
 </Project>
