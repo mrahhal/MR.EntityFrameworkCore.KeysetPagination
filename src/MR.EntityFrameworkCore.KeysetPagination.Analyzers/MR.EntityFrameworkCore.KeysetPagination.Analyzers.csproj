@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" ExcludeAssets="compile" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
