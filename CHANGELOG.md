@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 2.0.0 - Unreleased
 
+This version targets .net 8.
+
 ### Fixed
 
 - Fix an analyzer issue ([#60](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/60) by [@mrahhal](https://github.com/mrahhal))
+
+### Changed
+
+- Update to .net 8 ([#62](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/62) by [@mrahhal](https://github.com/mrahhal))
 
 [**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.4.1...v2.0.0)
 
