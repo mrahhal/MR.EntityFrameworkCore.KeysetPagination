@@ -18,7 +18,6 @@ public class AnalyzerTest
 
 	private void TestingTheAnalyzer()
 	{
-
 		var analyzerTestKeysetBuilderAction = (KeysetPaginationBuilder<User> b) =>
 		{
 			//                HERE
