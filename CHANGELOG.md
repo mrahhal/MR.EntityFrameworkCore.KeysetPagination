@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.5.0 - Unreleased
+## 1.5.0 - 2025-04-06
 
 This version targets .net 8.
 
@@ -17,7 +17,7 @@ This version targets .net 8.
 
 - Update to .net 8 ([#62](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/62) by [@mrahhal](https://github.com/mrahhal))
 
-[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.4.1...v2.0.0)
+[**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.4.1...v1.5.0)
 
 ## 1.4.1 - 2024-02-02
 
