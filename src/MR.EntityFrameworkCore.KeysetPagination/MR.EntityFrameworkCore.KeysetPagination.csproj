@@ -11,10 +11,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Analyzers">
-     <ProjectReference
-        Include="..\$(AnalyzersAssemblyName)\$(AnalyzersAssemblyName).csproj"
-        OutputItemType="Analyzer"
-        ReferenceOutputAssembly="False" />
+     <ProjectReference Include="..\$(AnalyzersAssemblyName)\$(AnalyzersAssemblyName).csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
 </Project>
