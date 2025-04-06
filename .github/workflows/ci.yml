@@ -15,6 +15,6 @@ jobs:
   main:
     uses: mrahhal/.github/.github/workflows/ci-dotnet-package.yml@main
     with:
-      dotnet-version: 6.x.x
+      dotnet-version: 8.x.x
     secrets:
       NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
