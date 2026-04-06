@@ -11,7 +11,7 @@ This version targets .net 10.
 
 ### Changed
 
-- Update to .net 10 ([#](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/) by [@mrahhal](https://github.com/mrahhal))
+- Update to .net 10 ([#65](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/pull/65) by [@mrahhal](https://github.com/mrahhal))
 
 [**Full diff**](https://github.com/mrahhal/MR.EntityFrameworkCore.KeysetPagination/compare/v1.5.0...v1.6.0)
 
