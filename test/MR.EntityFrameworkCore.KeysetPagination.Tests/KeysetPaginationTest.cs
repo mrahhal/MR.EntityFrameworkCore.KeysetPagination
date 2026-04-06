@@ -95,12 +95,12 @@ public abstract class KeysetPaginationTest
 
 		var expectedResult = await offsetOrderer(DbContext.MainModels)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		var result = await DbContext.MainModels.KeysetPaginateQuery(
 			keysetBuilder)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		AssertResult(expectedResult, result);
 	}
@@ -112,11 +112,11 @@ public abstract class KeysetPaginationTest
 
 		var result1 = await DbContext.MainModels.KeysetPaginateQuery(keyset)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		var result2 = await DbContext.MainModels.KeysetPaginateQuery(keyset)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		AssertResult(result1, result2);
 	}
@@ -130,12 +130,12 @@ public abstract class KeysetPaginationTest
 		var reference = await offsetOrderer(DbContext.MainModels)
 			.IncludeStuff()
 			.Skip(Size)
-			.FirstAsync();
+			.FirstAsync(cancellationToken: TestContext.Current.CancellationToken);
 		var expectedResult = await offsetOrderer(DbContext.MainModels)
 			.IncludeStuff()
 			.Skip(Size + 1)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		var result = await DbContext.MainModels.KeysetPaginateQuery(
 			keysetBuilder,
@@ -143,7 +143,7 @@ public abstract class KeysetPaginationTest
 			reference)
 			.IncludeStuff()
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		AssertResult(expectedResult, result);
 	}
@@ -156,7 +156,7 @@ public abstract class KeysetPaginationTest
 		var reference = await offsetOrderer(DbContext.MainModels)
 			.IncludeStuff()
 			.Skip(Size)
-			.FirstAsync();
+			.FirstAsync(cancellationToken: TestContext.Current.CancellationToken);
 		var referenceDto = new
 		{
 			Inner = new
@@ -167,14 +167,14 @@ public abstract class KeysetPaginationTest
 		var expectedResult = await offsetOrderer(DbContext.MainModels)
 			.Skip(Size + 1)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		var result = await DbContext.MainModels.KeysetPaginateQuery(
 			keysetBuilder,
 			KeysetPaginationDirection.Forward,
 			referenceDto)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		AssertResult(expectedResult, result);
 	}
@@ -188,11 +188,11 @@ public abstract class KeysetPaginationTest
 		var reference = await offsetOrderer(DbContext.MainModels)
 			.IncludeStuff()
 			.Skip(Size)
-			.FirstAsync();
+			.FirstAsync(cancellationToken: TestContext.Current.CancellationToken);
 		var expectedResult = await offsetOrderer(DbContext.MainModels)
 			.IncludeStuff()
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		var result = await DbContext.MainModels.KeysetPaginateQuery(
 			keysetBuilder,
@@ -200,7 +200,7 @@ public abstract class KeysetPaginationTest
 			reference)
 			.IncludeStuff()
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		AssertResult(expectedResult, result);
 	}
@@ -213,14 +213,14 @@ public abstract class KeysetPaginationTest
 
 		var reference = await offsetOrderer(DbContext.MainModels)
 			.IncludeStuff()
-			.FirstAsync();
+			.FirstAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		var result = await DbContext.MainModels.KeysetPaginateQuery(
 			keysetBuilder,
 			KeysetPaginationDirection.Backward,
 			reference)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		result.Should().BeEmpty();
 	}
@@ -236,7 +236,7 @@ public abstract class KeysetPaginationTest
 		var items = await keysetContext.Query
 			.IncludeStuff()
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
@@ -253,7 +253,7 @@ public abstract class KeysetPaginationTest
 		var reference = await offsetOrderer(DbContext.MainModels)
 			.IncludeStuff()
 			.Skip(1)
-			.FirstAsync();
+			.FirstAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		var keysetContext = DbContext.MainModels.KeysetPaginate(
 			keysetBuilder,
@@ -262,7 +262,7 @@ public abstract class KeysetPaginationTest
 		var items = await keysetContext.Query
 			.IncludeStuff()
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 		keysetContext.EnsureCorrectOrder(items);
 
 		var result = await keysetContext.HasPreviousAsync(items);
@@ -277,7 +277,7 @@ public abstract class KeysetPaginationTest
 			b => b.Ascending(x => x.Id));
 		var items = await keysetContext.Query
 			.Take(20)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 		keysetContext.EnsureCorrectOrder(items);
 
 		// A type that doesn't have an Id property which is included in the keyset above.
@@ -296,7 +296,7 @@ public abstract class KeysetPaginationTest
 			b => b.Ascending(x => x.Inner.Id));
 		var items = await keysetContext.Query
 			.Take(20)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 		keysetContext.EnsureCorrectOrder(items);
 
 		// Emulate not loading the chain.
@@ -316,7 +316,7 @@ public abstract class KeysetPaginationTest
 			b => b.Ascending(x => x.CreatedNullable));
 		var items = await keysetContext.Query
 			.Take(20)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 		keysetContext.EnsureCorrectOrder(items);
 
 		var dtos = items.Select(x => new { CreatedNullable = (DateTime?)null }).ToList();
@@ -333,7 +333,7 @@ public abstract class KeysetPaginationTest
 			KeysetPaginationDirection.Forward);
 		var items = await keysetContext.Query
 			.Take(20)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		keysetContext.EnsureCorrectOrder(items);
 
@@ -348,7 +348,7 @@ public abstract class KeysetPaginationTest
 			KeysetPaginationDirection.Backward);
 		var items = await keysetContext.Query
 			.Take(20)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		keysetContext.EnsureCorrectOrder(items);
 
@@ -365,7 +365,7 @@ public abstract class KeysetPaginationTest
 			KeysetPaginationDirection.Forward,
 			reference)
 			.Take(Size)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		result.Should().NotBeEmpty();
 	}
@@ -379,7 +379,7 @@ public abstract class KeysetPaginationTest
 			KeysetPaginationDirection.Backward);
 		var data = await keysetContext.Query
 			.Take(1)
-			.ToListAsync();
+			.ToListAsync(cancellationToken: TestContext.Current.CancellationToken);
 		keysetContext.EnsureCorrectOrder(data);
 
 		// Next on the last page => should be false
